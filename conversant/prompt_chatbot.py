@@ -82,6 +82,28 @@ class PromptChatbot(Chatbot):
         self.chat_history = []
         self.prompt_history = []
 
+    @property
+    def user_name(self):
+        """
+        Returns:
+            str: The name of the user, defined in the prompt. Defaults to "User".
+        """
+        if hasattr(self.prompt, "user_name"):
+            return self.prompt.user_name
+        else:
+            return "User"
+
+    @property
+    def bot_name(self):
+        """
+        Returns:
+            str: The name of the chatbot, defined in the prompt. Defaults to "PromptChatbot".
+        """
+        if hasattr(self.prompt, "bot_name"):
+            return self.prompt.bot_name
+        else:
+            return "PromptChatbot"
+
     def reply(self, query: str) -> Dict[str, str]:
         """Replies to a query given a chat history.
 
