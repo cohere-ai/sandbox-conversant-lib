@@ -67,10 +67,11 @@ Once the `conversant` poetry environment is setup, each command needs to be pref
 poetry shell
 ```
 
-Commands from hereon assume that `poetry shell` has been run. We use git `pre-commit` hooks, such that a commit will fail if any of the checks defined in `.pre-commit-config.yaml` fail. We also use `black` as the formatter, and `pytest` for testing:
+Commands from hereon assume that `poetry shell` has been run. We use git `pre-commit` hooks, such that a commit will fail if any of the checks defined in `.pre-commit-config.yaml` fail. We also use `black` as the formatter, `ruff` as the linter, and `pytest` for testing:
 ```
 pre-commit install
 black .
+ruff .
 pytest
 ```
 
