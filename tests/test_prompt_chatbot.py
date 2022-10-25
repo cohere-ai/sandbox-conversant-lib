@@ -29,6 +29,8 @@ def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
     """
     check_prompt_chatbot_config(mock_prompt_chatbot)
+    assert mock_prompt_chatbot.user_name == mock_prompt_chatbot.prompt.user_name
+    assert mock_prompt_chatbot.bot_name == mock_prompt_chatbot.prompt.bot_name
     mock_prompt_chatbot.reply(query="What's up?")
 
 
@@ -40,6 +42,8 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     """
     prompt_chatbot = PromptChatbot.from_persona("watch-sales-agent", client=mock_co)
     assert isinstance(prompt_chatbot, PromptChatbot)
+    assert prompt_chatbot.user_name == prompt_chatbot.prompt.user_name
+    assert prompt_chatbot.bot_name == prompt_chatbot.prompt.bot_name
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
 
@@ -71,23 +75,29 @@ def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -
 
     expected = (
         # start prompt
-        f"{mock_prompt_chatbot.prompt.preamble}\n\n"
+        f"{mock_prompt_chatbot.prompt.preamble}\n"
+        + f"{mock_prompt_chatbot.prompt.example_separator}"
         + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0]['user']}\n"
         + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.example_separator}"
         + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}"
         # context prompt
         + (
+            f"{mock_prompt_chatbot.prompt.example_separator}"
             f"{mock_prompt_chatbot.prompt.headers['user']}: Hello!\n"
             f"{mock_prompt_chatbot.prompt.headers['bot']}: Hello back\n"
         )
         * max_context_examples
         # query prompt
         + (
+            f"{mock_prompt_chatbot.prompt.example_separator}"
             f"{mock_prompt_chatbot.prompt.headers['user']}: Hello!\n"
             f"{mock_prompt_chatbot.prompt.headers['bot']}:"
         )
     )
+    print(current_prompt)
+    print(expected)
     assert current_prompt == expected
 
 
