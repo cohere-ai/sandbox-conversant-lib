@@ -10,7 +10,6 @@ import logging
 from dataclasses import field
 from typing import List
 
-from pydantic import PrivateAttr
 from pydantic.dataclasses import dataclass
 
 from conversant.prompts.prompt import Prompt
