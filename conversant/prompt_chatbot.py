@@ -13,7 +13,6 @@ from typing import Any, Dict, List
 
 import cohere
 import jsonschema
-from streamlit.web import cli as stcli
 
 from conversant.chatbot import Chatbot
 from conversant.prompts.start_prompt import StartPrompt
@@ -132,7 +131,8 @@ class PromptChatbot(Chatbot):
         """Configures chatbot options.
 
         Args:
-            chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults to {}.
+            chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults
+            to {}.
         """
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
@@ -144,7 +144,8 @@ class PromptChatbot(Chatbot):
             self.chatbot_config.update(chatbot_config)
         else:
             raise TypeError(
-                f"chatbot_config must be of type Dict, but was passed in as {type(chatbot_config)}"
+                f"chatbot_config must be of type Dict, but was passed in as \
+                    {type(chatbot_config)}"
             )
 
     def configure_client(self, client_config: Dict = {}) -> None:
@@ -159,14 +160,15 @@ class PromptChatbot(Chatbot):
                 "model": "xlarge",
                 "max_tokens": 100,
                 "temperature": 0.75,
-                "stop_seq": [f"\n"],
+                "stop_seq": ["\n"],
             }
         # Override default config values with the config passed in by the user.
         if isinstance(client_config, Dict):
             self.client_config.update(client_config)
         else:
             raise TypeError(
-                f"client_config must be of type Dict, but was passed in as {type(client_config)}"
+                f"client_config must be of type Dict, but was passed in as \
+                    {type(client_config)}"
             )
 
     @classmethod
@@ -179,13 +181,14 @@ class PromptChatbot(Chatbot):
         """
         # Load the persona from a local directory
         persona_path = os.path.join(
-            PERSONA_MODEL_DIRECTORY, persona_name, f"config.json"
+            PERSONA_MODEL_DIRECTORY, persona_name, "config.json"
         )
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
             raise FileNotFoundError(
-                f"{persona_name}.json cannot be found in {PERSONA_MODEL_DIRECTORY}/{persona_name}"
+                f"config.json cannot be found in \
+                    {PERSONA_MODEL_DIRECTORY}/{persona_name}"
             )
         with open(persona_path) as f:
             persona = json.load(f)
@@ -230,7 +233,8 @@ class PromptChatbot(Chatbot):
 
         joined_start_prompt = (
             f"Below is a series of chats between {self.bot_name} and {self.user_name}."
-            + f"{self.bot_name} responds to {self.user_name} based on the {description_header}.\n"
+            + f"{self.bot_name} responds to {self.user_name} "
+            + f"based on the {description_header}.\n"
             + f"{description_header}\n"
             + f"{stripped_desc}\n"
             + f"{conversation_header}\n"
@@ -253,7 +257,8 @@ class PromptChatbot(Chatbot):
         if colon_prefixed or hyphen_prefixed:
             # This might false-positive, so we only log a warning
             logging.warning(
-                "Did you mistakenly prefix the example dialogue turns with user/bot names?"
+                "Did you mistakenly prefix the example dialogue turns \
+                    with user/bot names?"
             )
 
         user_prefixed = all(
@@ -265,7 +270,8 @@ class PromptChatbot(Chatbot):
         )
 
         if user_prefixed and bot_prefixed:
-            # It's hard to think of any genuine case where all utterances start with self-names.
+            # It's hard to think of any genuine case where all utterances
+            # start with self-names.
             raise ValueError("Start turns should not be prefixed with user/bot names!")
 
     @staticmethod
@@ -280,7 +286,8 @@ class PromptChatbot(Chatbot):
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
             raise jsonschema.exceptions.ValidationError(
-                f"Type of values in given dictionary (persona from {persona_path}) do not match schema': {e}"
+                f"Type of values in given dictionary (persona from {persona_path}) \
+                    do not match schema': {e}"
             )
         except KeyError as e:
             raise KeyError(
@@ -288,5 +295,6 @@ class PromptChatbot(Chatbot):
             )
         except Exception as e:
             raise Exception(
-                f"Failed to validate persona in given dictionary (persona from {persona_path}): {e}"
+                f"Failed to validate persona in given dictionary \
+                    (persona from {persona_path}): {e}"
             )
