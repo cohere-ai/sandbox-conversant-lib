@@ -9,6 +9,7 @@ python = "^3.8"
 cohere = "^2.4.2"
 toml = "^0.10.2"
 streamlit-chat = "^0.0.2.1"
+pydantic = "^1.10.2"
 
 [tool.poetry.dev-dependencies]
 wandb = "^0.13.0"

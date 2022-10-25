@@ -41,5 +41,3 @@ class Chatbot(ABC):
             Dict[str, str]: A reply from a Chatbot with "speaker_name" and
             "utterance" keys
         """
-
-        return

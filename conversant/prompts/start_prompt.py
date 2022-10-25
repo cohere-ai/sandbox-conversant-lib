@@ -6,117 +6,142 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+import logging
+from dataclasses import field
+from typing import List
 
-import jsonschema
+from pydantic import PrivateAttr
+from pydantic.dataclasses import dataclass
 
-START_PROMPT_JSON_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "bot_desc": {"type": "string"},
-        "example_turns": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "user": {"type": "string"},
-                    "bot": {"type": "string"},
-                },
-            },
-        },
-    },
-}
+from conversant.prompts.prompt import Prompt
 
 
 @dataclass
-class StartPrompt:
-    """A starting prompt given to a Chatbot.
+class StartPrompt(Prompt):
+    """A start prompt given to a Chatbot.
 
-    Splits a start prompt into a description with a min length
-    requirement, and a series of example turns that help to shape
-    the dialogue during the "real" chat with a user. Also includes
-    some validation methods that trigger on __post_init__().
+    Required fields:
+        user: An entity speaking to the bot.
+        bot: The Chatbot itself.
+
+    Constants:
+        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt. (default: `["user", "bot"]`)
+        MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `1`)
+        MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in. (default: `1`)
     """
 
-    bot_desc: str
-    example_turns: List[Tuple[str, str]]
-
-    MIN_DESC_LEN: int = 10
+    REQUIRED_FIELDS: List[str] = field(default_factory=lambda: ["user", "bot"])
+    MIN_PREAMBLE_LENGTH: int = 10
+    MIN_NUM_EXAMPLES: int = 0
 
     def __post_init__(self) -> None:
-        self._validate_bot_desc()
-        self._validate_example_turns()
+        """Validators for the start prompt.
 
-    @classmethod
-    def from_dict(cls, config: Dict[str, Any]):
-        """Initializes a StartPrompt using a dictionary.
+        Validates that the prompt follows the requirements of the validators listed below.
+        Minimally, the StartPrompt needs to follow the requirements of its parent class.
+        """
+        super().__post_init__()
+        self._validate_dialogue()
 
-        The dictionary should be of the form
-        {
-            "bot_desc": str
-            "example_turns": [
-                {
-                    "user": str
-                    "bot": str
-                },
-                ...
-            ]
-        }
+    @property
+    def user_name(self):
+        """
+        Returns:
+            str: The name of the user that interacts with the chatbot who uses this
+                StartPrompt. Typically this should be set to `'User'`.
+        """
+        return self.headers["user"]
+
+    @property
+    def bot_name(self):
+        """
+        Returns:
+            str: The name of the chatbot who uses this StartPrompt.
+        """
+        return self.headers["bot"]
+
+    @property
+    def stop_sequences(self) -> List[str]:
+        """A (partial) list of stop sequences upon which the chatbot will cut off
+        generation.
+
+        The chatbot will stop generation when it encounters a newline followed by
+        a user or bot's name.
+
+        Returns:
+            List[str]: A list of stop sequences corresponding to the headers of the prompt.
+        """
+        return [f"\n{self.headers[speaker]}:" for speaker in self.headers]
+
+    def create_example_string(self, *args, **kwargs) -> str:
+        """Creates a string representation of conversation interaction from positional
+        and keyword arguments.
+
+        Examples should look like the following:
+
+            {example_separator}
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+            {example_separator}
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+
+        Note the colon and space separating the speaker name from the respective
+        utterance. Note also that the last utterance will not contain a `\n`.
 
         Args:
-            config (Dict[str, Any]): Dictionary containing the variables for a StartPrompt.
+            args: Positional arguments for the new example.
+            kwargs: Keyword arguments for the new example.
+
+        Returns:
+            str: String representation of an example.
         """
+        example = self.create_example(*args, **kwargs)
+        assert all(key in self.fields for key in example.keys())
+        return (
+            f"{self.example_separator}"
+            f"{self.headers['user']}: {example['user']}\n"
+            f"{self.headers['bot']}: {example['bot']}\n"
+        )
 
-        # Validate that the prompt follows our predefined schema
-        cls._validate_config(config)
+    def _validate_dialogue(self) -> None:
+        """Validates that the examples conform to a 2-person dialogue.
 
-        # Parse the example turns in the dictionary.
-        example_turns = [
-            (turn["user"], turn["bot"]) for turn in config["example_turns"]
-        ]
-
-        return cls(bot_desc=config["bot_desc"], example_turns=example_turns)
-
-    def _validate_example_turns(self) -> None:
-        """Checks starter turn dialogue formatting.
+        There should only be 2 speakers in the examples, and each speaker's utterance
+        should not be prefixed with their name.
 
         Raises:
-            ValueError: Errors if formatting of turns isn't a 1-1 convo.
+            ValueError: If the above requirement is not met.
         """
+        # Only 2 speakers should be in each conversation interaction
+        if not all([len(example) == 2 for example in self.examples]):
+            raise ValueError("Start turns must be pairs of utterances.")
 
-        if not all(isinstance(pair, tuple) for pair in self.example_turns):
-            raise ValueError("Start turns must be a list of tuples.")
+        # Only check the examples for name-prefixed utterances if there is at least
+        # one example
+        if len(self.examples) > 0:
+            user_turns = [example["user"] for example in self.examples]
+            bot_turns = [example["bot"] for example in self.examples]
+            all_turns = user_turns + bot_turns
 
-        if not all([len(pair) == 2 for pair in self.example_turns]):
-            raise ValueError("Start turns must be pairs of (user, bot) utterances.")
+            colon_prefixed = all(":" in turn for turn in all_turns)
+            hyphen_prefixed = all("-" in turn for turn in all_turns)
 
-    def _validate_bot_desc(self) -> None:
-        """Checks the description isn't trivially short.
+            if colon_prefixed or hyphen_prefixed:
+                # This might false-positive, so we only log a warning
+                logging.warning(
+                    "Did you mistakenly prefix the example dialogue turns with user/bot names?"
+                )
 
-        Raises:
-            ValueError: Errors if a description of a bot is trivially short.
-        """
-
-        if len(self.bot_desc) < self.MIN_DESC_LEN:
-            raise ValueError(
-                f"Bot description must be more than {self.MIN_DESC_LEN} characters and ideally should be a paragraph long."
+            user_prefixed = all(
+                turn.lstrip().startswith(self.user_name) for turn in user_turns
             )
 
-    @staticmethod
-    def _validate_config(config: Dict[str, Any]) -> None:
-        """Validates formatting of a prompt defined as a dictionary.
-
-        Args:
-            persona (Dict[str, Any]): A dictionary containing the prompt information.
-        """
-        try:
-            jsonschema.validate(instance=config, schema=START_PROMPT_JSON_SCHEMA)
-        except jsonschema.exceptions.ValidationError as e:
-            raise jsonschema.exceptions.ValidationError(
-                f"Type of values in given dictionary do not match schema': {e}"
+            bot_prefixed = all(
+                turn.lstrip().startswith(self.bot_name) for turn in bot_turns
             )
-        except KeyError as e:
-            raise KeyError(f"Invalid key in given dictionary': {e}")
-        except Exception as e:
-            raise Exception(f"Failed to validate prompt in given dictionary: {e}")
+            if user_prefixed and bot_prefixed:
+                # It's hard to think of any genuine case where all utterances start with self-names.
+                raise ValueError(
+                    "Start turns should not be prefixed with user/bot names!"
+                )

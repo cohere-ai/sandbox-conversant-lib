@@ -7,112 +7,78 @@
 # level of this repository.
 
 
-from dataclasses import dataclass
-from typing import Any, Dict, List
+from dataclasses import field
+from typing import List
 
-import jsonschema
+from pydantic.dataclasses import dataclass
 
-REWRITE_PROMPT_JSON_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "example_separator": {"type": "string"},
-        "fact_header": {"type": "string"},
-        "conversation_header": {"type": "string"},
-        "rewrite_header": {"type": "string"},
-        "preamble": {"type": "string"},
-        "examples": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "fact": {"type": "string"},
-                    "conversation": {"type": "string"},
-                    "rewrite": {"type": "string"},
-                },
-            },
-        },
-    },
-}
+from conversant.prompts.prompt import Prompt
 
 
 @dataclass
-class RewritePrompt:
-    """A prompt given to a chatbot to rewrite a message based on a factual paragraph.
+class RewritePrompt(Prompt):
+    """A rewrite prompt given to a Chatbot.
 
-    Splits the rewrite prompt to a preamble describing this grounded rewriting
-    functionaltiy, the separators and header used to demarcate an example,
-    a fact, a conversation message, and a rewrite. Also includes a series
-    of examples to help show this functionality, and some validation methods
-    that trigger on__post__init().
+    Required fields:
+        conversation: The possibly ungrounded message to be rewritten.
+        fact: A reference paragraph containing a fact to ground the message.
+        rewrite: A rewritten grounded message based on the reference fact.
+
+    Constants;
+        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt. (default: `["conversation", "rewrite", "fact"]`)
+        MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `10`)
+        MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in. (default: `1`)
     """
 
-    example_separator: str
-    fact_header: str
-    conversation_header: str
-    rewrite_header: str
-    preamble: str
-    examples: List[Dict[str, str]]
-
+    REQUIRED_FIELDS: List[str] = field(
+        default_factory=lambda: ["conversation", "rewrite", "fact"]
+    )
+    MIN_PREAMBLE_LENGTH: int = 10
     MIN_NUM_EXAMPLES: int = 1
 
     def __post_init__(self) -> None:
-        self._validate_examples()
+        """Validators for the rewrite prompt.
 
-    @classmethod
-    def from_dict(cls, config: Dict[str, Any]):
-        """Initializes a RewritePrompt using a dictionary.
+        Validates that the prompt follows the requirements of the validators listed below.
+        Minimally, the RewritePrompt needs to follow the requirements of its parent class.
+        """
+        super().__post_init__()
 
-        The dictionary should be of the form
-        {
-            "example_separator": str
-            "fact_header": str
-            "conversation_header": str
-            "rewrite_header": str
-            "preamble": str
-            "examples: [
-                {
-                    "fact": str
-                    "conversation": str
-                    "rewrite": str
-                },
-                ...
-            ]
-        }
+    def create_example_string(self, *args, **kwargs) -> str:
+        """Creates a string representation of a grounded rewriting example from positional
+        and keyword arguments.
+
+        Examples should look like the following:
+
+            \n{example_seprator}
+            {conversation_header}
+            {conversation}
+            {fact_header}
+            {fact}
+            {rewrite_header}
+            {rewrite}\n{example_seprator}
+            {convesation_header}
+            {conversation}
+            {fact_header}
+            {fact}
+            {rewrite_header}
+            {rewrite} # no `\n` here
+
+        Note the `\n` on either side of the example separator. Note also that the last
+        rewrite will not contain a `\n`.
 
         Args:
-            config (Dict[str, Any]): Dictionary containing the variables for
-            a RewritePrompt
+            args: Positional arguments for the new example.
+            kwargs: Keyword arguments for the new example.
+
+        Returns:
+            str: String representation of an example.
         """
-        # Validate that theprompt follows our predefined schema
-        cls._validate_config(config)
-
-        return cls(**config)
-
-    def _validate_examples(self) -> None:
-        """Checks at least MIN_NUM_EXAMPLES examples are given.
-
-        Raises:
-            ValueError: Error if there are insufficient examples given.
-        """
-        if len(self.examples) < self.MIN_NUM_EXAMPLES:
-            raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for {self.__class__.__name__}"
-            )
-
-    @staticmethod
-    def _validate_config(config: Dict[str, Any]) -> None:
-        """Validates formatting of a prompt defined as a dictionary.
-
-        Args:
-            persona (Dict[str, Any]): A dictionary containing the prompt information.
-        """
-        try:
-            jsonschema.validate(instance=config, schema=REWRITE_PROMPT_JSON_SCHEMA)
-        except jsonschema.exceptions.ValidationError as e:
-            raise jsonschema.exceptions.ValidationError(
-                f"Type of values in given dictionary do not match schema': {e}"
-            )
-        except KeyError as e:
-            raise KeyError(f"Invalid key in given dictionary': {e}")
-        except Exception as e:
-            raise Exception(f"Failed to validate prompt in given dictionary: {e}")
+        example = self.create_example(*args, **kwargs)
+        assert all(key in self.headers for key in example.keys())
+        return (
+            f"\n{self.example_separator}\n"
+            f"{self.headers['conversation']}\n{example['conversation']}\n"
+            f"{self.headers['fact']}\n{example['fact']}\n"
+            f"{self.headers['rewrite']}\n{example['rewrite']}"
+        )

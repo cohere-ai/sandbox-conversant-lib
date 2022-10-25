@@ -6,6 +6,7 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
+
 import pytest
 
 from conversant.prompt_chatbot import PromptChatbot
@@ -28,6 +29,8 @@ def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
     """
     check_prompt_chatbot_config(mock_prompt_chatbot)
+    assert mock_prompt_chatbot.user_name == mock_prompt_chatbot.prompt.user_name
+    assert mock_prompt_chatbot.bot_name == mock_prompt_chatbot.prompt.bot_name
     mock_prompt_chatbot.reply(query="What's up?")
 
 
@@ -39,51 +42,13 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     """
     prompt_chatbot = PromptChatbot.from_persona("watch-sales-agent", client=mock_co)
     assert isinstance(prompt_chatbot, PromptChatbot)
+    assert prompt_chatbot.user_name == prompt_chatbot.prompt.user_name
+    assert prompt_chatbot.bot_name == prompt_chatbot.prompt.bot_name
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
 
 
-def test_too_short_desc_fails(mock_co: object) -> None:
-    """Tests that short descriptions raise an error.
-
-    Args:
-        mock_co (object): mock Cohere client.
-    """
-    with pytest.raises(ValueError):
-        _ = PromptChatbot(
-            client=mock_co,
-            start_prompt=StartPrompt(
-                bot_desc="abc",
-                example_turns=[],
-            ),
-        )
-
-
-def test_prefixed_turns_fails(mock_co: object) -> None:
-    """Tests failure on prefixed dialogue turns.
-
-    Args:
-        mock_co (object): mock Cohere client.
-    """
-
-    user_name = "Alice"
-    bot_name = "Bob"
-
-    with pytest.raises(ValueError):
-        _ = PromptChatbot(
-            client=mock_co,
-            start_prompt=StartPrompt(
-                bot_desc="This is a long description.",
-                example_turns=[
-                    (f"{user_name}: Hey", f"{bot_name}: Hi"),
-                ],
-            ),
-            user_name=user_name,
-            bot_name=bot_name,
-        )
-
-
-def test_prompt_assembly(mock_prompt_chatbot: PromptChatbot) -> None:
+def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -> None:
     """Tests assembly of starter prompts and context.
 
     Starter prompts should be preserved and context
@@ -93,25 +58,42 @@ def test_prompt_assembly(mock_prompt_chatbot: PromptChatbot) -> None:
         prompt_chatbot (PromptChatbot): Bot test fixture
     """
 
-    max_lines = mock_prompt_chatbot.chatbot_config["max_context_lines"]
-    new_lines = ["User: Greetings!"] * (max_lines) + ["User: Hello!"] * (max_lines)
+    max_context_examples = mock_prompt_chatbot.chatbot_config["max_context_examples"]
+    chat_history = [{"user": "Greetings!", "bot": "I greet you"}] * (
+        max_context_examples
+    ) + [{"user": "Hello!", "bot": "Hello back"}] * (max_context_examples)
+    mock_prompt_chatbot.chat_history = chat_history
 
-    prompt = mock_prompt_chatbot._assemble_prompt(
-        new_lines=new_lines,
+    current_prompt = mock_prompt_chatbot.get_current_prompt(
+        query="Hello!", max_context_examples=max_context_examples
     )
 
-    assert prompt == (
-        f"Below is a series of chats between {mock_prompt_chatbot.bot_name} and {mock_prompt_chatbot.user_name}."
-        + f"{mock_prompt_chatbot.bot_name} responds to {mock_prompt_chatbot.user_name} based on the <<DESCRIPTION>>.\n"
-        + "<<DESCRIPTION>>\n"
-        + mock_prompt_chatbot.start_prompt.bot_desc
-        + "\n<<CONVERSATION>>\n"
-        + "User: hi\n"
-        + "Bot: hello\n"
-        + "<<CONVERSATION>>"
-        + f"\n{mock_prompt_chatbot.user_name}: Hello!" * max_lines
-        + f"\n{mock_prompt_chatbot.bot_name}:"
+    expected = (
+        # start prompt
+        f"{mock_prompt_chatbot.prompt.preamble}\n"
+        + f"{mock_prompt_chatbot.prompt.example_separator}"
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0]['user']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.example_separator}"
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1]['user']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}"
+        # context prompt
+        + (
+            f"{mock_prompt_chatbot.prompt.example_separator}"
+            f"{mock_prompt_chatbot.prompt.headers['user']}: Hello!\n"
+            f"{mock_prompt_chatbot.prompt.headers['bot']}: Hello back\n"
+        )
+        * max_context_examples
+        # query prompt
+        + (
+            f"{mock_prompt_chatbot.prompt.example_separator}"
+            f"{mock_prompt_chatbot.prompt.headers['user']}: Hello!\n"
+            f"{mock_prompt_chatbot.prompt.headers['bot']}:"
+        )
     )
+    print(current_prompt)
+    print(expected)
+    assert current_prompt == expected
 
 
 def test_missing_persona_fails(mock_co: object) -> None:

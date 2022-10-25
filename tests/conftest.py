@@ -16,6 +16,8 @@ from cohere.embeddings import Embeddings
 from cohere.generation import Generation, Generations, TokenLikelihood
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
+from conversant.prompts.prompt import Prompt
+from conversant.prompts.rewrite_prompt import RewritePrompt
 from conversant.prompts.start_prompt import StartPrompt
 from conversant.search.document import Document
 from conversant.search.local_searcher import LocalSearcher
@@ -54,16 +56,117 @@ def mock_co() -> object:
 
 
 @pytest.fixture
-def mock_start_prompt() -> StartPrompt:
-    """Instantiates a prompt fixture for tests.
+def mock_prompt_config() -> Dict[str, Any]:
+    """A Prompt config fixture for tests.
 
     Returns:
-        StartPrompt: A simple mock of a start prompt.
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a Prompt.
     """
-    return StartPrompt(
-        bot_desc="this is a long paragraph about a bot.",
-        example_turns=[("hi", "hello")],
-    )
+    return {
+        "preamble": "This is a prompt.",
+        "example_separator": "<example>\n",
+        "fields": ["query", "context", "generation"],
+        "headers": {
+            "query": "<query>",
+            "context": "<context>",
+            "generation": "<generation>",
+        },
+        "examples": [
+            {
+                "query": "This is a query.",
+                "context": "This is a context.",
+                "generation": "This is a generation.",
+            },
+            {
+                "query": "This is a second query.",
+                "context": "This is a second context.",
+                "generation": "This is a second generation.",
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def mock_prompt(mock_prompt_config: Dict[str, Any]) -> Prompt:
+    """Instantiates a Prompt fixture for tests.
+
+    Returns:
+        Prompt: A Prompt object fixture for tests.
+    """
+    return Prompt(**mock_prompt_config)
+
+
+@pytest.fixture
+def mock_start_prompt_config() -> Dict[str, Any]:
+    """A StartPrompt config fixture for tests.
+
+    Returns:
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a StartPrompt.
+    """
+    return {
+        "preamble": "This is a start prompt.",
+        "example_separator": "\n",
+        "fields": ["user", "bot"],
+        "headers": {"user": "User", "bot": "Mock Chatbot"},
+        "examples": [
+            {"user": "This is a user utterance", "bot": "This is a bot utterance"},
+            {
+                "user": "This is second user utterance",
+                "bot": "This is second bot utterance",
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def mock_start_prompt(mock_start_prompt_config: Dict[str, Any]) -> StartPrompt:
+    """A StartPrompt config fixture for tests.
+
+    Returns:
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a StartPrompt.
+    """
+    return StartPrompt(**mock_start_prompt_config)
+
+
+@pytest.fixture
+def mock_rewrite_prompt_config() -> Dict[str, Any]:
+    """A RewritePrompt config fixture for tests.
+
+    Returns:
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a RewritePrompt.
+    """
+    return {
+        "preamble": "This is a rewrite prompt.",
+        "example_separator": "\n",
+        "fields": ["conversation", "rewrite", "fact"],
+        "headers": {
+            "conversation": "<<CONVERSATION>>",
+            "fact": "<<FACTUAL_PARAGRAPH>>",
+            "rewrite": "<<REWRITE BASED ON THE ABOVE>>",
+        },
+        "examples": [
+            {
+                "conversation": "This is a wrong message.",
+                "fact": "This is a fact.",
+                "rewrite": "This is a message based on fact.",
+            },
+            {
+                "conversation": "This is a second wrong message.",
+                "fact": "This is a second fact.",
+                "rewrite": "This is a second message based on fact.",
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def mock_rewrite_prompt(mock_rewrite_prompt_config: Dict[str, Any]) -> RewritePrompt:
+    """A RewritePrompt config fixture for tests.
+
+    Returns:
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a RewritPrompt.
+    """
+    return RewritePrompt(**mock_rewrite_prompt_config)
 
 
 @pytest.fixture
@@ -77,9 +180,7 @@ def mock_prompt_chatbot(
     """
     return PromptChatbot(
         client=mock_co,
-        start_prompt=mock_start_prompt,
-        user_name="User",
-        bot_name="Bot",
+        prompt=mock_start_prompt,
     )
 
 
@@ -95,26 +196,6 @@ def mock_persona() -> Dict[str, Any]:
     with open(persona_path) as f:
         persona = json.load(f)
     return persona
-
-
-@pytest.fixture
-def mock_start_prompt_config(mock_persona: Dict[str, Any]) -> Dict[str, Any]:
-    """Instantiates a start prompt config fixture for tests.
-
-    Returns:
-        Dict[str, Any]: A mock dictionary used to initialize a StartPrompt.
-    """
-    return mock_persona["start_prompt_config"]
-
-
-@pytest.fixture
-def mock_rewrite_prompt_config(mock_persona: Dict[str, Any]) -> Dict[str, Any]:
-    """Instantiates a rewrite prompt config fixture for tests.
-
-    Returns:
-        Dict[str, Any]: A mock dictionary used to initialize a RewritePrompt.
-    """
-    return mock_persona["rewrite_prompt_config"]
 
 
 @pytest.fixture()

@@ -8,83 +8,122 @@
 
 from typing import Any, Dict
 
-import jsonschema
 import pytest
 
 from conversant.prompts.rewrite_prompt import RewritePrompt
 
 
-def test_rewrite_prompt_init() -> None:
-    """Tests proper start prompt initialization."""
-    prompt = RewritePrompt(
-        example_separator="--",
-        fact_header="<<FACTUAL_PARAGRAPH>>",
-        conversation_header="<<CONVERSATION>>",
-        rewrite_header="<<PLEASE REWRITE THIS>>",
-        preamble="test preamble",
-        examples=[
-            {
-                "fact": "this is a fact",
-                "conversation": "this is a wrong message",
-                "rewrite": "this is a message based on fact",
-            }
-        ],
-    )
+@pytest.fixture
+def new_example() -> Dict[str, str]:
+    """Instantiates a fixture for a new RewritePrompt example.
 
-    assert len(prompt.examples) >= prompt.MIN_NUM_EXAMPLES
-    assert prompt.preamble == "test preamble"
-    assert prompt.examples == [
-        {
-            "fact": "this is a fact",
-            "conversation": "this is a wrong message",
-            "rewrite": "this is a message based on fact",
-        }
-    ]
+    Returns:
+        Dict[str, str]: New RewritePrompt example fixture.
+    """
+    return {
+        "conversation": "Otters are plants.",
+        "fact": "Otters are mammals.",
+        "rewrite": "Otters are mammals.",
+    }
+
+
+@pytest.fixture
+def test_rewrite_prompt_init(mock_rewrite_prompt_config: Dict[str, Any]) -> None:
+    """Tests RewritePrompt.__init__
+
+    Args:
+        mock_rewrite_prompt_config (Dict[str, Any]): A RewritePrompt config fixture.
+    """
+    _ = RewritePrompt(**mock_rewrite_prompt_config)
 
 
 def test_rewrite_prompt_init_from_dict(
     mock_rewrite_prompt_config: Dict[str, Any]
 ) -> None:
+    """Tests RewritePrompt.from_dict
+
+    Args:
+        mock_rewrite_prompt_config (Dict[str, Any]): A RewritePrompt config fixture.
+    """
     _ = RewritePrompt.from_dict(mock_rewrite_prompt_config)
 
 
-def test_empty_fails() -> None:
-    """Test that empty rewrite prompts fail."""
-    with pytest.raises(TypeError):
-        _ = RewritePrompt()
-
-
-def test_no_example_fails() -> None:
-    """Test that fails when no example is given."""
-    with pytest.raises(ValueError):
-        _ = RewritePrompt(
-            example_separator="--",
-            fact_header="<<FACTUAL_PARAGRAPH>>",
-            conversation_header="<<CONVERSATION>>",
-            rewrite_header="<<PLEASE REWRITE THIS>>",
-            preamble="test preamble",
-            examples=[],
-        )
-
-
-def test_bad_rewrite_prompt_config_schema_fails(
-    mock_rewrite_prompt_config: Dict[str, Any]
+@pytest.mark.parametrize(
+    "config",
+    [
+        # short preamble
+        {"preamble": "short"},
+        # no examples
+        {"examples": []},
+    ],
+    ids=[
+        "short-preamble",
+        "no-examples",
+    ],
+)
+def test_rewrite_prompt_init_fails(
+    mock_rewrite_prompt_config: Dict[str, Any], config
 ) -> None:
-    """Test that wrong types or keys in a prompt config raises validation errors."""
-    # Test for wrong types in the prompt config.
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_rewrite_prompt_config.copy()
-        config["preamble"] = 123
-        _ = RewritePrompt.from_dict(config)
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_rewrite_prompt_config.copy()
-        config["examples"] = {}
-        _ = RewritePrompt.from_dict(config)
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_rewrite_prompt_config.copy()
-        config["examples"][0] = []
-        _ = RewritePrompt.from_dict(config)
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_rewrite_prompt_config.copy()
-        config["examples"][0] = {"fact": 123, "conversation": 123, "rewrite": 123}
-        _ = RewritePrompt.from_dict(config)
+    """Tests RewritePrompt.__init__ on bad parameters.
+
+    Args:
+        mock_rewrite_prompt_config (Dict[str, Any]): A RewritePrompt config fixture.
+        config (Dict[str, Any]): Dictionary of bad parameters.
+    """
+    mock_rewrite_prompt_config.update(config)
+    with pytest.raises(ValueError):
+        _ = RewritePrompt(**mock_rewrite_prompt_config)
+
+
+def test_rewrite_prompt_create_example_string(
+    mock_rewrite_prompt: RewritePrompt, new_example: Dict[str, str]
+) -> None:
+    """Tests RewritePrompt.create_example_string
+
+    Args:
+        mock_rewrite_prompt (RewritePrompt): A RewritePrompt fixture.
+        new_example (Dict[ str, str]): A new RewritePrompt example fixture.
+    """
+    expected = (
+        f"\n{mock_rewrite_prompt.example_separator}\n"
+        f"{mock_rewrite_prompt.headers['conversation']}\n"
+        f"{new_example['conversation']}\n"
+        f"{mock_rewrite_prompt.headers['fact']}\n"
+        f"{new_example['fact']}\n"
+        f"{mock_rewrite_prompt.headers['rewrite']}\n"
+        f"{new_example['rewrite']}"
+    )
+    # create from positional arguments
+    filled_template = mock_rewrite_prompt.create_example_string(
+        new_example["conversation"], new_example["rewrite"], new_example["fact"]
+    )
+    assert filled_template == expected
+    # create from keyword arguments
+    filled_template = mock_rewrite_prompt.create_example_string(**new_example)
+    assert filled_template == expected
+
+
+def test_rewrite_prompt_to_string(mock_rewrite_prompt: RewritePrompt) -> None:
+    """Tests RewritePrompt.to_string
+
+    Args:
+        mock_rewrite_prompt (RewritePrompt): A RewritePrompt fixture.
+    """
+    expected = (
+        f"{mock_rewrite_prompt.preamble}\n\n"
+        f"{mock_rewrite_prompt.example_separator}\n"
+        f"{mock_rewrite_prompt.headers['conversation']}\n"
+        f"{mock_rewrite_prompt.examples[0]['conversation']}\n"
+        f"{mock_rewrite_prompt.headers['fact']}\n"
+        f"{mock_rewrite_prompt.examples[0]['fact']}\n"
+        f"{mock_rewrite_prompt.headers['rewrite']}\n"
+        f"{mock_rewrite_prompt.examples[0]['rewrite']}\n"
+        f"{mock_rewrite_prompt.example_separator}\n"
+        f"{mock_rewrite_prompt.headers['conversation']}\n"
+        f"{mock_rewrite_prompt.examples[1]['conversation']}\n"
+        f"{mock_rewrite_prompt.headers['fact']}\n"
+        f"{mock_rewrite_prompt.examples[1]['fact']}\n"
+        f"{mock_rewrite_prompt.headers['rewrite']}\n"
+        f"{mock_rewrite_prompt.examples[1]['rewrite']}"
+    )
+    assert mock_rewrite_prompt.to_string() == expected
