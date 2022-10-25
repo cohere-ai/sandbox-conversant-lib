@@ -82,28 +82,6 @@ class PromptChatbot(Chatbot):
         self.chat_history = []
         self.prompt_history = []
 
-    @property
-    def user_name(self):
-        """
-        Returns:
-            str: The name of the user, defined in the prompt. Defaults to "User".
-        """
-        if hasattr(self.prompt, "user_name"):
-            return self.prompt.user_name
-        else:
-            return "User"
-
-    @property
-    def bot_name(self):
-        """
-        Returns:
-            str: The name of the chatbot, defined in the prompt. Defaults to "PromptChatbot".
-        """
-        if hasattr(self.prompt, "bot_name"):
-            return self.prompt.bot_name
-        else:
-            return "PromptChatbot"
-
     def reply(self, query: str) -> Dict[str, str]:
         """Replies to a query given a chat history.
 
@@ -210,23 +188,25 @@ class PromptChatbot(Chatbot):
             )
 
     @classmethod
-    def from_persona(cls, persona_name: str, client: cohere.Client):
+    def from_persona(
+        cls,
+        persona_name: str,
+        client: cohere.Client,
+        persona_dir: str = PERSONA_MODEL_DIRECTORY,
+    ):
         """Initializes a PromptChatbot using a persona.
 
         Args:
             persona (str): Name of persona, corresponding to a .json file.
             client (cohere.Client): Cohere client for API
+            persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(
-            PERSONA_MODEL_DIRECTORY, persona_name, f"config.json"
-        )
+        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
-            raise FileNotFoundError(
-                f"{persona_name}.json cannot be found in {PERSONA_MODEL_DIRECTORY}/{persona_name}"
-            )
+            raise FileNotFoundError(f"{persona_path} cannot be found.")
         with open(persona_path) as f:
             persona = json.load(f)
 
