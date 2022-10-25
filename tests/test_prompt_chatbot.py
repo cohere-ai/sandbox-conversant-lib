@@ -96,8 +96,6 @@ def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -
             f"{mock_prompt_chatbot.prompt.headers['bot']}:"
         )
     )
-    print(current_prompt)
-    print(expected)
     assert current_prompt == expected
 
 
