@@ -8,15 +8,20 @@
 
 
 import os
+import re
 import sys
 
 import cohere
+import emoji
 import streamlit as st
 import streamlit_chat as stchat
+from emojificate.filter import emojificate
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
 from conversant.prompts.start_prompt import StartPrompt
 from conversant.utils import demo_utils
+
+USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
 def get_reply():
@@ -40,6 +45,22 @@ def initialize_chatbot():
         st.session_state.bot = PromptChatbot.from_persona(
             st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
         )
+
+
+@st.cache
+def get_twemoji_url_from_shortcode(shortcode: str) -> str:
+    """Converts an emoji shortcode to its corresponding Twemoji URL.
+
+    Args:
+        shortcode (str): Emoji shortcode
+    """
+    # Emojize returns the unicode representation of that emoji from its shortcode.
+    unicode = emoji.emojize(shortcode)
+    # Emojificate returns html <img /> tag.
+    img_html_tag = emojificate(unicode)
+    # Find the URL from the html tag.
+    url = re.findall('src="(.*?)"', img_html_tag, re.DOTALL)[0]
+    return url
 
 
 # This decorator allows Streamlit to compute and cache the results
@@ -104,6 +125,9 @@ if __name__ == "__main__":
     chat_history_placeholder = st.empty()
     user_input_placeholder = st.empty()
     persona_selection_placeholder = st.empty()
+
+    # Initialize the user's avatar
+    st.session_state.user_avatar = get_twemoji_url_from_shortcode(USER_AVATAR_SHORTCODE)
 
     # List of available personas to choose from.
     st.session_state.persona_options = get_personas()
@@ -186,7 +210,7 @@ if __name__ == "__main__":
                             turn["user"],
                             is_user=True,
                             key=f"{i}_user",
-                            avatar_style="gridy",
+                            avatar_style=st.session_state.user_avatar,
                         )
 
         # Places the user input in a Streamlit container.
