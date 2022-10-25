@@ -6,8 +6,6 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
-import pytest
-
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
