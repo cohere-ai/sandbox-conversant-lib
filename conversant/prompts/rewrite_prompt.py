@@ -96,7 +96,8 @@ class RewritePrompt:
         """
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for {self.__class__.__name__}"
+                f"At least {self.MIN_NUM_EXAMPLES} example must be given for \
+                    {self.__class__.__name__}"
             )
 
     @staticmethod
