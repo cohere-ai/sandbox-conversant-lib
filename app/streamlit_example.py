@@ -41,7 +41,8 @@ def initialize_chatbot():
         st.session_state.bot = PromptChatbot.from_persona(
             st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
         )
-    update_session_with_prompt()
+    if "bot" in st.session_state and st.session_state.bot:
+        update_session_with_prompt()
     # Reset the edit_promp_json session state so we don't remain on the JSON editor when
     # changing to another bot. This is because st_ace is unable to write
     # new values from the current session state.
@@ -50,10 +51,11 @@ def initialize_chatbot():
 
 def update_session_with_prompt():
     """Saves the prompt config dictionary into the session state."""
-    st.session_state.prompt_config = st.session_state.bot.prompt.to_dict()
-    st.session_state.snapshot_prompt_config = copy.deepcopy(
-        st.session_state.prompt_config
-    )
+    if "bot" in st.session_state and st.session_state.bot:
+        st.session_state.prompt_config = st.session_state.bot.prompt.to_dict()
+        st.session_state.snapshot_prompt_config = copy.deepcopy(
+            st.session_state.prompt_config
+        )
 
 
 def update_prompt_from_json():
