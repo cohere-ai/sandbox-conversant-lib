@@ -17,12 +17,14 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
     for key in ["model", "max_tokens", "temperature", "stop_seq"]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
-                f"{key} not in config of {prompt_chatbot.__class__.__name__} but is required for co.generate"
+                f"{key} not in config of {prompt_chatbot.__class__.__name__} \
+                    but is required for co.generate"
             )
 
 
 def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
-    """Tests end to end that a prompt_chatbot is initialized correctly from class constructor.
+    """Tests end to end that a prompt_chatbot is initialized
+    correctly from class constructor.
 
     Args:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
@@ -101,8 +103,10 @@ def test_prompt_assembly(mock_prompt_chatbot: PromptChatbot) -> None:
     )
 
     assert prompt == (
-        f"Below is a series of chats between {mock_prompt_chatbot.bot_name} and {mock_prompt_chatbot.user_name}."
-        + f"{mock_prompt_chatbot.bot_name} responds to {mock_prompt_chatbot.user_name} based on the <<DESCRIPTION>>.\n"
+        f"Below is a series of chats between {mock_prompt_chatbot.bot_name} "
+        + f"and {mock_prompt_chatbot.user_name}."
+        + f"{mock_prompt_chatbot.bot_name} responds to {mock_prompt_chatbot.user_name} "
+        + "based on the <<DESCRIPTION>>.\n"
         + "<<DESCRIPTION>>\n"
         + mock_prompt_chatbot.start_prompt.bot_desc
         + "\n<<CONVERSATION>>\n"
