@@ -146,11 +146,13 @@ class PromptChatbot(Chatbot):
 
         return response
 
-    def get_current_prompt(self, query, max_context_examples) -> str:
+    def get_current_prompt(self, query: str, max_context_examples: int) -> str:
         """Stitches the prompt with a trailing window of the chat.
 
         Args:
-            new_lines (List[str]): New lines to append
+            query (str): The current user query.
+            max_context_examples (int): The maximum number of example to consider
+                as the context window in the prompt.
         """
         # get base prompt
         base_prompt = self.prompt.to_string()
