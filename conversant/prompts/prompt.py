@@ -154,7 +154,7 @@ class Prompt:
         lines = [f"{self.preamble}\n"]
         for example in self.examples:
             lines.append(self.create_example_string(**example))
-        return "".join(lines).strip()
+        return "".join(lines)
 
     def update(self, config: Dict[str, Any]) -> None:
         """Updates attributes of this class with attributes from `config`.
@@ -165,6 +165,9 @@ class Prompt:
         for key, value in config.items():
             if hasattr(self, key):
                 setattr(self, key, value)
+            else:
+                raise KeyError(f"Cannot update Prompt object with key: {key}")
+        self.__post_init__()
 
     @classmethod
     def from_dict(cls, config: Dict[str, Any]) -> "Prompt":
