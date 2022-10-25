@@ -11,8 +11,8 @@ import os
 import re
 
 import emoji
-import emojificate
 import streamlit as st
+from emojificate.filter import emojificate
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
 from conversant.prompts.start_prompt import StartPrompt
