@@ -7,132 +7,97 @@
 # level of this repository.
 
 
-import os
-import re
+import ast
+import copy
 import sys
 
 import cohere
-import emoji
 import streamlit as st
-import streamlit_chat as stchat
-from emojificate.filter import emojificate
 
-from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
-from conversant.prompts.start_prompt import StartPrompt
+from app import ui, utils
+from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
 USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
 def get_reply():
-    # Generate a bot reply in response to the user's input
-    reply = st.session_state.bot.reply(query=st.session_state.user_input)
-
-    # Reset user input
-    st.session_state.user_input = ""
+    """Replies query from the message input, and resets the message input"""
+    _ = st.session_state.bot.reply(query=st.session_state.message_input)
+    st.session_state.message_input = ""
 
 
 def initialize_chatbot():
-    # Initialize a bot from the chosen persona
+    """Initializes the chatbot from a selected persona and saves the session state."""
     if st.session_state.persona.startswith("from launch_demo") and len(sys.argv) > 1:
-        # Launched via demo_utils.launch_streamlit() utility function
-        st.session_state.bot = demo_utils.decode_object(sys.argv[1])
+        st.session_state.bot = demo_utils.decode_object(
+            sys.argv[1]
+        )  # Launched via demo_utils.launch_streamlit() utility function
     elif st.session_state.persona == "":
         st.session_state.bot = None
     elif st.session_state.persona == "parrot":
-        st.session_state.bot = ParrotChatbot()
+        st.session_state.bot = utils.ParrotChatbot()
     else:
         st.session_state.bot = PromptChatbot.from_persona(
             st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
         )
+    update_session_with_prompt()
+    # Reset the edit_promp_json session state so we don't remain on the JSON editor when
+    # changing to another bot. This is because st_ace is unable to write
+    # new values from the current session state.
+    st.session_state.edit_prompt_json = False
 
 
-@st.cache
-def get_twemoji_url_from_shortcode(shortcode: str) -> str:
-    """Converts an emoji shortcode to its corresponding Twemoji URL.
-
-    Args:
-        shortcode (str): Emoji shortcode
-    """
-    # Emojize returns the unicode representation of that emoji from its shortcode.
-    unicode = emoji.emojize(shortcode)
-    # Emojificate returns html <img /> tag.
-    img_html_tag = emojificate(unicode)
-    # Find the URL from the html tag.
-    url = re.findall('src="(.*?)"', img_html_tag, re.DOTALL)[0]
-    return url
+def update_session_with_prompt():
+    """Saves the prompt config dictionary into the session state."""
+    st.session_state.prompt_config = st.session_state.bot.prompt.to_dict()
+    st.session_state.snapshot_prompt_config = copy.deepcopy(
+        st.session_state.prompt_config
+    )
 
 
-# This decorator allows Streamlit to compute and cache the results
-# of this function.
-@st.cache
-def get_personas():
-    # Initialize the list of personas for Streamlit
-    persona_options = [""] + os.listdir(PERSONA_MODEL_DIRECTORY) + ["parrot"]
-    return persona_options
-
-
-class ParrotChatbot:
-    """Mock chat function; real use-cases should import
-    this functionality via a class that inherits from conversant.chatbot.Chatbot
-
-    This bot simply states the user's query.
-    """
-
-    def __init__(self):
-        self.prompt = StartPrompt(
-            preamble=(
-                "The Parrot Bot repeats back whatever is said to it "
-                "without using Cohere's large language models."
-            ),
-            fields=["user", "bot"],
-            headers={
-                "user": "User",
-                "bot": "Parrot Bot",
-            },
-            example_separator="",
-            examples=[],
-        )
-        self.chat_history = []
-
-    def reply(self, query: str) -> str:
-        """Replies to a user by stating their query.
-
-        Args:
-            user_input (str): A user's text chat query
-
-        Returns:
-            str: a mock reply
-        """
-        self.chat_history.append(self.prompt.create_example(query, query))
-        return query
+def update_prompt_from_json():
+    """Evaluates JSON string and updates the session's bot prompt."""
+    if st.session_state.json_editor_input:
+        try:
+            st.session_state.prompt_config = ast.literal_eval(
+                st.session_state.json_editor_input
+            )
+            st.session_state.bot.prompt.update(st.session_state.prompt_config)
+            update_session_with_prompt()
+            st.session_state.error = ""
+        except Exception as e:
+            st.session_state.error = e
 
 
 # This ensures rendering is prevented upon import of this file.
 if __name__ == "__main__":
-
     st.set_page_config(
         page_title="Conversational personas using Cohere",
         page_icon="🎭",
+        layout="wide",
     )
 
-    # Styles Streamlit in a way that allows messages to be scrollable
-    # and anchored to the bottom of the chat history.
+    # Streamlit's default elements are not easy to style. Instead, we have to
+    # define styling in a custom CSS file and inject it into the Streamlit DOM.
+    # This is brittle and dependent on the DOM structure. Any changes to the layout
+    # will break the styling defined in this file.
     with open("app/styles.css") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        utils.style_using_css(f.read())
 
-    # This initializes empty Streamlit containers as placeholders.
-    chat_history_placeholder = st.empty()
-    user_input_placeholder = st.empty()
-    persona_selection_placeholder = st.empty()
+    # We use the :bust_in_silhouette: emoji as a neutral user avatar.
+    st.session_state.user_avatar = utils.get_twemoji_url_from_shortcode(
+        USER_AVATAR_SHORTCODE
+    )
 
-    # Initialize the user's avatar
-    st.session_state.user_avatar = get_twemoji_url_from_shortcode(USER_AVATAR_SHORTCODE)
+    # Each persona is a directory in PERSONA_MODEL_DIRECTORY, each with its
+    # config.json file.
+    st.session_state.persona_options = utils.get_persona_options()
 
-    # List of available personas to choose from.
-    st.session_state.persona_options = get_personas()
-
-    # Load a PromptChatbot from command line argument if available.
+    # A chatbot can be passed in as a base64 encoding of a pickled PromptChatbot object.
+    # This is only used when calling the launch_demo() method of a PromptChatbot object.
+    # The chatbot is then injected into the list of available personas in this streamlit
+    # demo.
     if len(sys.argv) > 1 and "bot" not in st.session_state:
 
         # The PromptChatbot passed in should be a base64 encoding of a pickled
@@ -146,84 +111,141 @@ if __name__ == "__main__":
                 0, f"from launch_demo: {st.session_state.bot.persona_name}"
             )
 
-    # Initialize the chatbot with a selected persona.
-    with persona_selection_placeholder.container():
+    # Page control flow logic is determined from the sidebar.
+    with st.sidebar:
         st.selectbox(
             "Choose a chatbot persona:",
             options=st.session_state.persona_options,
             key="persona",
             on_change=initialize_chatbot,
         )
-
-        # Show persona description
-        if "bot" in st.session_state and st.session_state.bot:
-            st.write(
-                f"**More info about your conversations with {st.session_state.bot.prompt.bot_name}:**"
+        st.checkbox(
+            "Edit prompt",
+            value=True,
+            key="edit_prompt",
+            on_change=update_session_with_prompt,
+        )
+        if st.session_state.edit_prompt:
+            st.checkbox(
+                "Use JSON editor",
+                value=False,
+                key="edit_prompt_json",
+                on_change=update_session_with_prompt,
             )
-            st.write(f"> {st.session_state.bot.prompt.preamble}")
 
-            # Add disclaimer
-            if st.session_state.persona != "parrot":
-                st.write(
-                    "_Each persona is powered by [Cohere's](https://cohere.com) large language models, \
-                    and these examples are meant purely for demonstrative purposes. \
-                    These personas are works of fiction, are not factually grounded, and \
-                    should not be taken too seriously!_"
-                )
+        # Initialize a settings container in the sidebar. This allows us to place
+        # Streamlit elements within this placeholder later in this script.
+        settings_placeholder = st.empty()
+
+    # Initialize a chat container as the middle of 3 vertical columns.
+    # Only visible when the edit prompt checkbox is not selected.
+    _, chat_placeholder, _ = st.columns([1, 1, 1])
+    with chat_placeholder.container():
+        chat_history_placeholder = st.empty()
+        message_input_placeholder = st.empty()
+
+    # Initialize a prompt json and string view as 2 vertical columns.
+    # Only visible when the edit prompt checkbox is selected.
+    prompt_json_column, prompt_string_column = st.columns([1, 1])
+    with prompt_json_column:
+        prompt_json_edit_placeholder = st.empty()
+        prompt_json_view_placeholder = st.empty()
+    with prompt_string_column:
+        prompt_string_placeholder = st.empty()
 
     # Check if bot has been initialized in the Streamlit session.
     if "bot" in st.session_state and st.session_state.bot:
 
-        # List of Dict[str, str] dialogue turns.
-        # Each dictionary contains a "speaker_name" and "utterance" key.
-        # Let the chatbot begin the dialogue if the chat_history is empty.
-        if st.session_state.bot.chat_history == []:
+        # Editor view for the prompt
+        if st.session_state.edit_prompt:
 
-            # We can get the chatbot to begin the conversation with this
-            st.session_state.bot.reply(
-                query="Hello",
+            # Edit the prompt using a JSON editor
+            if st.session_state.edit_prompt_json:
+
+                # The prompt JSON editor needs to be drawn first so that
+                # the displayed form values in the sidebar take reference from
+                # the editor.
+                with prompt_json_edit_placeholder.container():
+                    ui.draw_prompt_json_editor(
+                        max_height=955
+                    )  # st_ace only accepts hardcoded pixel values
+                    update_prompt_from_json()
+
+                with settings_placeholder.container():
+                    ui.draw_prompt_form(disabled=True)
+
+                with prompt_string_placeholder.container():
+                    ui.draw_prompt_view(json=False)
+
+            # Edit the prompt using a form in the sidebar
+            else:
+
+                # The settings form needs to be drawn first so that
+                # the displayed JSON values in prompt JSON placeholder
+                # take reference from the form.
+                with settings_placeholder.container():
+                    ui.draw_prompt_form(disabled=False)
+
+                with prompt_json_view_placeholder.container():
+                    ui.draw_prompt_view(json=True)
+
+                with prompt_string_placeholder.container():
+                    ui.draw_prompt_view(json=False)
+
+            # When in editor view, elements should anchored from the top.
+            utils.style_using_css(
+                """
+                div.css-18e3th9.egzxvld2 {
+                    display: flex;
+                    align-items: flex-start;
+                    overflow: visible;
+                }
+            """
             )
 
-        # Places the chat history in a Streamlit container.
-        with chat_history_placeholder.container():
+        # Chat view with the persona
+        else:
 
-            # Iterate through the chat_history. This is done in reverse order to
-            # ensure that recent messages displayed are anchored at the bottom
-            # of the Streamlit demo.
-            for i, turn in enumerate(st.session_state.bot.chat_history[::-1]):
+            # We can get the chatbot to begin the conversation with this.
+            # The session's state needs to be manually updated since we are not
+            # refreshing the entire Streamlit app.
+            if len(st.session_state.bot.chat_history) == 0:
+                st.session_state.bot.reply(
+                    query="Hello",
+                )
+                update_session_with_prompt()
 
-                # If we are at the first conversation turn, we remove the
-                # injected user utterance of "Hello" from displaying.
-                if i == len(st.session_state.bot.chat_history) - 1:
-                    if "bot" in turn:
-                        stchat.message(turn["bot"], key=f"{i}_bot")
-                else:
+            # Draw UI elements for the sidebar
+            with settings_placeholder.container():
 
-                    # Streamlit renders & runs logic by stepping through
-                    # Python files procedurally. This is why you have to
-                    # render all chat messages in the chat_history. We use streamlit_chat
-                    # to render them.
-                    if "bot" in turn:
-                        stchat.message(turn["bot"], key=f"{i}_bot")
-                    if "user" in turn:
-                        stchat.message(
-                            turn["user"],
-                            is_user=True,
-                            key=f"{i}_user",
-                            avatar_style=st.session_state.user_avatar,
-                        )
+                with st.expander("Prompt (JSON)"):
+                    ui.draw_prompt_view(json=True)
 
-        # Places the user input in a Streamlit container.
-        with user_input_placeholder.container():
+                with st.expander("Prompt (string)", expanded=True):
+                    ui.draw_prompt_view(json=False)
 
-            # You could capture the value in a local var
-            # but using "key" instead captures in the
-            # session_state dictionary. The on_change allows us
-            # to add a callback get_reply that is called when user_input
-            # is given.
-            st.text_input(
-                label=f"Chat with {st.session_state.bot.prompt.bot_name}!",
-                placeholder="[Type something and press ENTER]",
-                key="user_input",
-                on_change=get_reply,
+            # Draw chat history.
+            with chat_history_placeholder.container():
+                ui.draw_chat_history()
+
+            # Draw the message input field and a disclaimer.
+            with message_input_placeholder.container():
+                st.text_input(
+                    label=f"Chat with {st.session_state.bot.prompt.bot_name}!",
+                    placeholder="Type a message",
+                    key="message_input",
+                    on_change=get_reply,
+                )
+                ui.draw_disclaimer()
+
+            # When in chat view, anchor elements from the bottom so that
+            # the message input field is at the bottom (more natural).
+            utils.style_using_css(
+                """
+                div.css-18e3th9.egzxvld2 {
+                    display: flex;
+                    align-items: flex-end;
+                    overflow: visible;
+                }
+            """
             )

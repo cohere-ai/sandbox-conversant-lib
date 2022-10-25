@@ -34,7 +34,7 @@
             },
             {
                 "user": "Thanks! I would like to understand the identity matrix.",
-                "bot": "The identity matrix of size n is an n x n square matrix with ones on the main daigonal and zeros elsewhere."
+                "bot": "The identity matrix of size n is an n x n square matrix with ones on the main diagonal and zeros elsewhere."
             },
             {
                 "user": "What are some other names for that?",

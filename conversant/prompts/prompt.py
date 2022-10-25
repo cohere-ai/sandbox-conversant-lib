@@ -6,6 +6,7 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
+import json
 from dataclasses import field
 from typing import Any, Dict, List
 
@@ -182,6 +183,29 @@ class Prompt:
             Prompt: The prompt object instantiated from the `config`.
         """
         return cls(**config)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serializes this instance into a Python dictionary.
+
+        Returns:
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a Prompt.
+        """
+        return {
+            "preamble": self.preamble,
+            "example_separator": self.example_separator,
+            "fields": self.fields,
+            "headers": self.headers,
+            "examples": self.examples,
+        }
+
+    def to_json_string(self) -> str:
+        """Serializes this instance into a JSON string.
+
+        Returns:
+            str: JSON string representation of this instance of a Prompt.
+        """
+        prompt_dict = self.to_dict()
+        return json.dumps(prompt_dict, indent=4) + "\n"
 
     def _validate_preamble(self) -> None:
         """Validates that the preamble meets the following requirements:

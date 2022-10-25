@@ -69,9 +69,7 @@ def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -
     ) + [{"user": "Hello!", "bot": "Hello back"}] * (max_context_examples)
     mock_prompt_chatbot.chat_history = chat_history
 
-    current_prompt = mock_prompt_chatbot.get_current_prompt(
-        query="Hello!", max_context_examples=max_context_examples
-    )
+    current_prompt = mock_prompt_chatbot.get_current_prompt(query="Hello!")
 
     expected = (
         # start prompt
