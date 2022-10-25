@@ -188,6 +188,31 @@ python-versions = "*"
 six = ">=1.4.0"
 
 [[package]]
+name = "emoji"
+version = "2.1.0"
+description = "Emoji for Python"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.extras]
+dev = ["coverage", "coveralls", "pytest"]
+
+[[package]]
+name = "emojificate"
+version = "0.6.0"
+description = "Convert emoji in HTML to fallback images, alt text, title text, and aria labels."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+click = "*"
+emoji = "*"
+grapheme = "*"
+requests = "*"
+
+[[package]]
 name = "entrypoints"
 version = "0.4"
 description = "Discover and load entry points from installed packages."
@@ -228,6 +253,17 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
+
+[[package]]
+name = "grapheme"
+version = "0.6.0"
+description = "Unicode grapheme helpers"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+test = ["pytest", "sphinx", "sphinx-autobuild", "twine", "wheel"]
 
 [[package]]
 name = "identify"
@@ -820,9 +856,16 @@ description = "A streamlit component, to make chatbots"
 category = "main"
 optional = false
 python-versions = ">=3.8"
+develop = false
 
 [package.dependencies]
 streamlit = ">=0.63"
+
+[package.source]
+type = "git"
+url = "https://github.com/yichern/st-chat.git"
+reference = "HEAD"
+resolved_reference = "52b5f040afe091fd23b4977edd990924eb5706b7"
 
 [[package]]
 name = "toml"
@@ -1005,7 +1048,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "7c8d5187946381a01922210b1bdb796b8935b655403ae6eef644f1be58266fe6"
+content-hash = "ce79069ee3c0f90f52a807bce355bd6c8a1f771db70e1b8fa186050b1324668f"
 
 [metadata.files]
 altair = [
@@ -1108,6 +1151,12 @@ docker-pycreds = [
     {file = "docker-pycreds-0.4.0.tar.gz", hash = "sha256:6ce3270bcaf404cc4c3e27e4b6c70d3521deae82fb508767870fdbf772d584d4"},
     {file = "docker_pycreds-0.4.0-py2.py3-none-any.whl", hash = "sha256:7266112468627868005106ec19cd0d722702d2b7d5912a28e19b826c3d37af49"},
 ]
+emoji = [
+    {file = "emoji-2.1.0.tar.gz", hash = "sha256:56a8c5e906c11694eb7694b78e5452d745030869b3945f6306a8151ff5cdbc39"},
+]
+emojificate = [
+    {file = "emojificate-0.6.0-py2.py3-none-any.whl", hash = "sha256:eca9fdd0678596717e661ff195b04f26b4c96ffb53b4bb076e4c802680212e93"},
+]
 entrypoints = [
     {file = "entrypoints-0.4-py3-none-any.whl", hash = "sha256:f174b5ff827504fd3cd97cc3f8649f3693f51538c7e4bdf3ef002c8429d42f9f"},
     {file = "entrypoints-0.4.tar.gz", hash = "sha256:b706eddaa9218a19ebcd67b56818f05bb27589b1ca9e8d797b74affad4ccacd4"},
@@ -1123,6 +1172,9 @@ gitdb = [
 gitpython = [
     {file = "GitPython-3.1.29-py3-none-any.whl", hash = "sha256:41eea0deec2deea139b459ac03656f0dd28fc4a3387240ec1d3c259a2c47850f"},
     {file = "GitPython-3.1.29.tar.gz", hash = "sha256:cc36bfc4a3f913e66805a28e84703e419d9c264c1077e537b54f0e1af85dbefd"},
+]
+grapheme = [
+    {file = "grapheme-0.6.0.tar.gz", hash = "sha256:44c2b9f21bbe77cfb05835fec230bd435954275267fea1858013b102f8603cca"},
 ]
 identify = [
     {file = "identify-2.5.6-py2.py3-none-any.whl", hash = "sha256:b276db7ec52d7e89f5bc4653380e33054ddc803d25875952ad90b0f012cbcdaa"},
@@ -1682,10 +1734,7 @@ streamlit = [
     {file = "streamlit-1.12.0-py2.py3-none-any.whl", hash = "sha256:19f58ae723afaedbc85891c3a159e9576343609036713ecbb73b219a47dfe48d"},
     {file = "streamlit-1.12.0.tar.gz", hash = "sha256:1bbb406d4eee9acb055e72627212e9f04eea8ef0332f8dfeb6745bdf256c168b"},
 ]
-streamlit-chat = [
-    {file = "streamlit-chat-0.0.2.1.tar.gz", hash = "sha256:e1f49861a4bd4efd9b650c91871a577c03630a71fe48b020121e6ac6a72e703f"},
-    {file = "streamlit_chat-0.0.2.1-py3-none-any.whl", hash = "sha256:937b4d701bfdf6df8822f0682386c0b47cb8a73775c6004d3acc85342a934365"},
-]
+streamlit-chat = []
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
