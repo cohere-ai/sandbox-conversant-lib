@@ -167,6 +167,8 @@ class PromptChatbot(Chatbot):
 
         # get context prompt
         context_prompt_lines = []
+        # TODO(yichern) when the max_context_examples is 0, this returns the entire
+        # chat history
         trimmed_chat_history = self.chat_history[
             -self.chatbot_config["max_context_examples"] :
         ]
@@ -269,6 +271,11 @@ class PromptChatbot(Chatbot):
             "persona_name": self.persona_name,
             "chatbot_config": self.chatbot_config,
             "client_config": self.client_config,
+            "chat_history": self.chat_history,
+            "prompt_history": self.prompt_history,
+            "user_name": self.user_name,
+            "bot_name": self.bot_name,
+            "latest_prompt": self.latest_prompt,
         }
 
     @staticmethod

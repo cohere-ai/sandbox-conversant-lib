@@ -57,6 +57,49 @@ def draw_disclaimer():
         )
 
 
+def draw_chatbot_config_form():
+    """Adds widgets to edit the chatbot config."""
+    config = st.session_state.snapshot_chatbot_config
+    max_context_examples = st.slider(
+        label="max_context_examples",
+        min_value=0,
+        max_value=20,
+        value=config["max_context_examples"],
+    )
+    st.session_state.bot.configure_chatbot(
+        {"max_context_examples": max_context_examples}
+    )
+
+
+def draw_client_config_form():
+    """Adds widgets to edit the client config."""
+    config = st.session_state.snapshot_client_config
+    model_options = ["", "small", "medium", "large", "xlarge"]
+    model = st.selectbox(
+        label="model",
+        options=model_options,
+        index=model_options.index(config["model"])
+        if config["model"] in model_options
+        else 0,
+    )
+    model_id_override = st.text_input(
+        label="model id override", value=model if model else config["model"]
+    )
+    max_tokens = st.slider(
+        label="max_tokens", min_value=50, max_value=250, value=config["max_tokens"]
+    )
+    temperature = st.slider(
+        label="temperature", min_value=0.0, max_value=5.0, value=config["temperature"]
+    )
+    st.session_state.bot.configure_client(
+        {
+            "model": model_id_override,
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+        }
+    )
+
+
 def draw_prompt_form(disabled: bool = False):
     """Adds a form for configuring the prompt through its fields.
 
@@ -170,7 +213,11 @@ def draw_prompt_view(json: bool = False):
         )
         # If the current JSON string is malformed, show the error to the user to help
         # with debugging.
-        if "error" in st.session_state and st.session_state.error:
+        if (
+            st.session_state.edit_prompt
+            and "error" in st.session_state
+            and st.session_state.error
+        ):
             st.exception(st.session_state.error)
         else:
             st.code(
@@ -179,17 +226,3 @@ def draw_prompt_view(json: bool = False):
             )
             if len(st.session_state.bot.chat_history) > 0:
                 st.write(f"_(includes the current chat history)_")
-
-
-def draw_chatbot_config_form():
-    """Adds widgets to edit the chatbot config."""
-    config = st.session_state.snapshot_chatbot_config
-    max_context_examples = st.slider(
-        label="max_context_examples",
-        min_value=0,
-        max_value=20,
-        value=config["max_context_examples"],
-    )
-    st.session_state.bot.configure_chatbot(
-        {"max_context_examples": max_context_examples}
-    )
