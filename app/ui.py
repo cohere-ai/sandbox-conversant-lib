@@ -83,8 +83,13 @@ def draw_client_config_form():
         else 0,
     )
     model_id_override = st.text_input(
-        label="model id override", value=model if model else config["model"]
+        label="model ID override",
+        value=model if model else config["model"],
     )
+    if model != model_id_override:
+        st.warning(
+            "WARNING: This demo does not validate that the model ID used for override is valid.",
+        )
     max_tokens = st.slider(
         label="max_tokens", min_value=50, max_value=250, value=config["max_tokens"]
     )
