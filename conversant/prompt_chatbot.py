@@ -167,11 +167,11 @@ class PromptChatbot(Chatbot):
 
         # get context prompt
         context_prompt_lines = []
-        # TODO(yichern) when the max_context_examples is 0, this returns the entire
-        # chat history
-        trimmed_chat_history = self.chat_history[
-            -self.chatbot_config["max_context_examples"] :
-        ]
+        trimmed_chat_history = (
+            self.chat_history[-self.chatbot_config["max_context_examples"] :]
+            if self.chatbot_config["max_context_examples"] > 0
+            else []
+        )
         # TODO(yichern) when prompt is updated, the history is mutated
         # as it is recreated using the new prompt. we need to save the new prompt
         # in history
