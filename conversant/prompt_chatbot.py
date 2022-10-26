@@ -163,7 +163,7 @@ class PromptChatbot(Chatbot):
             query (str): The current user query.
         """
         # get base prompt
-        base_prompt = self.prompt.to_string()
+        base_prompt = self.prompt.to_string() + "\n"
 
         # get context prompt
         context_prompt_lines = []

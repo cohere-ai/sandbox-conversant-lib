@@ -80,7 +80,7 @@ def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -
         + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0]['bot']}\n"
         + f"{mock_prompt_chatbot.prompt.example_separator}"
         + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}"
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}\n"
         # context prompt
         + (
             f"{mock_prompt_chatbot.prompt.example_separator}"
