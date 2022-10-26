@@ -115,9 +115,14 @@ def draw_prompt_form(disabled: bool = False):
         submitted = st.form_submit_button("Update")
         if submitted:
             try:
+                # print(repr(example_separator))
                 current_config = st.session_state.bot.prompt.to_dict()
-                current_config["preamble"] = preamble
-                current_config["example_separator"] = example_separator
+                current_config["preamble"] = preamble.encode(
+                    "raw_unicode_escape"
+                ).decode("unicode_escape")
+                current_config["example_separator"] = example_separator.encode(
+                    "raw_unicode_escape"
+                ).decode("unicode_escape")
                 current_config["headers"]["user"] = user_name
                 current_config["headers"]["bot"] = bot_name
                 st.session_state.bot.prompt.update(current_config)
