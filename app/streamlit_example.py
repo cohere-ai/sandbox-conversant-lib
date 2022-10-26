@@ -52,9 +52,8 @@ def initialize_chatbot():
 def update_session_with_prompt():
     """Saves the prompt config dictionary into the session state."""
     if "bot" in st.session_state and st.session_state.bot:
-        st.session_state.prompt_config = st.session_state.bot.prompt.to_dict()
         st.session_state.snapshot_prompt_config = copy.deepcopy(
-            st.session_state.prompt_config
+            st.session_state.bot.prompt.to_dict()
         )
 
 
@@ -62,10 +61,8 @@ def update_prompt_from_json():
     """Evaluates JSON string and updates the session's bot prompt."""
     if st.session_state.json_editor_input:
         try:
-            st.session_state.prompt_config = ast.literal_eval(
-                st.session_state.json_editor_input
-            )
-            st.session_state.bot.prompt.update(st.session_state.prompt_config)
+            prompt_config = ast.literal_eval(st.session_state.json_editor_input)
+            st.session_state.bot.prompt.update(prompt_config)
             update_session_with_prompt()
             st.session_state.error = ""
         except Exception as e:

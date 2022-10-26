@@ -72,7 +72,7 @@ def draw_prompt_form(disabled: bool = False):
         # taken from the current prompt config. Otherwise, its values should be taken
         # from the snapshot of the prompt config whenever it is first rendered.
         config = (
-            defaultdict(str, st.session_state.prompt_config)
+            defaultdict(str, st.session_state.bot.prompt.to_dict())
             if disabled
             else defaultdict(str, st.session_state.snapshot_prompt_config)
         )
@@ -115,11 +115,12 @@ def draw_prompt_form(disabled: bool = False):
         submitted = st.form_submit_button("Update")
         if submitted:
             try:
-                st.session_state.prompt_config["preamble"] = preamble
-                st.session_state.prompt_config["example_separator"] = example_separator
-                st.session_state.prompt_config["headers"]["user"] = user_name
-                st.session_state.prompt_config["headers"]["bot"] = bot_name
-                st.session_state.bot.prompt.update(st.session_state.prompt_config)
+                current_config = st.session_state.bot.prompt.to_dict()
+                current_config["preamble"] = preamble
+                current_config["example_separator"] = example_separator
+                current_config["headers"]["user"] = user_name
+                current_config["headers"]["bot"] = bot_name
+                st.session_state.bot.prompt.update(current_config)
                 st.session_state.error = ""
             except Exception as e:
                 st.session_state.error = e
