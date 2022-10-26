@@ -179,3 +179,17 @@ def draw_prompt_view(json: bool = False):
             )
             if len(st.session_state.bot.chat_history) > 0:
                 st.write(f"_(includes the current chat history)_")
+
+
+def draw_chatbot_config_form():
+    """Adds widgets to edit the chatbot config."""
+    config = st.session_state.snapshot_chatbot_config
+    max_context_examples = st.slider(
+        label="max_context_examples",
+        min_value=0,
+        max_value=20,
+        value=config["max_context_examples"],
+    )
+    st.session_state.bot.configure_chatbot(
+        {"max_context_examples": max_context_examples}
+    )
