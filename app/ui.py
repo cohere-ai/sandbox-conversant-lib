@@ -218,11 +218,7 @@ def draw_prompt_view(json: bool = False):
         )
         # If the current JSON string is malformed, show the error to the user to help
         # with debugging.
-        if (
-            st.session_state.edit_prompt
-            and "error" in st.session_state
-            and st.session_state.error
-        ):
+        if "error" in st.session_state and st.session_state.error:
             st.exception(st.session_state.error)
         else:
             st.code(
