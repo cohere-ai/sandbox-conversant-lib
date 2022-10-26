@@ -123,7 +123,7 @@ if __name__ == "__main__":
         )
         st.checkbox(
             "Edit prompt",
-            value=True,
+            value=False,
             key="edit_prompt",
             on_change=update_session_with_prompt,
         )
