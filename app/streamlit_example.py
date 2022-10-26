@@ -201,7 +201,6 @@ if __name__ == "__main__":
 
                 with prompt_json_view_placeholder.container():
                     ui.draw_prompt_view(json=True)
-                    st.json(st.session_state)
 
                 with prompt_string_placeholder.container():
                     ui.draw_prompt_view(json=False)
