@@ -170,9 +170,9 @@ class PromptChatbot(Chatbot):
         trimmed_chat_history = self.chat_history[
             -self.chatbot_config["max_context_examples"] :
         ]
-        # TODO(yichern) when prompt is updated, the history is mutated
-        # as it is recreated using the new prompt. we need to save the new prompt
-        # in history
+        # TODO when prompt is updated, the history is mutated
+        # as it is recreated using the new prompt. A possible fix is to save the old prompt
+        # in history and use it when recreating.
         for turn in trimmed_chat_history:
             context_prompt_lines.append(self.prompt.create_example_string(**turn))
         context_prompt = "".join(context_prompt_lines)
