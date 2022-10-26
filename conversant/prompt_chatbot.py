@@ -108,8 +108,8 @@ class PromptChatbot(Chatbot):
             return "PromptChatbot"
 
     @property
-    def recent_prompt(self) -> str:
-        """Retrieves the most recent prompt.
+    def latest_prompt(self) -> str:
+        """Retrieves the latest prompt.
 
         Returns:
             str: The prompt most recently added to the prompt history.

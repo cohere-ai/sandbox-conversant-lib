@@ -44,6 +44,7 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     assert isinstance(prompt_chatbot, PromptChatbot)
     assert prompt_chatbot.user_name == prompt_chatbot.prompt.user_name
     assert prompt_chatbot.bot_name == prompt_chatbot.prompt.bot_name
+    assert prompt_chatbot.latest_prompt == prompt_chatbot.prompt.to_string()
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
 
