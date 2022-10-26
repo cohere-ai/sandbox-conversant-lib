@@ -66,7 +66,7 @@ def draw_prompt_form(disabled: bool = False):
     Args:
         disabled (bool): Whether or not the form should be rendered as disabled.
     """
-    # Bathes elements together as a form with a common submit button.
+    # Batches elements together as a form with a common submit button.
     with st.form("prompt_form"):
         # When the form is disabled, each time it is rendered its values need to be
         # taken from the current prompt config. Otherwise, its values should be taken
