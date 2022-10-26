@@ -111,7 +111,7 @@ def draw_prompt_form(disabled: bool = False):
             disabled=True,
         )
         # Upon submitting the form, we will save the form values in to the current
-        # prompt conifg, then update the bot. Any errors should be saved.
+        # prompt config, then update the bot. Any errors should be saved.
         submitted = st.form_submit_button("Update")
         if submitted:
             try:
