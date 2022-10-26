@@ -12,7 +12,7 @@ div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(4
     max-height: 65vh;
 }
 
-/* Style prompt_json_view_placeholder header so overflow is scrollable */
+/* Style prompt_json_view_placeholder header so it is aligned. */
 div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) p {
     margin-left: 8px;
 }
