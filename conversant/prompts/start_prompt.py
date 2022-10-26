@@ -86,7 +86,7 @@ class StartPrompt(Prompt):
             {bot_name}: {utterance}\n
 
         Note the colon and space separating the speaker name from the respective
-        utterance. Note also that the last utterance will not contain a `\n`.
+        utterance.
 
         Args:
             args: Positional arguments for the new example.
