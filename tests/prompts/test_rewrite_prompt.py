@@ -27,7 +27,6 @@ def new_example() -> Dict[str, str]:
     }
 
 
-@pytest.fixture
 def test_rewrite_prompt_init(mock_rewrite_prompt_config: Dict[str, Any]) -> None:
     """Tests RewritePrompt.__init__
 
@@ -85,22 +84,50 @@ def test_rewrite_prompt_create_example_string(
         new_example (Dict[ str, str]): A new RewritePrompt example fixture.
     """
     expected = (
-        f"\n{mock_rewrite_prompt.example_separator}\n"
+        f"{mock_rewrite_prompt.example_separator}"
         f"{mock_rewrite_prompt.headers['conversation']}\n"
         f"{new_example['conversation']}\n"
         f"{mock_rewrite_prompt.headers['fact']}\n"
         f"{new_example['fact']}\n"
         f"{mock_rewrite_prompt.headers['rewrite']}\n"
-        f"{new_example['rewrite']}"
+        f"{new_example['rewrite']}\n"
     )
     # create from positional arguments
-    filled_template = mock_rewrite_prompt.create_example_string(
+    generated_example_str = mock_rewrite_prompt.create_example_string(
         new_example["conversation"], new_example["rewrite"], new_example["fact"]
     )
-    assert filled_template == expected
+    assert generated_example_str == expected
+
     # create from keyword arguments
-    filled_template = mock_rewrite_prompt.create_example_string(**new_example)
-    assert filled_template == expected
+    generated_example_str = mock_rewrite_prompt.create_example_string(**new_example)
+    assert generated_example_str == expected
+
+    # create from mix of positional and keyword arguments
+    kwargs = {"rewrite": "Otters are mammals."}
+    generated_example_str = mock_rewrite_prompt.create_example_string(
+        new_example["conversation"], new_example["fact"], **kwargs
+    )
+    assert generated_example_str == expected
+
+    # generated example string is dependent on the insertion order into the examples
+    # dictionary
+    reordered_example = {}
+    reordered_example["fact"] = new_example["fact"]
+    reordered_example["conversation"] = new_example["conversation"]
+    reordered_example["rewrite"] = new_example["rewrite"]
+    reordered_expected = (
+        f"{mock_rewrite_prompt.example_separator}"
+        f"{mock_rewrite_prompt.headers['fact']}\n"
+        f"{new_example['fact']}\n"
+        f"{mock_rewrite_prompt.headers['conversation']}\n"
+        f"{new_example['conversation']}\n"
+        f"{mock_rewrite_prompt.headers['rewrite']}\n"
+        f"{new_example['rewrite']}\n"
+    )
+    generated_reordered_example_str = mock_rewrite_prompt.create_example_string(
+        **reordered_example
+    )
+    assert generated_reordered_example_str == reordered_expected
 
 
 def test_rewrite_prompt_to_string(mock_rewrite_prompt: RewritePrompt) -> None:
@@ -110,15 +137,15 @@ def test_rewrite_prompt_to_string(mock_rewrite_prompt: RewritePrompt) -> None:
         mock_rewrite_prompt (RewritePrompt): A RewritePrompt fixture.
     """
     expected = (
-        f"{mock_rewrite_prompt.preamble}\n\n"
-        f"{mock_rewrite_prompt.example_separator}\n"
+        f"{mock_rewrite_prompt.preamble}\n"
+        f"{mock_rewrite_prompt.example_separator}"
         f"{mock_rewrite_prompt.headers['conversation']}\n"
         f"{mock_rewrite_prompt.examples[0]['conversation']}\n"
         f"{mock_rewrite_prompt.headers['fact']}\n"
         f"{mock_rewrite_prompt.examples[0]['fact']}\n"
         f"{mock_rewrite_prompt.headers['rewrite']}\n"
         f"{mock_rewrite_prompt.examples[0]['rewrite']}\n"
-        f"{mock_rewrite_prompt.example_separator}\n"
+        f"{mock_rewrite_prompt.example_separator}"
         f"{mock_rewrite_prompt.headers['conversation']}\n"
         f"{mock_rewrite_prompt.examples[1]['conversation']}\n"
         f"{mock_rewrite_prompt.headers['fact']}\n"
