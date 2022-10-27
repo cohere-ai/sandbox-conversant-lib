@@ -70,7 +70,7 @@ class Prompt:
         Returns:
             List[str]: A list of stop sequences corresponding to the headers of the prompt.
         """
-        return list(self.headers.keys())
+        return list(self.headers.values())
 
     def create_example(self, *args, **kwargs) -> Dict[str, str]:
         """Creates a new dictionary representation of an example from positional

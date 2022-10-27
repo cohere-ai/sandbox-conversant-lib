@@ -54,7 +54,7 @@ def test_prompt_init(mock_prompt_config: Dict[str, Any]) -> None:
             "generation": "This is a second generation.",
         },
     ]
-    assert prompt.stop_sequences == ["query", "context", "generation"]
+    assert prompt.stop_sequences == ["<query>", "<context>", "<generation>"]
 
 
 def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
@@ -84,7 +84,7 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
             "generation": "This is a second generation.",
         },
     ]
-    assert prompt.stop_sequences == ["query", "context", "generation"]
+    assert prompt.stop_sequences == ["<query>", "<context>", "<generation>"]
 
 
 @pytest.mark.parametrize(
