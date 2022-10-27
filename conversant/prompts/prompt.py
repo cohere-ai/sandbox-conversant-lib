@@ -190,7 +190,6 @@ class Prompt:
         return {
             "preamble": self.preamble,
             "example_separator": self.example_separator,
-            "fields": self.fields,
             "headers": self.headers,
             "examples": self.examples,
         }
