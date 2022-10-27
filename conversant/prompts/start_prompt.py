@@ -64,7 +64,7 @@ class StartPrompt(Prompt):
         """
         return self.headers["bot"]
 
-    def create_example_string(self, *args, **kwargs) -> str:
+    def create_interaction_string(self, *args, **kwargs) -> str:
         """Creates a string representation of conversation interaction from positional
         and keyword arguments.
 
