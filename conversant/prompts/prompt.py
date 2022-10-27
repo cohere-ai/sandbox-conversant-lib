@@ -257,7 +257,7 @@ class Prompt:
         for example in self.examples:
             if any(field not in example for field in self.REQUIRED_FIELDS):
                 raise ValueError(
-                    f"All fields must be used in each example.\nExample: {example}\nFields found: {self.headers.keys()}"
+                    f"Missing required field.\nExample's fields: {example.keys()}\nRequired: {self.REQUIRED_FIELDS}"
                 )
 
         # At least `MIN_NUM_EXAMPLES` examples are given.
