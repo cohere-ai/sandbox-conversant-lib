@@ -21,13 +21,13 @@ from conversant.utils import demo_utils
 USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
-def get_reply():
+def get_reply() -> None:
     """Replies query from the message input, and resets the message input"""
     _ = st.session_state.bot.reply(query=st.session_state.message_input)
     st.session_state.message_input = ""
 
 
-def initialize_chatbot():
+def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
     if st.session_state.persona.startswith("from launch_demo") and len(sys.argv) > 1:
         st.session_state.bot = demo_utils.decode_object(
@@ -49,7 +49,7 @@ def initialize_chatbot():
     st.session_state.edit_prompt_json = False
 
 
-def update_session_with_prompt():
+def update_session_with_prompt() -> None:
     """Saves the prompt config dictionary into the session state."""
     if "bot" in st.session_state and st.session_state.bot:
         st.session_state.snapshot_prompt_config = copy.deepcopy(
@@ -63,7 +63,7 @@ def update_session_with_prompt():
         )
 
 
-def update_prompt_from_json():
+def update_prompt_from_json() -> None:
     """Evaluates JSON string and updates the session's bot prompt."""
     if st.session_state.json_editor_input:
         try:
