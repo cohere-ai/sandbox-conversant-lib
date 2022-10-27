@@ -13,6 +13,8 @@ import streamlit as st
 from streamlit_ace import st_ace
 from streamlit_chat import message as st_message
 
+from app import utils
+
 
 def draw_chat_history() -> None:
     """Renders the chat history in Streamlit.
@@ -108,6 +110,27 @@ def draw_client_config_form() -> None:
         max_value=1.0,
         value=config["presence_penalty"],
     )
+    # This allows the user to add their own stop sequences to a multiselect form
+    # below.
+    if "current_stop_sequences" not in st.session_state:
+        st.session_state.current_stop_sequences = [
+            utils.escape_string(stop_seq) for stop_seq in config["stop_sequences"]
+        ]
+    new_stop_seq = st.text_input(label="add new stop sequence")
+    if (
+        new_stop_seq != ""
+        and new_stop_seq not in st.session_state.current_stop_sequences
+    ):
+        st.session_state.current_stop_sequences.append(new_stop_seq)
+    # Use the list of stop sequences in the session state, including any user added ones
+    # as the defaults for a multiselect form.
+    st.multiselect(
+        label="stop_sequences",
+        options=st.session_state.current_stop_sequences,
+        default=st.session_state.current_stop_sequences,
+        key="selected_stop_sequences",
+    )
+
     st.session_state.bot.configure_client(
         {
             "model": model_id_override,
@@ -115,6 +138,10 @@ def draw_client_config_form() -> None:
             "temperature": temperature,
             "frequency_penalty": frequency_penalty,
             "presence_penalty": presence_penalty,
+            "stop_sequences": [
+                utils.unescape_string(stop_seq)
+                for stop_seq in st.session_state.selected_stop_sequences
+            ],  # Stop sequences need to be unescaped e.g. from \\n to \n
         }
     )
 
@@ -152,19 +179,31 @@ def draw_prompt_form(disabled: bool = False) -> None:
         preamble = st.text_area(
             label="preamble",
             disabled=disabled,
-            value=default_preamble,
+            value=utils.escape_string(
+                default_preamble
+            ),  # Display chars like \n in the text area by escaping them to \\n
         )
         example_separator = st.text_input(
             label="example_separator",
             disabled=disabled,
-            value=default_example_separator,
+            value=utils.escape_string(
+                default_example_separator
+            ),  # Display chars like \n in the text area by escaping them to \\n
         )
         user_name = st.text_input(
             label="user",
             disabled=disabled,
-            value=default_user_name,
+            value=utils.escape_string(
+                default_user_name
+            ),  # Display chars like \n in the text area by escaping them to \\n
         )
-        bot_name = st.text_input(label="bot", disabled=disabled, value=default_bot_name)
+        bot_name = st.text_input(
+            label="bot",
+            disabled=disabled,
+            value=utils.escape_string(
+                default_bot_name
+            ),  # Display chars like \n in the text area by escaping them to \\n
+        )
         # Because prompt examples have a more complex structure, it is not very user
         # friendly to render them as form input fields.
         st.text_input(
@@ -177,16 +216,14 @@ def draw_prompt_form(disabled: bool = False) -> None:
         submitted = st.form_submit_button("Update")
         if submitted:
             try:
-                # print(repr(example_separator))
+                # Strings need to be unescaped e.g. from \\n to \n
                 current_config = st.session_state.bot.prompt.to_dict()
-                current_config["preamble"] = preamble.encode(
-                    "raw_unicode_escape"
-                ).decode("unicode_escape")
-                current_config["example_separator"] = example_separator.encode(
-                    "raw_unicode_escape"
-                ).decode("unicode_escape")
-                current_config["headers"]["user"] = user_name
-                current_config["headers"]["bot"] = bot_name
+                current_config["preamble"] = utils.unescape_string(preamble)
+                current_config["example_separator"] = utils.unescape_string(
+                    example_separator
+                )
+                current_config["headers"]["user"] = utils.unescape_string(user_name)
+                current_config["headers"]["bot"] = utils.unescape_string(bot_name)
                 st.session_state.bot.prompt.update(current_config)
                 st.session_state.error = ""
             except Exception as e:
