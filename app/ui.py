@@ -96,11 +96,25 @@ def draw_client_config_form() -> None:
     temperature = st.slider(
         label="temperature", min_value=0.0, max_value=5.0, value=config["temperature"]
     )
+    frequency_penalty = st.slider(
+        label="frequency_penalty",
+        min_value=0.0,
+        max_value=1.0,
+        value=config["frequency_penalty"],
+    )
+    presence_penalty = st.slider(
+        label="presence_penalty",
+        min_value=0.0,
+        max_value=1.0,
+        value=config["presence_penalty"],
+    )
     st.session_state.bot.configure_client(
         {
             "model": model_id_override,
             "max_tokens": max_tokens,
             "temperature": temperature,
+            "frequency_penalty": frequency_penalty,
+            "presence_penalty": presence_penalty,
         }
     )
 
