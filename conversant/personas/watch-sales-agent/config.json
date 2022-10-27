@@ -43,8 +43,7 @@
                 }
             ]
         ]
-    }
-    ,
+    },
     "rewrite_prompt_config": {
         "example_separator": "--",
         "fact_header": "<<FACTUAL PARAGRAPH>>",
