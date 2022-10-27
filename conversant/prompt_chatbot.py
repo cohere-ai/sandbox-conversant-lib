@@ -151,7 +151,7 @@ class PromptChatbot(Chatbot):
         response = response.lstrip()
 
         # We need to remember the current response in the chat history for future responses.
-        self.chat_history.append(self.prompt.create_example(query, response))
+        self.chat_history.append(self.prompt.create_interaction(query, response))
         self.prompt_history.append(current_prompt)
 
         return response
@@ -176,11 +176,11 @@ class PromptChatbot(Chatbot):
         # as it is recreated using the new prompt. A possible fix is to save the old prompt
         # in history and use it when recreating.
         for turn in trimmed_chat_history:
-            context_prompt_lines.append(self.prompt.create_example_string(**turn))
+            context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
         context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
 
         # get query prompt
-        query_prompt = self.prompt.create_example_string(query)
+        query_prompt = self.prompt.create_interaction_string(query)
 
         current_prompt = base_prompt + context_prompt + query_prompt
         return current_prompt.strip()

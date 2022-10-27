@@ -14,11 +14,11 @@ from conversant.prompts.start_prompt import StartPrompt
 
 
 @pytest.fixture
-def new_example() -> Dict[str, str]:
+def new_interaction() -> Dict[str, str]:
     """Instantiates a fixture for a new StartPrompt example.
 
     Returns:
-        Dict[str, str]: New StartPrompt example fixture.
+        Dict[str, str]: New StartPrompt interaction fixture.
     """
     return {"user": "Nice to meet you!", "bot": "You too!"}
 
@@ -103,43 +103,45 @@ def test_start_prompt_init_fails(
         _ = StartPrompt(**mock_start_prompt_config)
 
 
-def test_start_prompt_create_example_string(
-    mock_start_prompt: StartPrompt, new_example: Dict[str, str]
+def test_start_prompt_create_interaction_string(
+    mock_start_prompt: StartPrompt, new_interaction: Dict[str, str]
 ) -> None:
-    """Tests StartPrompt.create_example_string
+    """Tests StartPrompt.create_interaction_string
 
     Args:
         mock_start_prompt (StartPrompt): A StartPrompt fixture.
-        new_example (Dict[ str, str]): A new StartPrompt example fixture.
+        new_interaction (Dict[ str, str]): A new StartPrompt interaction fixture.
     """
     expected = (
-        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
-        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {new_interaction['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {new_interaction['bot']}\n"
     )
     # create from positional arguments
-    generated_example_str = mock_start_prompt.create_example_string(
-        new_example["user"], new_example["bot"]
+    generated_interaction_str = mock_start_prompt.create_interaction_string(
+        new_interaction["user"], new_interaction["bot"]
     )
-    assert generated_example_str == expected
+    assert generated_interaction_str == expected
 
     # create from keyword arguments
-    generated_example_str = mock_start_prompt.create_example_string(**new_example)
-    assert generated_example_str == expected
+    generated_interaction_str = mock_start_prompt.create_interaction_string(
+        **new_interaction
+    )
+    assert generated_interaction_str == expected
 
     # generated example string is dependent on the insertion order into the examples
     # dictionary
-    reordered_example = {}
-    reordered_example["bot"] = new_example["bot"]
-    reordered_example["user"] = new_example["user"]
+    reordered_interaction = {}
+    reordered_interaction["bot"] = new_interaction["bot"]
+    reordered_interaction["user"] = new_interaction["user"]
     reordered_expected = (
         f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
-        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {new_interaction['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {new_interaction['user']}\n"
     )
-    generated_reordered_example_str = mock_start_prompt.create_example_string(
-        **reordered_example
+    generated_reordered_interaction_str = mock_start_prompt.create_example_string(
+        **reordered_interaction
     )
-    assert generated_reordered_example_str == reordered_expected
+    assert generated_reordered_interaction_str == reordered_expected
 
 
 def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:

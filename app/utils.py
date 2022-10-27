@@ -54,7 +54,7 @@ class ParrotChatbot(PromptChatbot):
             str: a mock reply that repeats the user's query.
         """
         current_prompt = self.get_current_prompt(query)
-        self.chat_history.append(self.prompt.create_example(query, query))
+        self.chat_history.append(self.prompt.create_interaction(query, query))
         self.prompt_history.append(current_prompt)
         return query
 

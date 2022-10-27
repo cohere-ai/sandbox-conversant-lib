@@ -78,9 +78,8 @@ class StartPrompt(Prompt):
         """
         return [f"\n{self.headers[speaker]}:" for speaker in self.headers]
 
-    def create_example_string(self, *args, **kwargs) -> str:
-        """Creates a string representation of an example interaction from positional
-        and keyword arguments.
+    def create_interaction_string(self, *args, **kwargs) -> str:
+        """Creates a string representation of an interaction.
 
         Interactions will look like the following:
 
@@ -91,27 +90,23 @@ class StartPrompt(Prompt):
         utterance.
 
         Args:
-            args: Positional arguments for the new example.
-            kwargs: Keyword arguments for the new example.
+            args: Positional arguments for the new interaction.
+            kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            str: String representation of an example.
+            str: String representation of an interaction.
         """
-        example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
+        interaction = self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
         return "".join(
-            f"{self.headers[field]}: {example[field]}\n" for field in example.keys()
+            f"{self.headers[field]}: {interaction[field]}\n" for field in interaction.keys()
 
     def create_conversation_string(self, conversation: List[Dict[str, str]]):
-        """Creates a string represenation of an example conversation.
+        """Creates a string represenation of a conversation.
 
         Conversations will look like the following:
 
-            {example_separator}
             {user_name}: {utterance}\n
             {bot_name}: {utterance}\n
-            {user_name}: {utterance}\n
-            {bot_name}: {utterance}\n
-            {example_separator}
             {user_name}: {utterance}\n
             {bot_name}: {utterance}\n
 
@@ -119,15 +114,27 @@ class StartPrompt(Prompt):
             conversation (List[Dict[str, str]]): Am
         """
         return "".join(
-            self.create_example_string(**interaction) for interaction in conversation
+            self.create_interaction_string(**interaction)
+            for interaction in conversation
         )
 
     def to_string(self) -> str:
         """Creates a string representation of the conversation prompt.
 
         The string representation is assembled from the preamble and examples.
-        Each example is created from a `create_example_string` method and is demarcated
+        Each example is created from a `create_conversation_string` method and is demarcated
         by an `example_separator`.
+
+        Examples will look like the following:
+
+            {example_separator}
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+            {example_separator}
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
 
         Returns:
             str: String representation of the conversation prompt.

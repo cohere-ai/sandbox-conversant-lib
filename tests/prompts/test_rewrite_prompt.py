@@ -14,11 +14,11 @@ from conversant.prompts.rewrite_prompt import RewritePrompt
 
 
 @pytest.fixture
-def new_example() -> Dict[str, str]:
+def new_interaction() -> Dict[str, str]:
     """Instantiates a fixture for a new RewritePrompt example.
 
     Returns:
-        Dict[str, str]: New RewritePrompt example fixture.
+        Dict[str, str]: New RewritePrompt interaction fixture.
     """
     return {
         "conversation": "Otters are plants.",
@@ -74,59 +74,63 @@ def test_rewrite_prompt_init_fails(
         _ = RewritePrompt(**mock_rewrite_prompt_config)
 
 
-def test_rewrite_prompt_create_example_string(
-    mock_rewrite_prompt: RewritePrompt, new_example: Dict[str, str]
+def test_rewrite_prompt_create_interaction_string(
+    mock_rewrite_prompt: RewritePrompt, new_interaction: Dict[str, str]
 ) -> None:
-    """Tests RewritePrompt.create_example_string
+    """Tests RewritePrompt.create_interaction_string
 
     Args:
         mock_rewrite_prompt (RewritePrompt): A RewritePrompt fixture.
-        new_example (Dict[ str, str]): A new RewritePrompt example fixture.
+        new_interaction (Dict[ str, str]): A new RewritePrompt interaction fixture.
     """
     expected = (
         f"{mock_rewrite_prompt.headers['conversation']}\n"
-        f"{new_example['conversation']}\n"
+        f"{new_interaction['conversation']}\n"
         f"{mock_rewrite_prompt.headers['fact']}\n"
-        f"{new_example['fact']}\n"
+        f"{new_interaction['fact']}\n"
         f"{mock_rewrite_prompt.headers['rewrite']}\n"
-        f"{new_example['rewrite']}\n"
+        f"{new_interaction['rewrite']}\n"
     )
     # create from positional arguments
-    generated_example_str = mock_rewrite_prompt.create_example_string(
-        new_example["conversation"], new_example["rewrite"], new_example["fact"]
+    generated_interaction_str = mock_rewrite_prompt.create_interaction_string(
+        new_interaction["conversation"],
+        new_interaction["rewrite"],
+        new_interaction["fact"],
     )
     assert generated_example_str == expected
 
     # create from keyword arguments
-    generated_example_str = mock_rewrite_prompt.create_example_string(**new_example)
-    assert generated_example_str == expected
+    generated_interaction_str = mock_rewrite_prompt.create_interaction_string(
+        **new_interaction
+    )
+    assert generated_interaction_str == expected
 
     # create from mix of positional and keyword arguments
     kwargs = {"rewrite": "Otters are mammals."}
-    generated_example_str = mock_rewrite_prompt.create_example_string(
-        new_example["conversation"], new_example["fact"], **kwargs
+    generated_interaction_str = mock_rewrite_prompt.create_example_string(
+        new_interaction["conversation"], new_interaction["fact"], **kwargs
     )
-    assert generated_example_str == expected
+    assert generated_interaction_str == expected
 
     # generated example string is dependent on the insertion order into the examples
     # dictionary
-    reordered_example = {}
-    reordered_example["fact"] = new_example["fact"]
-    reordered_example["conversation"] = new_example["conversation"]
-    reordered_example["rewrite"] = new_example["rewrite"]
+    reordered_interaction = {}
+    reordered_interaction["fact"] = new_interaction["fact"]
+    reordered_interaction["conversation"] = new_interaction["conversation"]
+    reordered_interaction["rewrite"] = new_interaction["rewrite"]
     reordered_expected = (
         f"{mock_rewrite_prompt.example_separator}"
         f"{mock_rewrite_prompt.headers['fact']}\n"
-        f"{new_example['fact']}\n"
+        f"{new_interaction['fact']}\n"
         f"{mock_rewrite_prompt.headers['conversation']}\n"
-        f"{new_example['conversation']}\n"
+        f"{new_interaction['conversation']}\n"
         f"{mock_rewrite_prompt.headers['rewrite']}\n"
-        f"{new_example['rewrite']}\n"
+        f"{new_interaction['rewrite']}\n"
     )
-    generated_reordered_example_str = mock_rewrite_prompt.create_example_string(
-        **reordered_example
+    generated_reordered_interaction_str = mock_rewrite_prompt.create_example_string(
+        **reordered_interaction
     )
-    assert generated_reordered_example_str == reordered_expected
+    assert generated_reordered_interaction_str == reordered_expected
 
 
 def test_rewrite_prompt_to_string(mock_rewrite_prompt: RewritePrompt) -> None:

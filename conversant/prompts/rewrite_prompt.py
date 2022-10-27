@@ -44,35 +44,29 @@ class RewritePrompt(Prompt):
         """
         super().__post_init__()
 
-    def create_example_string(self, *args, **kwargs) -> str:
-        """Creates a string representation of a grounded rewriting example from positional
-        and keyword arguments.
+    def create_interaction_string(self, *args, **kwargs) -> str:
+        """Creates a string representation of a grounded rewriting interaction.
 
-        Examples should look like the following:
+        Interactions will look like the following:
 
-            {example_seprator}
             {conversation_header}\n
             {conversation}\n
             {fact_header}\n
             {fact}\n
             {rewrite_header}\n
             {rewrite}\n
-            {example_seprator}
-            {convesation_header}\n
-            {conversation}\n
-            {fact_header}\n
-            {fact}\n
-            {rewrite_header}\n
-            {rewrite}
 
         Args:
-            args: Positional arguments for the new example.
-            kwargs: Keyword arguments for the new example.
+            args: Positional arguments for the new interaction.
+            kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            str: String representation of an example.
+            str: String representation of an interaction.
         """
-        example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
+        interaction = (
+            self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
+        )
         return "".join(
-            f"{self.headers[field]}\n{example[field]}\n" for field in example.keys()
+            f"{self.headers[field]}\n{interaction[field]}\n"
+            for field in interaction.keys()
         )

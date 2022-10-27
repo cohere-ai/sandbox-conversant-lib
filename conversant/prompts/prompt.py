@@ -72,9 +72,8 @@ class Prompt:
         """
         return list(self.headers.values())
 
-    def create_example(self, *args, **kwargs) -> Dict[str, str]:
-        """Creates a new dictionary representation of an example from positional
-        and keyword arguments.
+    def create_interaction(self, *args, **kwargs) -> Dict[str, str]:
+        """Creates a new dictionary representation of an interaction.
 
         The order of args here should correspond to the order of the `fields`. The i-th
         positional argument passed in corresponds to the i-th field, up to `len(fields)`.
@@ -85,22 +84,21 @@ class Prompt:
         arguments.
 
         Args:
-            args: Positional arguments for the new example.
-            kwargs: Keyword arguments for the new example.
+            args: Positional arguments for the new interaction.
+            kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            Dict[str, str]: Dictionary representation of an example.
+            Dict[str, str]: Dictionary representation of an interaction.
         """
-        new_example = {
+        new_interaction = {
             field: args[i] if i < len(args) else ""
             for i, field in enumerate(self.headers.keys())
         }
-        new_example.update(kwargs)
-        return new_example
+        new_interaction.update(kwargs)
+        return new_interaction
 
-    def create_example_string(self, *args, **kwargs) -> str:
-        """Creates a string representation of an example from positional and
-        keyword arguments.
+    def create_interaction_string(self, *args, **kwargs) -> str:
+        """Creates a string representation of an interaction.
 
         The order of args here should correspond to the order of the `fields`. The i-th
         positional argument passed in corresponds to the i-th field, up to `len(fields)`.
@@ -117,13 +115,8 @@ class Prompt:
         a new example dictionary is created from the positional arguments and the ordering
         is dependent on the order of the `headers`.
 
-        Examples will look like the following:
+        Interactions will look like the following:
 
-            {example_separator}
-            {field}{value}\n
-            {field}{value}\n
-            ...
-            {example_separator}
             {field}{value}\n
             {field}{value}\n
 
@@ -131,30 +124,44 @@ class Prompt:
         overrides this method.
 
         Args:
-            args: Positional arguments for the new example.
-            kwargs: Keyword arguments for the new example.
+            args: Positional arguments for the new interaction.
+            kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            str: String representation of an example.
+            str: String representation of an interaction.
         """
-        example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
+        interaction = (
+            self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
+        )
         return "".join(
-            f"{self.headers[field]}{example[field]}\n" for field in example.keys()
+            f"{self.headers[field]}{interaction[field]}\n"
+            for field in interaction.keys()
         )
 
     def to_string(self) -> str:
         """Creates a string representation of the prompt.
 
         The string representation is assembled from the preamble and examples.
-        Each example is created from a `create_example_string` method and is demarcated
+        Each example is created from a `create_interaction_string` method and is demarcated
         by an `example_separator`.
+
+        Examples will look like the following:
+
+            {preamble}\n
+            {example_separator}
+            {field}{value}\n
+            {field}{value}\n
+            {example_separator}
+            {field}{value}\n
+            {field}{value}\n
+            ...
 
         Returns:
             str: String representation of the prompt.
         """
         lines = [f"{self.preamble}\n"]
         lines += self.example_separator + f"{self.example_separator}".join(
-            self.create_example_string(**example) for example in self.examples
+            self.create_interaction_string(**example) for example in self.examples
         )
         return "".join(lines).strip()
 
