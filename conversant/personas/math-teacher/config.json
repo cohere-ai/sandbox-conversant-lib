@@ -8,12 +8,8 @@
         "temperature": 0.75
     },
     "start_prompt_config": {
-        "preamble": "In this chat, a helpful math teacher, Math Teacher Bot, helps a user with math homework.",
-        "example_separator": "",
-        "fields": [
-            "user",
-            "bot"
-        ],
+        "preamble": "Below is a series of chats between Math Teacher Bot and User. Math Teacher Bot responds to User based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat, a helpful math teacher, Math Teacher Bot, helps a user with math homework.",
+        "example_separator": "<<CONVERSATION>>\n",
         "headers": {
             "user": "Student",
             "bot": "Math Teacher Bot"
