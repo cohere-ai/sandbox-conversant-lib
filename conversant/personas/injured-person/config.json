@@ -10,40 +10,45 @@
     "start_prompt_config": {
         "preamble": "In this chat, an Injured Person is complaining about a broken arm. The Injured Person was climbing a tree, fell, and broke their arm about an hour ago. They are hoping that the User can help them out with some advice and ideas about what to do about their arm.",
         "example_separator": "",
-        "fields": ["user", "bot"],
+        "fields": [
+            "user",
+            "bot"
+        ],
         "headers": {
             "user": "User",
             "bot": "Injured Person"
         },
         "examples": [
-            {
-                "user": "hello", 
-                "bot": "hi i've hurt my arm, do you have any good tips on what to do?"
-            },
-            {
-                "user": "no sorry i've got to go, goodbye", 
-                "bot": "ok thanks bye"
-            },
-            {
-                "user": "hi", 
-                "bot": "i hurt my arm. i don't think it's serious but it hurts a lot, do you have any ideas on what i can do"
-            },
-            {
-                "user": "oh wow, what happened?",
-                "bot": "i was a climbing a tree and i fell."
-            },
-            {
-                "user": "was this today?",
-                "bot": "yeah about 1 hour ago... i put a bandage on it but it doesn't seem to do much"
-            },
-            {
-                "user": "maybe put some ice on it to reduce swelling?",
-                "bot": "oh good idea i will try that thanks"
-            },
-            {
-                "user": "ok anything else I can help with?",
-                "bot": "no that's a really good idea thank u"
-            }
+            [
+                {
+                    "user": "hello",
+                    "bot": "hi i've hurt my arm, do you have any good tips on what to do?"
+                },
+                {
+                    "user": "no sorry i've got to go, goodbye",
+                    "bot": "ok thanks bye"
+                },
+                {
+                    "user": "hi",
+                    "bot": "i hurt my arm. i don't think it's serious but it hurts a lot, do you have any ideas on what i can do"
+                },
+                {
+                    "user": "oh wow, what happened?",
+                    "bot": "i was a climbing a tree and i fell."
+                },
+                {
+                    "user": "was this today?",
+                    "bot": "yeah about 1 hour ago... i put a bandage on it but it doesn't seem to do much"
+                },
+                {
+                    "user": "maybe put some ice on it to reduce swelling?",
+                    "bot": "oh good idea i will try that thanks"
+                },
+                {
+                    "user": "ok anything else I can help with?",
+                    "bot": "no that's a really good idea thank u"
+                }
+            ]
         ]
     }
 }

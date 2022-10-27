@@ -8,7 +8,7 @@
 
 import logging
 from dataclasses import field
-from typing import List
+from typing import Dict, List
 
 from pydantic.dataclasses import dataclass
 
@@ -29,6 +29,8 @@ class StartPrompt(Prompt):
         MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in. (default: `1`)
     """
 
+    examples: List[List[Dict[str, str]]]
+
     REQUIRED_FIELDS: List[str] = field(default_factory=lambda: ["user", "bot"])
     MIN_PREAMBLE_LENGTH: int = 10
     MIN_NUM_EXAMPLES: int = 0
@@ -39,7 +41,12 @@ class StartPrompt(Prompt):
         Validates that the prompt follows the requirements of the validators listed below.
         Minimally, the StartPrompt needs to follow the requirements of its parent class.
         """
-        super().__post_init__()
+        # super().__post_init__()
+        super()._validate_preamble()
+        super()._validate_fields()
+        super()._validate_example_separator()
+        super()._validate_headers()
+        self._validate_examples()
         self._validate_dialogue()
 
     @property
@@ -73,15 +80,11 @@ class StartPrompt(Prompt):
         return [f"\n{self.headers[speaker]}:" for speaker in self.headers]
 
     def create_example_string(self, *args, **kwargs) -> str:
-        """Creates a string representation of conversation interaction from positional
+        """Creates a string representation of an example interaction from positional
         and keyword arguments.
 
-        Examples should look like the following:
+        Interactions will look like the following:
 
-            {example_separator}
-            {user_name}: {utterance}\n
-            {bot_name}: {utterance}\n
-            {example_separator}
             {user_name}: {utterance}\n
             {bot_name}: {utterance}\n
 
@@ -96,9 +99,68 @@ class StartPrompt(Prompt):
             str: String representation of an example.
         """
         example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
-        return f"{self.example_separator}" + "".join(
+        return "".join(
             f"{self.headers[field]}: {example[field]}\n" for field in example.keys()
+
+    def create_conversation_string(self, conversation: List[Dict[str, str]]):
+        """Creates a string represenation of an example conversation.
+
+        Conversations will look like the following:
+
+            {example_separator}
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+            {example_separator}
+            {user_name}: {utterance}\n
+            {bot_name}: {utterance}\n
+
+        Args:
+            conversation (List[Dict[str, str]]): Am
+        """
+        return "".join(
+            self.create_example_string(**interaction) for interaction in conversation
         )
+
+    def to_string(self) -> str:
+        """Creates a string representation of the conversation prompt.
+
+        The string representation is assembled from the preamble and examples.
+        Each example is created from a `create_example_string` method and is demarcated
+        by an `example_separator`.
+
+        Returns:
+            str: String representation of the conversation prompt.
+        """
+        lines = [f"{self.preamble}\n"]
+        lines += self.example_separator + f"{self.example_separator}".join(
+            self.create_conversation_string(example) for example in self.examples
+        )
+        return "".join(lines).strip()
+
+    def _validate_examples(self) -> None:
+        """Validates that the `examples` meet the following requirements:
+
+        - All fields are used in every example of `examples`.
+        - At least `MIN_NUM_EXAMPLES` examples are given.
+
+        Raises:
+            ValueError: If any of the above requirements is not met.
+        """
+        # All fields are used in every example of `examples`.
+        for example in self.examples:
+            for interaction in example:
+                if any(field not in interaction for field in self.fields):
+                    raise ValueError(
+                        f"All fields must be used in each example.\nExample: {example}\nFields found: {example.keys()}"
+                    )
+
+        # At least `MIN_NUM_EXAMPLES` examples are given.
+        if len(self.examples) < self.MIN_NUM_EXAMPLES:
+            raise ValueError(
+                f"At least {self.MIN_NUM_EXAMPLES} example must be given for {self.__class__.__name__}"
+            )
 
     def _validate_dialogue(self) -> None:
         """Validates that the examples conform to a 2-person dialogue.
@@ -109,35 +171,36 @@ class StartPrompt(Prompt):
         Raises:
             ValueError: If the above requirement is not met.
         """
-        # Only 2 speakers should be in each conversation interaction
-        if not all([len(example) == 2 for example in self.examples]):
-            raise ValueError("Conversation interactions must be pairs of utterances.")
+        for example in self.examples:
+            # Only 2 speakers should be in each conversation interaction
+            if not all([len(interaction) == 2 for interaction in example]):
+                raise ValueError("Conversation interactions must be pairs of utterances.")
 
-        # Only check the examples for name-prefixed utterances if there is at least
-        # one example
-        if self.examples:
-            user_turns = [example["user"] for example in self.examples]
-            bot_turns = [example["bot"] for example in self.examples]
-            all_turns = user_turns + bot_turns
+            # Only check the examples for name-prefixed utterances if there is at least
+            # one interaction
+            if example:
+                user_turns = [interaction["user"] for interaction in example]
+                bot_turns = [interaction["bot"] for interaction in example]
+                all_turns = user_turns + bot_turns
 
-            colon_prefixed = all(":" in turn for turn in all_turns)
-            hyphen_prefixed = all("-" in turn for turn in all_turns)
+                colon_prefixed = all(":" in turn for turn in all_turns)
+                hyphen_prefixed = all("-" in turn for turn in all_turns)
 
-            if colon_prefixed or hyphen_prefixed:
-                # This might false-positive, so we only log a warning
-                logging.warning(
-                    "Did you mistakenly prefix the example dialogue turns with user/bot names?"
+                if colon_prefixed or hyphen_prefixed:
+                    # This might false-positive, so we only log a warning
+                    logging.warning(
+                        "Did you mistakenly prefix the example dialogue turns with user/bot names?"
+                    )
+
+                user_prefixed = all(
+                    turn.lstrip().startswith(self.user_name) for turn in user_turns
                 )
 
-            user_prefixed = all(
-                turn.lstrip().startswith(self.user_name) for turn in user_turns
-            )
-
-            bot_prefixed = all(
-                turn.lstrip().startswith(self.bot_name) for turn in bot_turns
-            )
-            if user_prefixed and bot_prefixed:
-                # It's hard to think of any genuine case where all utterances start with self-names.
-                raise ValueError(
-                    "Conversation interactions should not be prefixed with user/bot names!"
+                bot_prefixed = all(
+                    turn.lstrip().startswith(self.bot_name) for turn in bot_turns
                 )
+                if user_prefixed and bot_prefixed:
+                    # It's hard to think of any genuine case where all utterances start with self-names.
+                    raise ValueError(
+                        "Conversation interactions should not be prefixed with user/bot names!"
+                    )

@@ -177,7 +177,7 @@ class PromptChatbot(Chatbot):
         # in history and use it when recreating.
         for turn in trimmed_chat_history:
             context_prompt_lines.append(self.prompt.create_example_string(**turn))
-        context_prompt = "".join(context_prompt_lines)
+        context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
 
         # get query prompt
         query_prompt = self.prompt.create_example_string(query)

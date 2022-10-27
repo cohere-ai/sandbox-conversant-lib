@@ -113,7 +113,6 @@ def test_start_prompt_create_example_string(
         new_example (Dict[ str, str]): A new StartPrompt example fixture.
     """
     expected = (
-        f"{mock_start_prompt.example_separator}"
         f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
         f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
     )
@@ -152,10 +151,14 @@ def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:
     expected = (
         f"{mock_start_prompt.preamble}\n"
         f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0]['user']}\n"
-        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[0]['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0][0]['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[0][0]['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0][1]['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[0][1]['bot']}\n"
         f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1]['user']}\n"
-        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[1]['bot']}"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1][0]['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[1][0]['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1][1]['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[1][1]['bot']}"
     )
     assert mock_start_prompt.to_string() == expected
