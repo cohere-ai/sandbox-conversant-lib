@@ -86,6 +86,14 @@ streamlit run app/streamlit_example.py
 
 ### Example
 
+When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
+
+![Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas.](images/fortune-teller-setup.png)
+
+After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
+
+![Screenshot showing an exchange between a Fortune Teller chatbot and a user.](images/fortune-teller-chat.png)
+
 ### Creating a Custom Persona
 Once you've followed the steps in [Getting Started](#getting-started), you can begin experimenting with creating custom personas! Check out the configuration JSONs for each persona in the [personas directory](/conversant/personas/). You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file (as an example, check out the [config file for the fortune teller persona](/conversant/personas/fortune-teller/config.json)). 
 
