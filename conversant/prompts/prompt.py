@@ -14,7 +14,7 @@ from pydantic.dataclasses import dataclass
 
 @dataclass
 class Prompt:
-    """Base class for all prompts.
+    """Base class for all structured zero-shot or few-shot prompts.
 
     Args:
         preamble (str): A string that directs the model to behave in certain ways by describing its function
