@@ -60,8 +60,7 @@ class Prompt:
         return self.to_string()
 
     def create_interaction(self, *args, **kwargs) -> Dict[str, str]:
-        """Creates a new dictionary representation of an example from positional
-        and keyword arguments.
+        """Creates a new dictionary representation of an interaction.
 
         The order of args here should correspond to the order of the `fields`. The i-th
         positional argument passed in corresponds to the i-th field, up to `len(fields)`.
