@@ -19,18 +19,16 @@ class Prompt:
     Args:
         preamble (str): A preamble to direct the model to behave in certain ways.
         example_separator (str): A separator for each example.
-        fields (List[str]): Fields for each example.
         headers (Dict[str, str]): Headers to demarcate each field within examples.
         examples (List[Dict[str, str]]): A list of examples with fields to illustrate the intended behaviour.
 
     Constants:
-        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt. (default: `[]`)
+        REQUIRED_FIELDS (List[str]): The list of required keys in headers for the prompt. (default: `[]`)
         MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `1`)
         MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in. (default: `1`)
     """
 
     preamble: str
-    fields: List[str]
     example_separator: str
     headers: Dict[str, str]
     examples: List[Dict[str, str]]
@@ -48,7 +46,6 @@ class Prompt:
         defining custom validators, or adjusting the constants of Prompt.
         """
         self._validate_preamble()
-        self._validate_fields()
         self._validate_example_separator()
         self._validate_headers()
         self._validate_examples()
@@ -64,7 +61,7 @@ class Prompt:
         """A (partial) list of stop sequences on which the model will stop generation.
 
         By default, models should cut off generation when encountering
-        any header already defined in the prompt. More stop sequences can be added
+        any variable already defined in the prompt. More stop sequences can be added
         external to Prompt, before passing them as an argument to a generation client.
 
         Returns:
@@ -93,7 +90,7 @@ class Prompt:
         """
         new_example = {
             field: args[i] if i < len(args) else ""
-            for i, field in enumerate(self.fields)
+            for i, field in enumerate(self.headers.keys())
         }
         new_example.update(kwargs)
         return new_example
@@ -112,7 +109,7 @@ class Prompt:
 
         Each prompt can have their own way of stitching together headers and field
         values within examples. Generally, each field should follow its corresponding
-        header. The class Prompt does not enforce a specific ordering of the `fields`
+        variable. The class Prompt does not enforce a specific ordering of the `fields`
         until this method. The default ordering defined here follows the order of `fields`.
 
         Examples will look like the following:
@@ -136,9 +133,8 @@ class Prompt:
             str: String representation of an example.
         """
         example = self.create_example(*args, **kwargs)
-        assert all(key in self.fields for key in example.keys())
         return f"{self.example_separator}" + "".join(
-            f"{self.headers[field]}{example[field]}\n" for field in self.fields
+            f"{self.headers[field]}{example[field]}\n" for field in example.keys()
         )
 
     def to_string(self) -> str:
@@ -193,8 +189,8 @@ class Prompt:
                 f"Preamble must be at least {self.MIN_PREAMBLE_LENGTH} characters."
             )
 
-    def _validate_fields(self) -> None:
-        """Validates that `fields` meets the following requirements:
+    def _validate_headers(self) -> None:
+        """Validates that `headers` meets the following requirements:
 
         - Contains all fields in `REQUIRED_FIELDS`.
 
@@ -202,9 +198,9 @@ class Prompt:
             ValueError: If any field in `REQUIRED_FIELDS` is missing from the prompt's
                 fields.
         """
-        if any(field not in self.fields for field in self.REQUIRED_FIELDS):
+        if any(field not in self.headers.keys() for field in self.REQUIRED_FIELDS):
             raise ValueError(
-                f"Missing required field.\nPrompt's fields: {self.fields}.\nRequired: {self.REQUIRED_FIELDS}."
+                f"Missing required field.\nPrompt's fields: {self.headers.keys()}.\nRequired: {self.REQUIRED_FIELDS}."
             )
 
     def _validate_example_separator(self) -> None:
@@ -220,19 +216,6 @@ class Prompt:
                 f"example_separator must be a string. Current type: {type(self.example_separator)}"
             )
 
-    def _validate_headers(self) -> None:
-        """Validates that the `headers` meet the following requirements:
-
-        - All fields have a corresponding header in `headers`.
-
-        Raises:
-            ValueError: If any field is missing from `headers`.
-        """
-        if any(field not in self.headers for field in self.fields):
-            raise ValueError(
-                f"All fields must have a corresponding header.\nHeaders: {self.headers}\nFields: {self.fields}"
-            )
-
     def _validate_examples(self) -> None:
         """Validates that the `examples` meet the following requirements:
 
@@ -242,11 +225,11 @@ class Prompt:
         Raises:
             ValueError: If any of the above requirements is not met.
         """
-        # All fields are used in every example of `examples`.
+        # All required fields are used in every example of `examples`.
         for example in self.examples:
-            if any(field not in example for field in self.fields):
+            if any(field not in example for field in self.REQUIRED_FIELDS):
                 raise ValueError(
-                    f"All fields must be used in each example.\nExample: {example}\nFields found: {example.keys()}"
+                    f"All fields must be used in each example.\nExample: {example}\nFields found: {self.headers.keys()}"
                 )
 
         # At least `MIN_NUM_EXAMPLES` examples are given.

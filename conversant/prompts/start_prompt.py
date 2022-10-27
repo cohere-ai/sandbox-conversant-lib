@@ -96,11 +96,8 @@ class StartPrompt(Prompt):
             str: String representation of an example.
         """
         example = self.create_example(*args, **kwargs)
-        assert all(key in self.fields for key in example.keys())
-        return (
-            f"{self.example_separator}"
-            f"{self.headers['user']}: {example['user']}\n"
-            f"{self.headers['bot']}: {example['bot']}\n"
+        return f"{self.example_separator}" + "".join(
+            f"{self.headers[field]}: {example[field]}\n" for field in example.keys()
         )
 
     def _validate_dialogue(self) -> None:

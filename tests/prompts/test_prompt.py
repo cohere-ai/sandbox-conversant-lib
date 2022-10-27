@@ -36,7 +36,6 @@ def test_prompt_init(mock_prompt_config: Dict[str, Any]) -> None:
     prompt = Prompt(**mock_prompt_config)
     assert prompt.preamble == "This is a prompt."
     assert prompt.example_separator == "<example>\n"
-    assert prompt.fields == ["query", "context", "generation"]
     assert prompt.headers == {
         "query": "<query>",
         "context": "<context>",
@@ -66,7 +65,6 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
     prompt = Prompt.from_dict(mock_prompt_config)
     assert prompt.preamble == "This is a prompt."
     assert prompt.example_separator == "<example>\n"
-    assert prompt.fields == ["query", "context", "generation"]
     assert prompt.headers == {
         "query": "<query>",
         "context": "<context>",
@@ -96,11 +94,7 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
         {
             "example_separator": 123,
         },
-        # headers missing fields
-        {
-            "fields": ["query", "context", "generation", "new-field"],
-        },
-        # example missing header
+        # example missing variable
         {
             "examples": [{"query": "This is a query."}],
         },
@@ -112,8 +106,7 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
     ids=[
         "validation-no-preamble",
         "validation-example-separator-not-str",
-        "validation-headers-missing-field",
-        "validation-example-missing-header",
+        "validation-example-missing-variable",
         "validation-no-examples",
     ],
 )

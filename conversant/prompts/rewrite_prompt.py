@@ -50,22 +50,20 @@ class RewritePrompt(Prompt):
 
         Examples should look like the following:
 
-            \n{example_seprator}
-            {conversation_header}
-            {conversation}
-            {fact_header}
-            {fact}
-            {rewrite_header}
-            {rewrite}\n{example_seprator}
-            {convesation_header}
-            {conversation}
-            {fact_header}
-            {fact}
-            {rewrite_header}
-            {rewrite} # no `\n` here
-
-        Note the `\n` on either side of the example separator. Note also that the last
-        rewrite will not contain a `\n`.
+            {example_seprator}
+            {conversation_header}\n
+            {conversation}\n
+            {fact_header}\n
+            {fact}\n
+            {rewrite_header}\n
+            {rewrite}\n
+            {example_seprator}
+            {convesation_header}\n
+            {conversation}\n
+            {fact_header}\n
+            {fact}\n
+            {rewrite_header}\n
+            {rewrite}
 
         Args:
             args: Positional arguments for the new example.

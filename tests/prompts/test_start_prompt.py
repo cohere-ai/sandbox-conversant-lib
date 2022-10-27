@@ -20,7 +20,7 @@ def new_example() -> Dict[str, str]:
     Returns:
         Dict[str, str]: New StartPrompt example fixture.
     """
-    return {"user": "Nice to meet you!", "bot": ""}
+    return {"user": "Nice to meet you!", "bot": "You too!"}
 
 
 def test_start_prompt_init(mock_start_prompt_config: Dict[str, Any]) -> None:
@@ -52,10 +52,6 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
     [
         # short preamble
         {"preamble": "short"},
-        # fields missing user
-        {"fields": ["bot"]},
-        # fields missing bot
-        {"fields": ["user"]},
         # headers do not contain user
         {"headers": {"bot": "Mock Chatbot"}},
         # headers do not contain bot
@@ -84,8 +80,6 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
     ],
     ids=[
         "short-preamble",
-        "fields-no-user",
-        "fields-no-bot",
         "headers-no-user",
         "headers-no-bot",
         "examples-no-speakers",
@@ -121,7 +115,7 @@ def test_start_prompt_create_example_string(
     expected = (
         f"{mock_start_prompt.example_separator}"
         f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
-        f"{mock_start_prompt.headers['bot']}: \n"
+        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
     )
     # create from positional arguments
     generated_example_str = mock_start_prompt.create_example_string(
