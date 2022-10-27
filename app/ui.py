@@ -190,7 +190,7 @@ def draw_prompt_json_editor(max_height: int) -> None:
             If set to None, height will auto adjust to editor's content.
             None by default.
     """
-    st.write(f"**JSON:**")
+    st.write(f"**Prompt (JSON):**")
     st_ace(
         value=f"{st.session_state.bot.prompt.to_json_string()}",
         placeholder="Enter a JSON representation of a prompt.",
@@ -210,7 +210,7 @@ def draw_prompt_view(json: bool = False) -> None:
         json (bool): Whether to render the prompt as a JSON object.
     """
     if json:
-        st.write(f"**JSON:**")
+        st.write(f"**Prompt (JSON):**")
         st.json(st.session_state.bot.prompt.to_dict())
     else:
         st.write(
