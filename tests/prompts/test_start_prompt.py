@@ -127,6 +127,21 @@ def test_start_prompt_create_example_string(
     generated_example_str = mock_start_prompt.create_example_string(**new_example)
     assert generated_example_str == expected
 
+    # generated example string is dependent on the insertion order into the examples
+    # dictionary
+    reordered_example = {}
+    reordered_example["bot"] = new_example["bot"]
+    reordered_example["user"] = new_example["user"]
+    reordered_expected = (
+        f"{mock_start_prompt.example_separator}"
+        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
+    )
+    generated_reordered_example_str = mock_start_prompt.create_example_string(
+        **reordered_example
+    )
+    assert generated_reordered_example_str == reordered_expected
+
 
 def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:
     """Tests StartPrompt.to_string

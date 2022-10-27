@@ -72,11 +72,7 @@ class RewritePrompt(Prompt):
         Returns:
             str: String representation of an example.
         """
-        example = self.create_example(*args, **kwargs)
-        assert all(key in self.headers for key in example.keys())
-        return (
-            f"\n{self.example_separator}\n"
-            f"{self.headers['conversation']}\n{example['conversation']}\n"
-            f"{self.headers['fact']}\n{example['fact']}\n"
-            f"{self.headers['rewrite']}\n{example['rewrite']}"
+        example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
+        return f"{self.example_separator}" + "".join(
+            f"{self.headers[field]}\n{example[field]}\n" for field in example.keys()
         )

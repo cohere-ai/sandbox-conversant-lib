@@ -183,6 +183,23 @@ def test_prompt_create_example_string(
     )
     assert generated_example_str == expected
 
+    # generated example string is dependent on the insertion order into the examples
+    # dictionary
+    reordered_example = {}
+    reordered_example["context"] = new_example["context"]
+    reordered_example["query"] = new_example["query"]
+    reordered_example["generation"] = new_example["generation"]
+    reordered_expected = (
+        f"{mock_prompt.example_separator}"
+        f"{mock_prompt.headers['context']}{new_example['context']}\n"
+        f"{mock_prompt.headers['query']}{new_example['query']}\n"
+        f"{mock_prompt.headers['generation']}{new_example['generation']}\n"
+    )
+    generated_reordered_example_str = mock_prompt.create_example_string(
+        **reordered_example
+    )
+    assert generated_reordered_example_str == reordered_expected
+
 
 def test_prompt_to_string(mock_prompt: Prompt) -> None:
     """Tests Prompt.to_string
