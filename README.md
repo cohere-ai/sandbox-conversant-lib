@@ -26,7 +26,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#about-conversant">About conversant</a>
+      <a href="#conversant">Conversant</a>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -50,8 +50,10 @@
 
 
 
-## About conversant
-A framework for building conversational agents on top of the [Cohere API](https://docs.cohere.ai/). 
+## Conversant
+Conversant is a framework for building conversational agents (CAs) on top of the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers and software developers alike. 
+
+This is a work-in-progress tool that facilitates the creation of CAs with unique personas, which can answer a variety of user queries including those that rely on knowledge available in reference materials. The fastest way to see what `conversant` can do for you is to start talking to a chatbot! Try it without installing anything [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/).
 
 ## Getting Started
 
@@ -65,8 +67,7 @@ pip install conversant
 We recommend installing `conversant` in a virtual environment.
 
 ### Running a Streamlit Demo
-The fastest way to see what `conversant` can do for you is to start talking to a chatbot! 
-You will first need a `COHERE_API_KEY`. 
+If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
 You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai). 
 
 Add the key to `.streamlit/secrets.toml`:
