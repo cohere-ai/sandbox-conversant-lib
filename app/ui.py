@@ -14,7 +14,7 @@ from streamlit_ace import st_ace
 from streamlit_chat import message as st_message
 
 
-def draw_chat_history():
+def draw_chat_history() -> None:
     """Renders the chat history in Streamlit.
 
     The messages are rendered using streamlit-chat, a custom Streamlit component
@@ -42,7 +42,7 @@ def draw_chat_history():
                 )
 
 
-def draw_disclaimer():
+def draw_disclaimer() -> None:
     """Adds a disclaimer about the personas in this demo."""
     if st.session_state.persona != "parrot":
         st.write(
@@ -57,7 +57,7 @@ def draw_disclaimer():
         )
 
 
-def draw_prompt_form(disabled: bool = False):
+def draw_prompt_form(disabled: bool = False) -> None:
     """Adds a form for configuring the prompt through its fields.
 
     The form is rendered as disabled when we only need to show the non-editable values
@@ -131,7 +131,7 @@ def draw_prompt_form(disabled: bool = False):
                 st.session_state.error = e
 
 
-def draw_prompt_json_editor(max_height):
+def draw_prompt_json_editor(max_height: int) -> None:
     """Renders an streamlit-ace editor into the app.
 
     streamlit-ace is a custom Streamlitcomponent for an Ace editor.
@@ -155,7 +155,7 @@ def draw_prompt_json_editor(max_height):
     )
 
 
-def draw_prompt_view(json: bool = False):
+def draw_prompt_view(json: bool = False) -> None:
     """Adds a representation of the prompt in JSON or as a string.
 
     Args:

@@ -9,6 +9,7 @@
 
 import os
 import re
+from typing import List
 
 import emoji
 import streamlit as st
@@ -60,9 +61,14 @@ class ParrotChatbot(PromptChatbot):
 
 @st.cache
 def get_twemoji_url_from_shortcode(shortcode: str) -> str:
+
     """Converts an emoji shortcode to its corresponding Twemoji URL.
+
     Args:
         shortcode (str): Emoji shortcode
+
+    Returns:
+        str: The string that is the Twemoji URL corresponding to the emoji.
     """
     # Emojize returns the unicode representation of that emoji from its shortcode.
     unicode = emoji.emojize(shortcode)
@@ -74,19 +80,22 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
 
 
 @st.cache
-def get_persona_options():
+def get_persona_options() -> List[str]:
     """Initializes a list of personas.
 
     Each persona is a directory in PERSONA_MODEL_DIRECTORY, each with its
     config.json file. The mock parrot persona is also included for testing
     purposes.
+
+    Returns:
+        List[str]: A list of persona names.
     """
     # Initialize the list of personas for Streamlit
     persona_options = [""] + os.listdir(PERSONA_MODEL_DIRECTORY) + ["parrot"]
     return persona_options
 
 
-def style_using_css(style: str):
+def style_using_css(style: str) -> None:
     """Utility function to inject CSS style into the Streamlit DOM.
 
     Args:
