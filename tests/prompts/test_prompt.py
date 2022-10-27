@@ -35,7 +35,7 @@ def test_prompt_init(mock_prompt_config: Dict[str, Any]) -> None:
     """
     prompt = Prompt(**mock_prompt_config)
     assert prompt.preamble == "This is a prompt."
-    assert prompt.example_separator == "<example>"
+    assert prompt.example_separator == "<example>\n"
     assert prompt.fields == ["query", "context", "generation"]
     assert prompt.headers == {
         "query": "<query>",
@@ -46,8 +46,13 @@ def test_prompt_init(mock_prompt_config: Dict[str, Any]) -> None:
         {
             "query": "This is a query.",
             "context": "This is a context.",
-            "generation": "This is a generation!",
-        }
+            "generation": "This is a generation.",
+        },
+        {
+            "query": "This is a second query.",
+            "context": "This is a second context.",
+            "generation": "This is a second generation.",
+        },
     ]
     assert prompt.stop_sequences == ["query", "context", "generation"]
 
@@ -60,7 +65,7 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
     """
     prompt = Prompt.from_dict(mock_prompt_config)
     assert prompt.preamble == "This is a prompt."
-    assert prompt.example_separator == "<example>"
+    assert prompt.example_separator == "<example>\n"
     assert prompt.fields == ["query", "context", "generation"]
     assert prompt.headers == {
         "query": "<query>",
@@ -71,8 +76,13 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
         {
             "query": "This is a query.",
             "context": "This is a context.",
-            "generation": "This is a generation!",
-        }
+            "generation": "This is a generation.",
+        },
+        {
+            "query": "This is a second query.",
+            "context": "This is a second context.",
+            "generation": "This is a second generation.",
+        },
     ]
     assert prompt.stop_sequences == ["query", "context", "generation"]
 

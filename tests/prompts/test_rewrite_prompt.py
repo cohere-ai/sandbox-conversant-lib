@@ -27,7 +27,6 @@ def new_example() -> Dict[str, str]:
     }
 
 
-@pytest.fixture
 def test_rewrite_prompt_init(mock_rewrite_prompt_config: Dict[str, Any]) -> None:
     """Tests RewritePrompt.__init__
 
