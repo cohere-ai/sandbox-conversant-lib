@@ -34,22 +34,22 @@ def test_prompt_init(mock_prompt_config: Dict[str, Any]) -> None:
         mock_prompt_config (Dict[str, Any]): A Prompt config fixture.
     """
     prompt = Prompt(**mock_prompt_config)
-    prompt.preamble == "This is a prompt."
-    prompt.example_separator == "<example>"
-    prompt.fields == ["query", "context", "generation"]
-    prompt.headers == {
+    assert prompt.preamble == "This is a prompt."
+    assert prompt.example_separator == "<example>"
+    assert prompt.fields == ["query", "context", "generation"]
+    assert prompt.headers == {
         "query": "<query>",
         "context": "<context>",
         "generation": "<generation>",
     }
-    prompt.examples == [
+    assert prompt.examples == [
         {
             "query": "This is a query.",
             "context": "This is a context.",
             "generation": "This is a generation!",
         }
     ]
-    prompt.stop_sequences == ["query", "context", "generation"]
+    assert prompt.stop_sequences == ["query", "context", "generation"]
 
 
 def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
@@ -59,22 +59,22 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
         mock_prompt_config (Dict[str, Any]): A Prompt config fixture.
     """
     prompt = Prompt.from_dict(mock_prompt_config)
-    prompt.preamble == "This is a prompt."
-    prompt.example_separator == "<example>"
-    prompt.fields == ["query", "context", "generation"]
-    prompt.headers == {
+    assert prompt.preamble == "This is a prompt."
+    assert prompt.example_separator == "<example>"
+    assert prompt.fields == ["query", "context", "generation"]
+    assert prompt.headers == {
         "query": "<query>",
         "context": "<context>",
         "generation": "<generation>",
     }
-    prompt.examples == [
+    assert prompt.examples == [
         {
             "query": "This is a query.",
             "context": "This is a context.",
             "generation": "This is a generation!",
         }
     ]
-    prompt.stop_sequences == ["query", "context", "generation"]
+    assert prompt.stop_sequences == ["query", "context", "generation"]
 
 
 @pytest.mark.parametrize(

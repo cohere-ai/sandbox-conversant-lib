@@ -30,9 +30,9 @@ def test_start_prompt_init(mock_start_prompt_config: Dict[str, Any]) -> None:
         mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
     """
     start_prompt = StartPrompt(**mock_start_prompt_config)
-    start_prompt.user_name == "User"
-    start_prompt.bot_name == "Mock Chatbot"
-    start_prompt.stop_sequences == ["User: ", "Mock Chatbot: "]
+    assert start_prompt.user_name == "User"
+    assert start_prompt.bot_name == "Mock Chatbot"
+    assert start_prompt.stop_sequences == ["\nUser: ", "\nMock Chatbot: "]
 
 
 def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -> None:
@@ -42,9 +42,9 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
     """
     start_prompt = StartPrompt.from_dict(mock_start_prompt_config)
-    start_prompt.user_name == "User"
-    start_prompt.bot_name == "Mock Chatbot"
-    start_prompt.stop_sequences == ["User: ", "Mock Chatbot: "]
+    assert start_prompt.user_name == "User"
+    assert start_prompt.bot_name == "Mock Chatbot"
+    assert start_prompt.stop_sequences == ["\nUser: ", "\nMock Chatbot: "]
 
 
 @pytest.mark.parametrize(
