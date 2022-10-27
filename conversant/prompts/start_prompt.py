@@ -115,7 +115,7 @@ class StartPrompt(Prompt):
 
         # Only check the examples for name-prefixed utterances if there is at least
         # one example
-        if len(self.examples) > 0:
+        if self.examples:
             user_turns = [example["user"] for example in self.examples]
             bot_turns = [example["bot"] for example in self.examples]
             all_turns = user_turns + bot_turns
