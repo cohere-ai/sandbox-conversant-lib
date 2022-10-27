@@ -96,9 +96,13 @@ class StartPrompt(Prompt):
         Returns:
             str: String representation of an interaction.
         """
-        interaction = self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
+        interaction = (
+            self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
+        )
         return "".join(
-            f"{self.headers[field]}: {interaction[field]}\n" for field in interaction.keys()
+            f"{self.headers[field]}: {interaction[field]}\n"
+            for field in interaction.keys()
+        )
 
     def create_conversation_string(self, conversation: List[Dict[str, str]]):
         """Creates a string represenation of a conversation.
@@ -159,9 +163,8 @@ class StartPrompt(Prompt):
             for interaction in example:
                 if any(field not in interaction for field in self.fields):
                     raise ValueError(
-                        f"All fields must be used in each interaction.\nInteraction: {interaction}\nFields found: {self.fields}"
+                        f"Missing required field.\nInteraction's fields: {interaction.keys()}\nRequired: {self.REQUIRED_FIELDS}"
                     )
-
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
@@ -180,7 +183,9 @@ class StartPrompt(Prompt):
         for example in self.examples:
             # Only 2 speakers should be in each conversation interaction
             if not all([len(interaction) == 2 for interaction in example]):
-                raise ValueError("Conversation interactions must be pairs of utterances.")
+                raise ValueError(
+                    "Conversation interactions must be pairs of utterances."
+                )
 
             # Only check the examples for name-prefixed utterances if there is at least
             # one interaction
