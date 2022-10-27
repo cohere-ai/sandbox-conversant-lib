@@ -200,8 +200,7 @@ if __name__ == "__main__":
                     ui.draw_prompt_form(disabled=False)
 
                 with prompt_json_view_placeholder.container():
-                    # ui.draw_prompt_view(json=True)
-                    st.json(dict(sorted(st.session_state.items())))
+                    ui.draw_prompt_view(json=True)
 
                 with prompt_string_placeholder.container():
                     ui.draw_prompt_view(json=False)
