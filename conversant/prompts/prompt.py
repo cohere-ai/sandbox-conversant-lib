@@ -59,7 +59,7 @@ class Prompt:
     def __str__(self) -> str:
         return self.to_string()
 
-    def create_example(self, *args, **kwargs) -> Dict[str, str]:
+    def create_interaction(self, *args, **kwargs) -> Dict[str, str]:
         """Creates a new dictionary representation of an example from positional
         and keyword arguments.
 
