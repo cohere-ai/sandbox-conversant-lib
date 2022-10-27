@@ -48,10 +48,14 @@
   </ol>
 </details>
 
-# conversant
+
+
+## About conversant
 A framework for building conversational agents on top of the [Cohere API](https://docs.cohere.ai/). 
 
-## Installation
+## Getting Started
+
+### Installation
 `conversant` is tested on Python 3.8+ and Cohere 2.4.2+.
 
 ```
@@ -60,7 +64,7 @@ pip install conversant
 
 We recommend installing `conversant` in a virtual environment.
 
-## Running a Streamlit Demo
+### Running a Streamlit Demo
 The fastest way to see what `conversant` can do for you is to start talking to a chatbot! 
 You will first need a `COHERE_API_KEY`. 
 You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai). 
@@ -74,6 +78,12 @@ Start a streamlit demo using `app/streamlit_example.py`:
 ```
 streamlit run app/streamlit_example.py
 ```
+
+## Usage
+
+### Example
+
+### Creating a Custom Persona
 
 ## Contributing Guidelines
 If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
