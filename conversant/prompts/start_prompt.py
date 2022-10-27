@@ -154,12 +154,12 @@ class StartPrompt(Prompt):
         Raises:
             ValueError: If any of the above requirements is not met.
         """
-        # All fields are used in every example of `examples`.
+        # All fields are used in every interaction in every example of `examples`.
         for example in self.examples:
             for interaction in example:
                 if any(field not in interaction for field in self.fields):
                     raise ValueError(
-                        f"All fields must be used in each example.\nExample: {example}\nFields found: {example.keys()}"
+                        f"All fields must be used in each interaction.\nInteraction: {interaction}\nFields found: {self.fields}"
                     )
 
         # At least `MIN_NUM_EXAMPLES` examples are given.
