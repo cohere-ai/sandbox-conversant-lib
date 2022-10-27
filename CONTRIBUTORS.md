@@ -103,7 +103,7 @@ pdoc conversant -o docs/ --docformat google
     User: Hello
     Bot:
     ```
-        *This small example shows the structure of the starter prompt passed to co.generate(). The prompt starts with a description of the bot. The six lines that follow represent an example conversation. The penultimate line shows the user hypothetically saying “Hello”. In the last line, the label “Bot:” prompts co.generate() to produce an appropriate greeting to start the conversation.*
+    *This small example shows the structure of the starter prompt passed to co.generate(). The prompt starts with a description of the bot. The six lines that follow represent an example conversation. The penultimate line shows the user hypothetically saying “Hello”. In the last line, the label “Bot:” prompts co.generate() to produce an appropriate greeting to start the conversation.*
 
 2. The generated output is returned to the user, such that the user sees the bot’s response (but not the hypothetical ‘Hello’ that was inserted at the end of the prompt).
 3. The response from the bot is added to the chat log (technically, the hypothetical ‘Hello’ is as well, but it is immediately removed).
@@ -122,7 +122,7 @@ pdoc conversant -o docs/ --docformat google
     User: Are coconuts tropical?
     Bot:
     ```
-        *An example of a new prompt. Note that the hypothetical ‘Hello’ is no longer in the prompt, but all previous statements from the bot and user are included as part of the chat log.*
+    *An example of a new prompt. Note that the hypothetical ‘Hello’ is no longer in the prompt, but all previous statements from the bot and user are included as part of the chat log.*
 
 6. Prompt is given to `co.generate()` to produce the response from the bot.
 7. The user query & response from the bot are added to the chat log.
