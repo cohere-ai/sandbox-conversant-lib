@@ -161,7 +161,6 @@ def test_prompt_create_example_string(
         new_example (Dict[ str, str]): A new Prompt example fixture.
     """
     expected = (
-        f"{mock_prompt.example_separator}"
         f"{mock_prompt.headers['query']}{new_example['query']}\n"
         f"{mock_prompt.headers['context']}{new_example['context']}\n"
         f"{mock_prompt.headers['generation']}{new_example['generation']}\n"

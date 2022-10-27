@@ -41,7 +41,6 @@ class StartPrompt(Prompt):
         Validates that the prompt follows the requirements of the validators listed below.
         Minimally, the StartPrompt needs to follow the requirements of its parent class.
         """
-        # super().__post_init__()
         super()._validate_preamble()
         super()._validate_fields()
         super()._validate_example_separator()

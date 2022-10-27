@@ -138,7 +138,7 @@ class Prompt:
             str: String representation of an example.
         """
         example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
-        return f"{self.example_separator}" + "".join(
+        return "".join(
             f"{self.headers[field]}{example[field]}\n" for field in example.keys()
         )
 
@@ -153,8 +153,9 @@ class Prompt:
             str: String representation of the prompt.
         """
         lines = [f"{self.preamble}\n"]
-        for example in self.examples:
-            lines.append(self.create_example_string(**example))
+        lines += self.example_separator + f"{self.example_separator}".join(
+            self.create_example_string(**example) for example in self.examples
+        )
         return "".join(lines).strip()
 
     def update(self, config: Dict[str, Any]) -> None:

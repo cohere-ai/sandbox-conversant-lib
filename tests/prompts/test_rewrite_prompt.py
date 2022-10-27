@@ -84,7 +84,6 @@ def test_rewrite_prompt_create_example_string(
         new_example (Dict[ str, str]): A new RewritePrompt example fixture.
     """
     expected = (
-        f"{mock_rewrite_prompt.example_separator}"
         f"{mock_rewrite_prompt.headers['conversation']}\n"
         f"{new_example['conversation']}\n"
         f"{mock_rewrite_prompt.headers['fact']}\n"
