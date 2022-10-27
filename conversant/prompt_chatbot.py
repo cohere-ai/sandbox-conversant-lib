@@ -14,6 +14,8 @@ from typing import Any, Dict, List
 import cohere
 import jsonschema
 from streamlit.web import cli as stcli
+import streamlit as st
+
 
 from conversant.chatbot import Chatbot
 from conversant.prompts.start_prompt import StartPrompt
@@ -106,27 +108,34 @@ class PromptChatbot(Chatbot):
             + [f"{formatted_query['speaker_name']}: {formatted_query['utterance']}"]
         )
 
-        generated_object = self.co.generate(
-            model=self.client_config["model"],
-            prompt=prompt,
-            max_tokens=self.client_config["max_tokens"],
-            temperature=self.client_config["temperature"],
-            stop_sequences=self.client_config["stop_seq"],
-        )
-        # If response was cut off by .generate() finding a stop sequence,
-        # remove that sequence from the response.
-        response = generated_object.generations[0].text
-        for stop_seq in self.client_config["stop_seq"]:
-            if response.endswith(stop_seq):
-                response = response[: -len(stop_seq)]
-        formatted_response = {
-            "speaker_name": self.bot_name,
-            "utterance": response,
-        }
-        self.chatlog.append(formatted_query)
-        self.chatlog.append(formatted_response)
+        tokens = self.co.tokenize(prompt)
 
-        return formatted_response
+        if len(tokens)>2048:
+            return False
+        else:
+            generated_object = self.co.generate(
+                model=self.client_config["model"],
+                prompt=prompt,
+                max_tokens=self.client_config["max_tokens"],
+                temperature=self.client_config["temperature"],
+                stop_sequences=self.client_config["stop_seq"],
+            )
+            # If response was cut off by .generate() finding a stop sequence,
+            # remove that sequence from the response.
+            response = generated_object.generations[0].text
+            for stop_seq in self.client_config["stop_seq"]:
+                if response.endswith(stop_seq):
+                    response = response[: -len(stop_seq)]
+                    
+            formatted_response = {
+                "speaker_name": self.bot_name,
+                "utterance": response,
+            }
+            self.chatlog.append(formatted_query)
+            self.chatlog.append(formatted_response)
+
+            return formatted_response
+
 
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
         """Configures chatbot options.
