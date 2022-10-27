@@ -21,7 +21,7 @@ from conversant.utils import demo_utils
 
 def get_reply():
     # Generate a bot reply in response to the user's input
-    reply = st.session_state.bot.reply(query=st.session_state.user_input)
+    _ = st.session_state.bot.reply(query=st.session_state.user_input)
 
     # Reset user input
     st.session_state.user_input = ""
@@ -139,17 +139,18 @@ if __name__ == "__main__":
         # Show persona description
         if "bot" in st.session_state and st.session_state.bot:
             st.write(
-                f"**More info about your conversations with {st.session_state.bot.bot_name}:**"
+                f"**More info about your conversations with \
+                    {st.session_state.bot.bot_name}:**"
             )
             st.write(f"> {st.session_state.bot.start_prompt.bot_desc}")
 
             # Add disclaimer
             if st.session_state.persona != "parrot":
                 st.write(
-                    "_Each persona is powered by [Cohere's](https://cohere.com) large language models, \
-                    and these examples are meant purely for demonstrative purposes. \
-                    These personas are works of fiction, are not factually grounded, and \
-                    should not be taken too seriously!_"
+                    "_Each persona is powered by [Cohere's](https://cohere.com) large \
+                    language models, and these examples are meant purely for \
+                    demonstrative purposes. These personas are works of fiction, are \
+                    not factually grounded, and should not be taken too seriously!_"
                 )
 
     # Check if bot has been initialized in the Streamlit session.
