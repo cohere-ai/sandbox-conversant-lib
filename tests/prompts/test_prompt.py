@@ -34,22 +34,26 @@ def test_prompt_init(mock_prompt_config: Dict[str, Any]) -> None:
         mock_prompt_config (Dict[str, Any]): A Prompt config fixture.
     """
     prompt = Prompt(**mock_prompt_config)
-    prompt.preamble == "This is a prompt."
-    prompt.example_separator == "<example>"
-    prompt.fields == ["query", "context", "generation"]
-    prompt.headers == {
+    assert prompt.preamble == "This is a prompt."
+    assert prompt.example_separator == "<example>\n"
+    assert prompt.headers == {
         "query": "<query>",
         "context": "<context>",
         "generation": "<generation>",
     }
-    prompt.examples == [
+    assert prompt.examples == [
         {
             "query": "This is a query.",
             "context": "This is a context.",
-            "generation": "This is a generation!",
-        }
+            "generation": "This is a generation.",
+        },
+        {
+            "query": "This is a second query.",
+            "context": "This is a second context.",
+            "generation": "This is a second generation.",
+        },
     ]
-    prompt.stop_sequences == ["query", "context", "generation"]
+    assert prompt.stop_sequences == ["<query>", "<context>", "<generation>"]
 
 
 def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
@@ -59,22 +63,26 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
         mock_prompt_config (Dict[str, Any]): A Prompt config fixture.
     """
     prompt = Prompt.from_dict(mock_prompt_config)
-    prompt.preamble == "This is a prompt."
-    prompt.example_separator == "<example>"
-    prompt.fields == ["query", "context", "generation"]
-    prompt.headers == {
+    assert prompt.preamble == "This is a prompt."
+    assert prompt.example_separator == "<example>\n"
+    assert prompt.headers == {
         "query": "<query>",
         "context": "<context>",
         "generation": "<generation>",
     }
-    prompt.examples == [
+    assert prompt.examples == [
         {
             "query": "This is a query.",
             "context": "This is a context.",
-            "generation": "This is a generation!",
-        }
+            "generation": "This is a generation.",
+        },
+        {
+            "query": "This is a second query.",
+            "context": "This is a second context.",
+            "generation": "This is a second generation.",
+        },
     ]
-    prompt.stop_sequences == ["query", "context", "generation"]
+    assert prompt.stop_sequences == ["<query>", "<context>", "<generation>"]
 
 
 @pytest.mark.parametrize(
@@ -86,11 +94,7 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
         {
             "example_separator": 123,
         },
-        # headers missing fields
-        {
-            "fields": ["query", "context", "generation", "new-field"],
-        },
-        # example missing header
+        # example missing variable
         {
             "examples": [{"query": "This is a query."}],
         },
@@ -102,8 +106,7 @@ def test_prompt_from_dict(mock_prompt_config: Dict[str, Any]) -> None:
     ids=[
         "validation-no-preamble",
         "validation-example-separator-not-str",
-        "validation-headers-missing-field",
-        "validation-example-missing-header",
+        "validation-example-missing-variable",
         "validation-no-examples",
     ],
 )
@@ -179,6 +182,23 @@ def test_prompt_create_example_string(
         new_example["query"], new_example["context"], **kwargs
     )
     assert generated_example_str == expected
+
+    # generated example string is dependent on the insertion order into the examples
+    # dictionary
+    reordered_example = {}
+    reordered_example["context"] = new_example["context"]
+    reordered_example["query"] = new_example["query"]
+    reordered_example["generation"] = new_example["generation"]
+    reordered_expected = (
+        f"{mock_prompt.example_separator}"
+        f"{mock_prompt.headers['context']}{new_example['context']}\n"
+        f"{mock_prompt.headers['query']}{new_example['query']}\n"
+        f"{mock_prompt.headers['generation']}{new_example['generation']}\n"
+    )
+    generated_reordered_example_str = mock_prompt.create_example_string(
+        **reordered_example
+    )
+    assert generated_reordered_example_str == reordered_expected
 
 
 def test_prompt_to_string(mock_prompt: Prompt) -> None:

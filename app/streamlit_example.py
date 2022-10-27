@@ -222,7 +222,7 @@ if __name__ == "__main__":
             # to add a callback get_reply that is called when user_input
             # is given.
             st.text_input(
-                label=f"Chat with {st.session_state.bot.prompt.bot_name}!",
+                label=f"Chat with {st.session_state.bot.bot_name}!",
                 placeholder="[Type something and press ENTER]",
                 key="user_input",
                 on_change=get_reply,

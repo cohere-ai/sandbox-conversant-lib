@@ -20,7 +20,7 @@ def new_example() -> Dict[str, str]:
     Returns:
         Dict[str, str]: New StartPrompt example fixture.
     """
-    return {"user": "Nice to meet you!", "bot": ""}
+    return {"user": "Nice to meet you!", "bot": "You too!"}
 
 
 def test_start_prompt_init(mock_start_prompt_config: Dict[str, Any]) -> None:
@@ -30,9 +30,9 @@ def test_start_prompt_init(mock_start_prompt_config: Dict[str, Any]) -> None:
         mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
     """
     start_prompt = StartPrompt(**mock_start_prompt_config)
-    start_prompt.user_name == "User"
-    start_prompt.bot_name == "Mock Chatbot"
-    start_prompt.stop_sequences == ["User: ", "Mock Chatbot: "]
+    assert start_prompt.user_name == "User"
+    assert start_prompt.bot_name == "Mock Chatbot"
+    assert start_prompt.stop_sequences == ["\nUser:", "\nMock Chatbot:"]
 
 
 def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -> None:
@@ -42,9 +42,9 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
     """
     start_prompt = StartPrompt.from_dict(mock_start_prompt_config)
-    start_prompt.user_name == "User"
-    start_prompt.bot_name == "Mock Chatbot"
-    start_prompt.stop_sequences == ["User: ", "Mock Chatbot: "]
+    assert start_prompt.user_name == "User"
+    assert start_prompt.bot_name == "Mock Chatbot"
+    assert start_prompt.stop_sequences == ["\nUser:", "\nMock Chatbot:"]
 
 
 @pytest.mark.parametrize(
@@ -52,10 +52,6 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
     [
         # short preamble
         {"preamble": "short"},
-        # fields missing user
-        {"fields": ["bot"]},
-        # fields missing bot
-        {"fields": ["user"]},
         # headers do not contain user
         {"headers": {"bot": "Mock Chatbot"}},
         # headers do not contain bot
@@ -84,8 +80,6 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
     ],
     ids=[
         "short-preamble",
-        "fields-no-user",
-        "fields-no-bot",
         "headers-no-user",
         "headers-no-bot",
         "examples-no-speakers",
@@ -121,7 +115,7 @@ def test_start_prompt_create_example_string(
     expected = (
         f"{mock_start_prompt.example_separator}"
         f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
-        f"{mock_start_prompt.headers['bot']}: \n"
+        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
     )
     # create from positional arguments
     generated_example_str = mock_start_prompt.create_example_string(
@@ -132,6 +126,21 @@ def test_start_prompt_create_example_string(
     # create from keyword arguments
     generated_example_str = mock_start_prompt.create_example_string(**new_example)
     assert generated_example_str == expected
+
+    # generated example string is dependent on the insertion order into the examples
+    # dictionary
+    reordered_example = {}
+    reordered_example["bot"] = new_example["bot"]
+    reordered_example["user"] = new_example["user"]
+    reordered_expected = (
+        f"{mock_start_prompt.example_separator}"
+        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
+    )
+    generated_reordered_example_str = mock_start_prompt.create_example_string(
+        **reordered_example
+    )
+    assert generated_reordered_example_str == reordered_expected
 
 
 def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:
