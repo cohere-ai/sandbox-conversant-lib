@@ -114,7 +114,7 @@ class StartPrompt(Prompt):
         """
         # Only 2 speakers should be in each conversation interaction
         if not all([len(example) == 2 for example in self.examples]):
-            raise ValueError("Start turns must be pairs of utterances.")
+            raise ValueError("Conversation interactions must be pairs of utterances.")
 
         # Only check the examples for name-prefixed utterances if there is at least
         # one example
@@ -142,5 +142,5 @@ class StartPrompt(Prompt):
             if user_prefixed and bot_prefixed:
                 # It's hard to think of any genuine case where all utterances start with self-names.
                 raise ValueError(
-                    "Start turns should not be prefixed with user/bot names!"
+                    "Conversation interactions should not be prefixed with user/bot names!"
                 )
