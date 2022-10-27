@@ -20,6 +20,34 @@
 #                                                                              #
 ################################################################################
 ```
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-conversant">About conversant</a>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#running-a-streamlit-demo">Running a Streamlit Demo</a></li>
+      </ul>
+    </li>
+    <li>
+        <a href="#usage">Usage</a>
+            <ul>
+                <li><a href="#example">Example</a></li>
+                <li><a href="#creating-a-custom-persona">Creating a Custom Persona</a></li>
+            </ul>
+    </li>
+    <li><a href="#contributing-guidelines">Contributing Guidelines</a></li>
+    <li><a href="#maintainers">Maintainers</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
 # conversant
 A framework for building conversational agents on top of the [Cohere API](https://docs.cohere.ai/). 
 
