@@ -35,13 +35,7 @@
         <li><a href="#running-a-streamlit-demo">Running a Streamlit Demo</a></li>
       </ul>
     </li>
-    <li>
-        <a href="#usage">Usage</a>
-            <ul>
-                <li><a href="#example">Example</a></li>
-                <li><a href="#creating-a-custom-persona">Creating a Custom Persona</a></li>
-            </ul>
-    </li>
+    <li><a href="#creating-a-custom-persona">Creating a Custom Persona</a></li>
     <li><a href="#contributing-guidelines">Contributing Guidelines</a></li>
     <li><a href="#maintainers">Maintainers</a></li>
     <li><a href="#license">License</a></li>
@@ -58,6 +52,14 @@ This is a work-in-progress tool that facilitates the creation of CAs with unique
 ## Getting Started
 
 Try `conversant` without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
+
+When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
+
+![Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas.](images/fortune-teller-setup.png)
+
+After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
+
+![Screenshot showing an exchange between a Fortune Teller chatbot and a user.](images/fortune-teller-chat.png)
 
 ### Installation
 `conversant` is tested on Python 3.8+ and Cohere 2.4.2+.
@@ -82,19 +84,7 @@ Start a streamlit demo using `app/streamlit_example.py`:
 streamlit run app/streamlit_example.py
 ```
 
-## Usage
-
-### Example
-
-When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
-
-![Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas.](images/fortune-teller-setup.png)
-
-After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
-
-![Screenshot showing an exchange between a Fortune Teller chatbot and a user.](images/fortune-teller-chat.png)
-
-### Creating a Custom Persona
+## Creating a Custom Persona
 Once you've followed the steps in [Getting Started](#getting-started), you can begin experimenting with creating custom personas! Check out the configuration JSONs for each persona in the [personas directory](/conversant/personas/). You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file (as an example, check out the [config file for the fortune teller persona](/conversant/personas/fortune-teller/config.json)). 
 
 This file contains a description of the persona, a few example rounds of conversation, as well as a name for your bot, and `conversant` will take care of the rest! When you launch the Streamlit app, the new persona will appear in the drop down menu.
