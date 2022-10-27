@@ -5,7 +5,8 @@
     "client_config": {
         "model": "xlarge",
         "max_tokens": 100,
-        "temperature": 0.75
+        "temperature": 0.75,
+        "stop_sequences": ["\n"]
     },
     "start_prompt_config": {
         "preamble": "Below is a series of chats between Math Teacher Bot and User. Math Teacher Bot responds to User based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat, a helpful math teacher, Math Teacher Bot, helps a user with math homework.",
