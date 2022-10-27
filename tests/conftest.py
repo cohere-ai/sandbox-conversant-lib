@@ -65,7 +65,6 @@ def mock_prompt_config() -> Dict[str, Any]:
     return {
         "preamble": "This is a prompt.",
         "example_separator": "<example>\n",
-        "fields": ["query", "context", "generation"],
         "headers": {
             "query": "<query>",
             "context": "<context>",
@@ -83,6 +82,7 @@ def mock_prompt_config() -> Dict[str, Any]:
                 "generation": "This is a second generation.",
             },
         ],
+        "REQUIRED_FIELDS": ["query", "context", "generation"],
     }
 
 
@@ -106,7 +106,6 @@ def mock_start_prompt_config() -> Dict[str, Any]:
     return {
         "preamble": "This is a start prompt.",
         "example_separator": "\n",
-        "fields": ["user", "bot"],
         "headers": {"user": "User", "bot": "Mock Chatbot"},
         "examples": [
             {"user": "This is a user utterance", "bot": "This is a bot utterance"},
@@ -138,7 +137,6 @@ def mock_rewrite_prompt_config() -> Dict[str, Any]:
     return {
         "preamble": "This is a rewrite prompt.",
         "example_separator": "\n",
-        "fields": ["conversation", "rewrite", "fact"],
         "headers": {
             "conversation": "<<CONVERSATION>>",
             "fact": "<<FACTUAL_PARAGRAPH>>",

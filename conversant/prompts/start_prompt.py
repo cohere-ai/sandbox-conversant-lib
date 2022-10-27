@@ -86,7 +86,7 @@ class StartPrompt(Prompt):
             {bot_name}: {utterance}\n
 
         Note the colon and space separating the speaker name from the respective
-        utterance. Note also that the last utterance will not contain a `\n`.
+        utterance.
 
         Args:
             args: Positional arguments for the new example.
@@ -95,12 +95,9 @@ class StartPrompt(Prompt):
         Returns:
             str: String representation of an example.
         """
-        example = self.create_example(*args, **kwargs)
-        assert all(key in self.fields for key in example.keys())
-        return (
-            f"{self.example_separator}"
-            f"{self.headers['user']}: {example['user']}\n"
-            f"{self.headers['bot']}: {example['bot']}\n"
+        example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
+        return f"{self.example_separator}" + "".join(
+            f"{self.headers[field]}: {example[field]}\n" for field in example.keys()
         )
 
     def _validate_dialogue(self) -> None:
@@ -114,11 +111,11 @@ class StartPrompt(Prompt):
         """
         # Only 2 speakers should be in each conversation interaction
         if not all([len(example) == 2 for example in self.examples]):
-            raise ValueError("Start turns must be pairs of utterances.")
+            raise ValueError("Conversation interactions must be pairs of utterances.")
 
         # Only check the examples for name-prefixed utterances if there is at least
         # one example
-        if len(self.examples) > 0:
+        if self.examples:
             user_turns = [example["user"] for example in self.examples]
             bot_turns = [example["bot"] for example in self.examples]
             all_turns = user_turns + bot_turns
@@ -142,5 +139,5 @@ class StartPrompt(Prompt):
             if user_prefixed and bot_prefixed:
                 # It's hard to think of any genuine case where all utterances start with self-names.
                 raise ValueError(
-                    "Start turns should not be prefixed with user/bot names!"
+                    "Conversation interactions should not be prefixed with user/bot names!"
                 )
