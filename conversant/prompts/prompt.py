@@ -17,9 +17,11 @@ class Prompt:
     """Base class for all prompts.
 
     Args:
-        preamble (str): A preamble to direct the model to behave in certain ways.
+        preamble (str): A string that directs the model to behave in certain ways by describing its function
+            (e.g. a description of a bot's persona).
         example_separator (str): A separator for each example.
-        headers (Dict[str, str]): Headers to demarcate each field within examples.
+        headers (Dict[str, str]): A dictionary mapping from keys in examples to the values that will
+            substitute them. These headers demarcate each field within example strings.
         examples (List[Dict[str, str]]): A list of examples with fields to illustrate the intended behaviour.
 
     Constants:
