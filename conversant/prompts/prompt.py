@@ -109,8 +109,10 @@ class Prompt:
 
         Each prompt can have their own way of stitching together headers and field
         values within examples. Generally, each field should follow its corresponding
-        variable. The class Prompt does not enforce a specific ordering of the `fields`
-        until this method. The default ordering defined here follows the order of `fields`.
+        variable. If there are no positional arguments passed in, then the ordering of
+        the variables in examples follows the order of the keyword arguments. Otherwise,
+        a new example dictionary is created from the positional arguments and the ordering
+        is dependent on the order of the `headers`.
 
         Examples will look like the following:
 
