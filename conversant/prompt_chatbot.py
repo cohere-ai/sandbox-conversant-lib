@@ -223,7 +223,7 @@ class PromptChatbot(Chatbot):
                 "temperature": 0.75,
                 "frequency_penalty": 0.0,
                 "presence_penalty": 0.0,
-                "stop_sequences": self.prompt.stop_sequences,
+                "stop_sequences": [],
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
