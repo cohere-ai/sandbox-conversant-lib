@@ -57,7 +57,7 @@ This is a work-in-progress tool that facilitates the creation of CAs with unique
 
 ## Getting Started
 
-Try `conversant` without installing anything [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/).
+Try `conversant` without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
 
 ### Installation
 `conversant` is tested on Python 3.8+ and Cohere 2.4.2+.
