@@ -189,16 +189,15 @@ def test_prompt_create_interaction_string(
     # generated example string is dependent on the insertion order into the examples
     # dictionary
     reordered_example = {}
-    reordered_example["context"] = new_example["context"]
-    reordered_example["query"] = new_example["query"]
-    reordered_example["generation"] = new_example["generation"]
+    reordered_example["context"] = new_interaction["context"]
+    reordered_example["query"] = new_interaction["query"]
+    reordered_example["generation"] = new_interaction["generation"]
     reordered_expected = (
-        f"{mock_prompt.example_separator}"
-        f"{mock_prompt.headers['context']}{new_example['context']}\n"
-        f"{mock_prompt.headers['query']}{new_example['query']}\n"
-        f"{mock_prompt.headers['generation']}{new_example['generation']}\n"
+        f"{mock_prompt.headers['context']}{new_interaction['context']}\n"
+        f"{mock_prompt.headers['query']}{new_interaction['query']}\n"
+        f"{mock_prompt.headers['generation']}{new_interaction['generation']}\n"
     )
-    generated_reordered_example_str = mock_prompt.create_example_string(
+    generated_reordered_example_str = mock_prompt.create_interaction_string(
         **reordered_example
     )
     assert generated_reordered_example_str == reordered_expected

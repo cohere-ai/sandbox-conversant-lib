@@ -97,7 +97,7 @@ def test_rewrite_prompt_create_interaction_string(
         new_interaction["rewrite"],
         new_interaction["fact"],
     )
-    assert generated_example_str == expected
+    assert generated_interaction_str == expected
 
     # create from keyword arguments
     generated_interaction_str = mock_rewrite_prompt.create_interaction_string(
@@ -107,7 +107,7 @@ def test_rewrite_prompt_create_interaction_string(
 
     # create from mix of positional and keyword arguments
     kwargs = {"rewrite": "Otters are mammals."}
-    generated_interaction_str = mock_rewrite_prompt.create_example_string(
+    generated_interaction_str = mock_rewrite_prompt.create_interaction_string(
         new_interaction["conversation"], new_interaction["fact"], **kwargs
     )
     assert generated_interaction_str == expected
@@ -119,7 +119,6 @@ def test_rewrite_prompt_create_interaction_string(
     reordered_interaction["conversation"] = new_interaction["conversation"]
     reordered_interaction["rewrite"] = new_interaction["rewrite"]
     reordered_expected = (
-        f"{mock_rewrite_prompt.example_separator}"
         f"{mock_rewrite_prompt.headers['fact']}\n"
         f"{new_interaction['fact']}\n"
         f"{mock_rewrite_prompt.headers['conversation']}\n"
@@ -127,7 +126,7 @@ def test_rewrite_prompt_create_interaction_string(
         f"{mock_rewrite_prompt.headers['rewrite']}\n"
         f"{new_interaction['rewrite']}\n"
     )
-    generated_reordered_interaction_str = mock_rewrite_prompt.create_example_string(
+    generated_reordered_interaction_str = mock_rewrite_prompt.create_interaction_string(
         **reordered_interaction
     )
     assert generated_reordered_interaction_str == reordered_expected

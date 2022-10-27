@@ -42,7 +42,6 @@ class StartPrompt(Prompt):
         Minimally, the StartPrompt needs to follow the requirements of its parent class.
         """
         super()._validate_preamble()
-        super()._validate_fields()
         super()._validate_example_separator()
         super()._validate_headers()
         self._validate_examples()
@@ -161,7 +160,7 @@ class StartPrompt(Prompt):
         # All fields are used in every interaction in every example of `examples`.
         for example in self.examples:
             for interaction in example:
-                if any(field not in interaction for field in self.fields):
+                if any(field not in interaction for field in self.REQUIRED_FIELDS):
                     raise ValueError(
                         f"Missing required field.\nInteraction's fields: {interaction.keys()}\nRequired: {self.REQUIRED_FIELDS}"
                     )

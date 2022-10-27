@@ -59,23 +59,25 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         # examples have no speakers
         {"examples": [{}]},
         # examples have one speaker
-        {"examples": [{"user": "user utterance"}, {"bot": "bot utterance"}]},
+        {"examples": [[{"user": "user utterance"}, {"bot": "bot utterance"}]]},
         # examples have wrong field
-        {"examples": [{"user": "user utterance", "": "bot utterance"}]},
+        {"examples": [[{"user": "user utterance", "": "bot utterance"}]]},
         # examples have three speakers
         {
             "examples": [
-                {
-                    "user": "user utterance",
-                    "bot": "bot utterance",
-                    "user2": "user2 utterance",
-                }
+                [
+                    {
+                        "user": "user utterance",
+                        "bot": "bot utterance",
+                        "user2": "user2 utterance",
+                    }
+                ]
             ]
         },
         # examples are prefixed by user and bot names
         {
             "headers": {"user": "Alice", "bot": "Bob"},
-            "examples": [{"user": "Alice: Hey", "bot": "Bob: Hi"}],
+            "examples": [[{"user": "Alice: Hey", "bot": "Bob: Hi"}]],
         },
     ],
     ids=[
@@ -134,11 +136,10 @@ def test_start_prompt_create_interaction_string(
     reordered_interaction["bot"] = new_interaction["bot"]
     reordered_interaction["user"] = new_interaction["user"]
     reordered_expected = (
-        f"{mock_start_prompt.example_separator}"
         f"{mock_start_prompt.headers['bot']}: {new_interaction['bot']}\n"
         f"{mock_start_prompt.headers['user']}: {new_interaction['user']}\n"
     )
-    generated_reordered_interaction_str = mock_start_prompt.create_example_string(
+    generated_reordered_interaction_str = mock_start_prompt.create_interaction_string(
         **reordered_interaction
     )
     assert generated_reordered_interaction_str == reordered_expected
