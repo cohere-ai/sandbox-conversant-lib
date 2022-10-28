@@ -55,11 +55,15 @@ Try `conversant` without installing anything [here!](https://cohere-ai-sandbox-c
 
 When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
 
-![Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas.](images/fortune-teller-setup.png)
+<center>
+<img src="images/fortune-teller-setup.png" alt="Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas." width="700">
+</center>
 
 After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
 
-![Screenshot showing an exchange between a Fortune Teller chatbot and a user.](images/fortune-teller-chat.png)
+<center>
+<img src="images/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." width="700">
+</center>
 
 ### Installation
 `conversant` is tested on Python 3.8+ and Cohere 2.4.2+.
