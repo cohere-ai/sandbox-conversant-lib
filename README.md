@@ -72,7 +72,7 @@ After you've selected a persona, the bot will send a greeting. With each respons
 pip install conversant
 ```
 
-We recommend installing `conversant` in a virtual environment.
+We recommend installing `conversant` in a virtual environment. 
 
 ### Running a Streamlit Demo
 If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
@@ -86,6 +86,25 @@ COHERE_API_KEY = "YOUR_KEY_HERE"
 Start a streamlit demo using `app/streamlit_example.py`:
 ```
 streamlit run app/streamlit_example.py
+```
+
+### Usage Example
+
+Once `conversant` is installed, it's also possible to create a bot outside of Streamlit and connect it to the Cohere API in order start generating replies. Here's some example code demonstrating this:
+
+```
+from conversant import PromptChatbot
+
+client = cohere.Client("<YOUR API KEY HERE>")
+bot = conversant.PromptChatbot.from_persona("math-teacher", client=client)
+bot.reply("Hello world")
+```
+
+From there, it's also possible to launch the Streamlit app:
+
+```
+from conversant.utils import demo_utils
+demo_utils.launch_streamlit(bot)
 ```
 
 ## Creating a Custom Persona
