@@ -65,7 +65,8 @@ class StartPrompt:
         }
 
         Args:
-            config (Dict[str, Any]): Dictionary containing the variables for a StartPrompt.
+            config (Dict[str, Any]): Dictionary containing the variables for
+            a StartPrompt.
         """
 
         # Validate that the prompt follows our predefined schema
@@ -100,7 +101,8 @@ class StartPrompt:
 
         if len(self.bot_desc) < self.MIN_DESC_LEN:
             raise ValueError(
-                f"Bot description must be more than {self.MIN_DESC_LEN} characters and ideally should be a paragraph long."
+                f"Bot description must be more than {self.MIN_DESC_LEN} characters and \
+                    ideally should be a paragraph long."
             )
 
     @staticmethod
