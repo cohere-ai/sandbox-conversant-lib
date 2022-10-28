@@ -33,6 +33,7 @@
       <ul>
         <li><a href="#installation">Installation</a></li>
         <li><a href="#running-a-streamlit-demo">Running a Streamlit Demo</a></li>
+        <li><a href="#usage-example">Usage Example</a></li>
       </ul>
     </li>
     <li><a href="#creating-a-custom-persona">Creating a Custom Persona</a></li>
