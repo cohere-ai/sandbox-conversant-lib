@@ -1,6 +1,4 @@
 {
-    "user_name": "Student",
-    "bot_name": "Personal Trainer Bot",
     "chatbot_config": {
         "max_context_lines": 20
     },
@@ -11,10 +9,10 @@
         "stop_sequences": ["\n"]
     },
     "start_prompt_config": {
-        "preamble": "Below is a series of chats between Personal Trainer Bot and User. Personal Trainer Bot responds to User based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat you will receive exercise recommendations from the famous Personal Trainer Bot, so that it is easier to train at home and adapt your workout. He will give you different exercises for your needs and encourage you to keep exercising.",
+        "preamble": "Below is a series of chats between Personal Trainer Bot and Student. Personal Trainer Bot responds to Student based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat you will receive exercise recommendations from the famous Personal Trainer Bot, so that it is easier to train at home and adapt your workout. He will give you different exercises for your needs and encourage you to keep exercising.",
         "example_separator": "<<CONVERSATION>>\n",
         "headers": {
-            "user": "User",
+            "user": "Student",
             "bot": "Personal Trainer Bot"
         },
         "examples": [
