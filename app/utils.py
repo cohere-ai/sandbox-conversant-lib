@@ -16,7 +16,7 @@ import streamlit as st
 from emojificate.filter import emojificate
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
-from conversant.prompts.start_prompt import StartPrompt
+from conversant.prompts.chat_prompt import ChatPrompt
 
 
 class ParrotChatbot(PromptChatbot):
@@ -29,7 +29,7 @@ class ParrotChatbot(PromptChatbot):
     def __init__(self):
         super().__init__(
             client=None,
-            prompt=StartPrompt(
+            prompt=ChatPrompt(
                 preamble=(
                     "The Parrot Bot repeats back whatever is said to it "
                     "without using Cohere's large language models."

@@ -15,8 +15,8 @@ import cohere
 import jsonschema
 
 from conversant.chatbot import Chatbot
+from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
-from conversant.prompts.start_prompt import StartPrompt
 
 PERSONA_MODEL_DIRECTORY = "conversant/personas"
 PERSONA_JSON_SCHEMA = {
@@ -260,7 +260,7 @@ class PromptChatbot(Chatbot):
 
         return cls(
             client=client,
-            prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
+            prompt=ChatPrompt.from_dict(persona["chat_prompt_config"]),
             persona_name=persona_name,
             chatbot_config=persona["chatbot_config"],
             client_config=persona["client_config"],

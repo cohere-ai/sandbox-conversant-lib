@@ -16,8 +16,8 @@ from conversant.prompts.prompt import Prompt
 
 
 @dataclass
-class StartPrompt(Prompt):
-    """A start prompt given to a Chatbot.
+class ChatPrompt(Prompt):
+    """A chat prompt given to a Chatbot.
 
     Required fields:
         user: An entity speaking to the bot.
@@ -36,10 +36,10 @@ class StartPrompt(Prompt):
     MIN_NUM_EXAMPLES: int = 0
 
     def __post_init__(self) -> None:
-        """Validators for the start prompt.
+        """Validators for the chat prompt.
 
         Validates that the prompt follows the requirements of the validators listed below.
-        Minimally, the StartPrompt needs to follow the requirements of its parent class.
+        Minimally, the ChatPrompt needs to follow the requirements of its parent class.
         """
         super()._validate_preamble()
         super()._validate_example_separator()
@@ -52,7 +52,7 @@ class StartPrompt(Prompt):
         """
         Returns:
             str: The name of the user that interacts with the chatbot who uses this
-                StartPrompt. Typically this should be set to `'User'`.
+                ChatPrompt. Typically this should be set to `'User'`.
         """
         return self.headers["user"]
 
@@ -60,7 +60,7 @@ class StartPrompt(Prompt):
     def bot_name(self):
         """
         Returns:
-            str: The name of the chatbot who uses this StartPrompt.
+            str: The name of the chatbot who uses this ChatPrompt.
         """
         return self.headers["bot"]
 
@@ -197,7 +197,7 @@ class StartPrompt(Prompt):
                     turn.lstrip().startswith(self.bot_name) for turn in bot_turns
                 )
                 if user_prefixed and bot_prefixed:
-                    # It's hard to think of any genuine case where all utterances start with self-names.
+                    # It's hard to think of any genuine case where all utterances begin with self-names.
                     raise ValueError(
                         "Conversation interactions should not be prefixed with user/bot names!"
                     )

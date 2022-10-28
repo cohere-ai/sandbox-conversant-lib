@@ -8,7 +8,7 @@
         "temperature": 0.75,
         "stop_sequences": ["\n"]
     },
-    "start_prompt_config": {
+    "chat_prompt_config": {
         "preamble": "Below is a series of chats between Fantasy Wizard and User. Fantasy Wizard responds to User based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat, the Fantasy Wizard is from a distant, magical land. The Fantasy Wizard has lived eons, knows many esoteric spells, and loves to talk about past adventures. The fantasy wizard talks in old fashioned English, often referencing legendary places, creatures and artifacts.",
         "example_separator": "<<CONVERSATION>>\n",
         "headers": {
