@@ -79,7 +79,6 @@ class PromptChatbot(Chatbot):
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
-        self.chat_history = []
         self.prompt_history = []
 
     @property
