@@ -19,22 +19,21 @@ from conversant.prompts.prompt import Prompt
 class ChatPrompt(Prompt):
     """A chat prompt given to a Chatbot.
 
-    Required fields:
+    Required keys:
         user: An entity speaking to the bot.
         bot: The Chatbot itself.
 
     Constants:
-        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt.
+        REQUIRED_KEYS (List[str]): The list of required keys for the chat prompt.
             (default: `["user", "bot"]`)
-        MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble.
-            (default: `1`)
+        MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `1`)
         MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in.
             (default: `1`)
     """
 
     examples: List[List[Dict[str, str]]]
 
-    REQUIRED_FIELDS: List[str] = field(default_factory=lambda: ["user", "bot"])
+    REQUIRED_KEYS: List[str] = field(default_factory=lambda: ["user", "bot"])
     MIN_PREAMBLE_LENGTH: int = 10
     MIN_NUM_EXAMPLES: int = 0
 
@@ -90,8 +89,7 @@ class ChatPrompt(Prompt):
             self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
         )
         return "".join(
-            f"{self.headers[field]}: {interaction[field]}\n"
-            for field in interaction.keys()
+            f"{self.headers[key]}: {interaction[key]}\n" for key in interaction.keys()
         )
 
     def create_conversation_string(self, conversation: List[Dict[str, str]]):
@@ -151,20 +149,16 @@ class ChatPrompt(Prompt):
         # All fields are used in every interaction in every example of `examples`.
         for example in self.examples:
             for interaction in example:
-                if any(field not in interaction for field in self.REQUIRED_FIELDS):
+                if any(key not in interaction for key in self.REQUIRED_KEYS):
                     raise ValueError(
-                        (
-                            "Missing required field.\nInteraction's fields:"
-                            f"{interaction.keys()}\nRequired: {self.REQUIRED_FIELDS}"
-                        )
+                        "Missing required key.\nInteraction's keys:"
+                        f"{interaction.keys()}\nRequired: {self.REQUIRED_KEYS}"
                     )
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                (
-                    f"At least {self.MIN_NUM_EXAMPLES} example must be given for"
-                    f"{self.__class__.__name__}"
-                )
+                f"At least {self.MIN_NUM_EXAMPLES} example(s) must be given for"
+                f"{self.__class__.__name__}"
             )
 
     def _validate_dialogue(self) -> None:

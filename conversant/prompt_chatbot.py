@@ -50,12 +50,6 @@ class PromptChatbot(Chatbot):
     """Use prompt templates and LLM generation to define a chatbot.
 
     This bot makes no use of external knowledge sources.
-
-    Warning: The `fields` of the Prompt that the PromptChatbot uses must be defined
-    in this manner. Indices indicated with `[i]`.
-        [0]: The query posed to the model.
-        [1]: The generation expected from the model.
-        [2+]: Any contextual arguments the model is expected to use.
     """
 
     def __init__(

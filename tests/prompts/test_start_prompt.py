@@ -58,7 +58,7 @@ def test_chat_prompt_init_from_dict(mock_chat_prompt_config: Dict[str, Any]) -> 
         {"examples": [{}]},
         # examples have one speaker
         {"examples": [[{"user": "user utterance"}, {"bot": "bot utterance"}]]},
-        # examples have wrong field
+        # examples have wrong key
         {"examples": [[{"user": "user utterance", "": "bot utterance"}]]},
         # examples have three speakers
         {
@@ -84,7 +84,7 @@ def test_chat_prompt_init_from_dict(mock_chat_prompt_config: Dict[str, Any]) -> 
         "headers-no-bot",
         "examples-no-speakers",
         "examples-one-speaker",
-        "examples-wrong-field",
+        "examples-wrong-key",
         "examples-three-speakers",
         "examples-prefixed-with-name",
     ],
@@ -152,14 +152,14 @@ def test_chat_prompt_to_string(mock_chat_prompt: ChatPrompt) -> None:
     expected = (
         f"{mock_chat_prompt.preamble}\n"
         f"{mock_chat_prompt.example_separator}"
-        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[0][0]['user']}\n"
-        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[0][0]['bot']}\n"
-        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[0][1]['user']}\n"
-        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[0][1]['bot']}\n"
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[0][0]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[0][0]['bot']}\n"  # noqa
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[0][1]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[0][1]['bot']}\n"  # noqa
         f"{mock_chat_prompt.example_separator}"
-        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[1][0]['user']}\n"
-        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[1][0]['bot']}\n"
-        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[1][1]['user']}\n"
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[1][0]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[1][0]['bot']}\n"  # noqa
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[1][1]['user']}\n"  # noqa
         f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[1][1]['bot']}"
     )
     assert mock_chat_prompt.to_string() == expected
