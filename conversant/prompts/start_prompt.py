@@ -19,27 +19,30 @@ from conversant.prompts.prompt import Prompt
 class StartPrompt(Prompt):
     """A start prompt given to a Chatbot.
 
-    Required fields:
+    Required keys:
         user: An entity speaking to the bot.
         bot: The Chatbot itself.
 
     Constants:
-        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt. (default: `["user", "bot"]`)
+        REQUIRED_KEYS (List[str]): The list of required keys for the prompt.(default:
+            `["user", "bot"]`)
         MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `1`)
-        MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in. (default: `1`)
+        MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in.
+            (default: `1`)
     """
 
     examples: List[List[Dict[str, str]]]
 
-    REQUIRED_FIELDS: List[str] = field(default_factory=lambda: ["user", "bot"])
+    REQUIRED_KEYS: List[str] = field(default_factory=lambda: ["user", "bot"])
     MIN_PREAMBLE_LENGTH: int = 10
     MIN_NUM_EXAMPLES: int = 0
 
     def __post_init__(self) -> None:
         """Validators for the start prompt.
 
-        Validates that the prompt follows the requirements of the validators listed below.
-        Minimally, the StartPrompt needs to follow the requirements of its parent class.
+        Validates that the prompt follows the requirements of the validators listed
+        below. Minimally, the StartPrompt needs to follow the requirements of its parent
+        class.
         """
         super()._validate_preamble()
         super()._validate_example_separator()
@@ -73,7 +76,8 @@ class StartPrompt(Prompt):
         a user or bot's name.
 
         Returns:
-            List[str]: A list of stop sequences corresponding to the headers of the prompt.
+            List[str]: A list of stop sequences corresponding to the headers of the
+                prompt.
         """
         return [f"\n{self.headers[speaker]}:" for speaker in self.headers]
 
@@ -99,8 +103,7 @@ class StartPrompt(Prompt):
             self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
         )
         return "".join(
-            f"{self.headers[field]}: {interaction[field]}\n"
-            for field in interaction.keys()
+            f"{self.headers[key]}: {interaction[key]}\n" for key in interaction.keys()
         )
 
     def create_conversation_string(self, conversation: List[Dict[str, str]]):
@@ -125,8 +128,8 @@ class StartPrompt(Prompt):
         """Creates a string representation of the conversation prompt.
 
         The string representation is assembled from the preamble and examples.
-        Each example is created from a `create_conversation_string` method and is demarcated
-        by an `example_separator`.
+        Each example is created from a `create_conversation_string` method and is
+        demarcated by an `example_separator`.
 
         Examples will look like the following:
 
@@ -160,16 +163,17 @@ class StartPrompt(Prompt):
         # All fields are used in every interaction in every example of `examples`.
         for example in self.examples:
             for interaction in example:
-                if any(field not in interaction for field in self.REQUIRED_FIELDS):
+                if any(key not in interaction for key in self.REQUIRED_KEYS):
                     raise ValueError(
-                        f"Missing required field.\nInteraction's fields: {interaction.keys()}\nRequired: {self.REQUIRED_FIELDS}"
+                        f"Missing required key.\nHeader keys: {interaction.keys()}\n"
+                        f"Required: {self.REQUIRED_KEYS}"
                     )
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for {self.__class__.__name__}"
+                f"At least {self.MIN_NUM_EXAMPLES} example must be given for"
+                f"{self.__class__.__name__}"
             )
-
 
     def _validate_dialogue(self) -> None:
         """Validates that the examples conform to a 2-person dialogue.
@@ -201,7 +205,8 @@ class StartPrompt(Prompt):
                 if colon_prefixed or hyphen_prefixed:
                     # This might false-positive, so we only log a warning
                     logging.warning(
-                        "Did you mistakenly prefix the example dialogue turns with user/bot names?"
+                        "Did you mistakenly prefix the example dialogue turns with"
+                        "user/bot names?"
                     )
 
                 user_prefixed = all(
@@ -212,7 +217,9 @@ class StartPrompt(Prompt):
                     turn.lstrip().startswith(self.bot_name) for turn in bot_turns
                 )
                 if user_prefixed and bot_prefixed:
-                    # It's hard to think of any genuine case where all utterances start with self-names.
+                    # It's hard to think of any genuine case where all utterances start
+                    # with self-names.
                     raise ValueError(
-                        "Conversation interactions should not be prefixed with user/bot names!"
+                        "Conversation interactions should not be prefixed with user/bot"
+                        "names!"
                     )

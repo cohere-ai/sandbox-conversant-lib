@@ -10,10 +10,6 @@
     "start_prompt_config": {
         "preamble": "In this chat, a helpful math teacher, Math Teacher Bot, helps a user with math homework.",
         "example_separator": "",
-        "fields": [
-            "user",
-            "bot"
-        ],
         "headers": {
             "user": "Student",
             "bot": "Math Teacher Bot"

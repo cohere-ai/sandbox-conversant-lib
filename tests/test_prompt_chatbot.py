@@ -11,7 +11,6 @@ import itertools
 import pytest
 
 from conversant.prompt_chatbot import PromptChatbot
-from conversant.prompts.start_prompt import StartPrompt
 
 
 def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
@@ -93,15 +92,15 @@ def test_prompt_chatbot_get_current_prompt(
         # start prompt
         f"{mock_prompt_chatbot.prompt.preamble}\n"
         + f"{mock_prompt_chatbot.prompt.example_separator}"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][0]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][0]['bot']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][1]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][1]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][0]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][1]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][1]['bot']}\n"  # noqa
         + f"{mock_prompt_chatbot.prompt.example_separator}"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][0]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][0]['bot']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][1]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][1]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][0]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][1]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][1]['bot']}\n"  # noqa
         # context prompt
         + f"{mock_prompt_chatbot.prompt.example_separator}"
         + "".join(
