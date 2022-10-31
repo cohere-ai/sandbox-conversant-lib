@@ -85,7 +85,6 @@ class ParrotChatbot:
                 "The Parrot Bot repeats back whatever is said to it "
                 "without using Cohere's large language models."
             ),
-            fields=["user", "bot"],
             headers={
                 "user": "User",
                 "bot": "Parrot Bot",
@@ -202,8 +201,8 @@ if __name__ == "__main__":
 
                     # Streamlit renders & runs logic by stepping through
                     # Python files procedurally. This is why you have to
-                    # render all chat messages in the chat_history. We use streamlit_chat
-                    # to render them.
+                    # render all chat messages in the chat_history. We use
+                    # streamlit_chat to render them.
                     if "bot" in turn:
                         stchat.message(turn["bot"], key=f"{i}_bot")
                     if "user" in turn:

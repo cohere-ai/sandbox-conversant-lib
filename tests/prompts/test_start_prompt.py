@@ -60,7 +60,7 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         {"examples": [{}]},
         # examples have one speaker
         {"examples": [{"user": "user utterance"}, {"bot": "bot utterance"}]},
-        # examples have wrong field
+        # examples have wrong key
         {"examples": [{"user": "user utterance", "": "bot utterance"}]},
         # examples have three speakers
         {
@@ -84,7 +84,7 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         "headers-no-bot",
         "examples-no-speakers",
         "examples-one-speaker",
-        "examples-wrong-field",
+        "examples-wrong-key",
         "examples-three-speakers",
         "examples-prefixed-with-name",
     ],
@@ -152,10 +152,10 @@ def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:
     expected = (
         f"{mock_start_prompt.preamble}\n"
         f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0]['user']}\n"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0]['user']}\n"  # noqa
         f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[0]['bot']}\n"
         f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1]['user']}\n"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1]['user']}\n"  # noqa
         f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[1]['bot']}"
     )
     assert mock_start_prompt.to_string() == expected
