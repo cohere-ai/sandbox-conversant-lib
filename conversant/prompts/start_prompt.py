@@ -170,8 +170,10 @@ class StartPrompt(Prompt):
                 f"At least {self.MIN_NUM_EXAMPLES} example must be given for {self.__class__.__name__}"
             )
 
+
     def _validate_dialogue(self) -> None:
         """Validates that the examples conform to a 2-person dialogue.
+
 
         There should only be 2 speakers in the examples, and each speaker's utterance
         should not be prefixed with their name.

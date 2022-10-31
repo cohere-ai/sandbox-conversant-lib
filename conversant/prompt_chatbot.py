@@ -189,7 +189,8 @@ class PromptChatbot(Chatbot):
         """Configures chatbot options.
 
         Args:
-            chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults to {}.
+            chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults
+            to {}.
         """
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
@@ -201,7 +202,8 @@ class PromptChatbot(Chatbot):
             self.chatbot_config.update(chatbot_config)
         else:
             raise TypeError(
-                f"chatbot_config must be of type Dict, but was passed in as {type(chatbot_config)}"
+                f"chatbot_config must be of type Dict, but was passed in as \
+                    {type(chatbot_config)}"
             )
 
     def configure_client(self, client_config: Dict = {}) -> None:
@@ -223,7 +225,8 @@ class PromptChatbot(Chatbot):
             self.client_config.update(client_config)
         else:
             raise TypeError(
-                f"client_config must be of type Dict, but was passed in as {type(client_config)}"
+                f"client_config must be of type Dict, but was passed in as \
+                    {type(client_config)}"
             )
 
     @classmethod
@@ -290,7 +293,8 @@ class PromptChatbot(Chatbot):
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
             raise jsonschema.exceptions.ValidationError(
-                f"Type of values in given dictionary (persona from {persona_path}) do not match schema': {e}"
+                f"Type of values in given dictionary (persona from {persona_path}) \
+                    do not match schema': {e}"
             )
         except KeyError as e:
             raise KeyError(
@@ -298,5 +302,6 @@ class PromptChatbot(Chatbot):
             )
         except Exception as e:
             raise Exception(
-                f"Failed to validate persona in given dictionary (persona from {persona_path}): {e}"
+                f"Failed to validate persona in given dictionary \
+                    (persona from {persona_path}): {e}"
             )
