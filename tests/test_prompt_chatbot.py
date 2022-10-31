@@ -96,7 +96,7 @@ def test_prompt_chatbot_get_current_prompt(
         + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0]['bot']}\n"  # noqa
         + f"{mock_prompt_chatbot.prompt.example_separator}"
         + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1]['user']}\n"  # noqa
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}\n"  # noqa
         # context prompt
         + "".join(
             [
