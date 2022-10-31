@@ -25,7 +25,7 @@
 **Project maintained until at least (YYYY-MM-DD):** 2023-03-01
 
 # conversant
-A framework for building conversational agents on top of the [Cohere API](https://docs.cohere.ai/). 
+A framework for building dialogue agents on top of the [Cohere API](https://docs.cohere.ai/). 
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -52,9 +52,9 @@ A framework for building conversational agents on top of the [Cohere API](https:
 
 
 ## Conversant
-Conversant is a framework for building conversational agents (CAs) on top of the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers and software developers alike. 
+Conversant is a framework for building dialogue agents on top of the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers and software developers alike. 
 
-This is a work-in-progress tool that facilitates the creation of CAs with unique personas, which can answer a variety of user queries including those that rely on knowledge available in reference materials. The fastest way to see what `conversant` can do for you is to start talking to a chatbot! 
+This is a work-in-progress tool that facilitates the creation of dialogue agents with unique personas, which can answer a variety of user queries including those that rely on knowledge available in reference materials. The fastest way to see what `conversant` can do for you is to start talking to a chatbot! 
 
 ## Getting Started
 
