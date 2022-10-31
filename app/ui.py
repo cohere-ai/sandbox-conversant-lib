@@ -68,6 +68,7 @@ def draw_chatbot_config_form() -> None:
         min_value=0,
         max_value=20,
         value=config["max_context_examples"],
+        help="The number of interactions to keep as context for the chatbot.",
     )
     st.session_state.bot.configure_chatbot(
         {"max_context_examples": max_context_examples}
@@ -76,6 +77,10 @@ def draw_chatbot_config_form() -> None:
 
 def draw_client_config_form() -> None:
     """Adds widgets to edit the client config."""
+    st.write(
+        "For more information on these parameters, see "
+        "https://docs.cohere.ai/generate-reference"
+    )
     config = st.session_state.snapshot_client_config
     model_options = ["", "small", "medium", "large", "xlarge"]
     model = st.selectbox(
@@ -84,33 +89,57 @@ def draw_client_config_form() -> None:
         index=model_options.index(config["model"])
         if config["model"] in model_options
         else 0,
+        help="The size of the Cohere model used to generate with.",
     )
     model_id_override = st.text_input(
         label="model ID override",
         value=model if model else config["model"],
+        help=(
+            "The full ID of a custom model. See "
+            "https://docs.cohere.ai/generate-reference#model-optional for more details."
+        ),
     )
     if model != model_id_override:
         st.warning(
-            "WARNING: This demo does not validate that the model ID used for override"
+            "WARNING: This demo does not validate that the model ID used for override "
             "is valid.",
         )
     max_tokens = st.slider(
-        label="max_tokens", min_value=50, max_value=250, value=config["max_tokens"]
+        label="max_tokens",
+        min_value=50,
+        max_value=250,
+        value=config["max_tokens"],
+        help="The number of tokens to predict per response.",
     )
     temperature = st.slider(
-        label="temperature", min_value=0.0, max_value=5.0, value=config["temperature"]
+        label="temperature",
+        min_value=0.0,
+        max_value=5.0,
+        value=config["temperature"],
+        help=(
+            "The degree of randomness for the response. Large temperature values may "
+            "yield overly random results!"
+        ),
     )
     frequency_penalty = st.slider(
         label="frequency_penalty",
         min_value=0.0,
         max_value=1.0,
         value=config["frequency_penalty"],
+        help=(
+            "Penalty to reduce repetitiveness of generated tokens, weighted by their "
+            "frequency. Large penalty values may yield strange results!"
+        ),
     )
     presence_penalty = st.slider(
         label="presence_penalty",
         min_value=0.0,
         max_value=1.0,
         value=config["presence_penalty"],
+        help=(
+            "Penalty to reduce repetitiveness of generated tokens, weighted equally "
+            "to all present tokens. Large penalty values may yield strange results!"
+        ),
     )
     # This allows the user to add their own stop sequences to a multiselect form
     # below.
@@ -118,7 +147,10 @@ def draw_client_config_form() -> None:
         st.session_state.current_stop_sequences = [
             utils.escape_string(stop_seq) for stop_seq in config["stop_sequences"]
         ]
-    new_stop_seq = st.text_input(label="add new stop sequence")
+    new_stop_seq = st.text_input(
+        label="add new stop sequence",
+        help="Add a stop sequence to the selection below.",
+    )
     if (
         new_stop_seq != ""
         and new_stop_seq not in st.session_state.current_stop_sequences
@@ -131,6 +163,10 @@ def draw_client_config_form() -> None:
         options=st.session_state.current_stop_sequences,
         default=st.session_state.current_stop_sequences,
         key="selected_stop_sequences",
+        help=(
+            "The generated response will be cut off at the first instance of any of "
+            "these stop sequences."
+        ),
     )
 
     st.session_state.bot.configure_client(
@@ -184,6 +220,11 @@ def draw_prompt_form(disabled: bool = False) -> None:
             value=utils.escape_string(
                 default_preamble
             ),  # Display chars like \n in the text area by escaping them to \\n
+            help=(
+                "A string that directs the chatbot to behae in certain ways by "
+                "describing its function and characteristics (i.e. a description of "
+                "a bot's persona). Accepts escape sequences like \\n."
+            ),
         )
         example_separator = st.text_input(
             label="example_separator",
@@ -191,6 +232,7 @@ def draw_prompt_form(disabled: bool = False) -> None:
             value=utils.escape_string(
                 default_example_separator
             ),  # Display chars like \n in the text area by escaping them to \\n
+            help="A separator for each example. Accepts escape sequences like \\n.",
         )
         user_name = st.text_input(
             label="user",
@@ -198,6 +240,7 @@ def draw_prompt_form(disabled: bool = False) -> None:
             value=utils.escape_string(
                 default_user_name
             ),  # Display chars like \n in the text area by escaping them to \\n
+            help="The name of the user. Defaults to 'User'.",
         )
         bot_name = st.text_input(
             label="bot",
@@ -205,6 +248,7 @@ def draw_prompt_form(disabled: bool = False) -> None:
             value=utils.escape_string(
                 default_bot_name
             ),  # Display chars like \n in the text area by escaping them to \\n
+            help="The name of the chatbot.",
         )
         # Because prompt examples have a more complex structure, it is not very user
         # friendly to render them as form input fields.
@@ -212,6 +256,10 @@ def draw_prompt_form(disabled: bool = False) -> None:
             label="examples",
             placeholder="Please edit examples with the JSON editor.",
             disabled=True,
+            help=(
+                "A list of examples to illustrate how the chatbot should respond to "
+                "a user."
+            ),
         )
         # Upon submitting the form, we will save the form values in to the current
         # prompt config, then update the bot. Any errors should be saved.
