@@ -21,12 +21,13 @@ from conversant.utils import demo_utils
 
 def get_reply():
 
-
     # Generate a bot reply in response to the user's input
-    reply = st.session_state.bot.reply(query=st.session_state.user_input)
+    response = st.session_state.bot.reply(query=st.session_state.user_input)
+    reply = response.get('data')
 
-    if(reply == False):
-        st.session_state.good_size = False
+    # Stores the reply status value and the output message
+    st.session_state.reply_status = response['status']
+    st.session_state.output_message = response.get('output_message')
 
     # Reset user input
     st.session_state.user_input = ""
@@ -45,7 +46,8 @@ def initialize_chatbot():
         st.session_state.bot = PromptChatbot.from_persona(
             st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
         )
-    st.session_state.good_size = True
+    st.session_state.reply_status = 'Success'
+    st.session_state.output_message = None
 
 
 # This decorator allows Streamlit to compute and cache the results
@@ -175,11 +177,11 @@ if __name__ == "__main__":
         # Places the chat history in a Streamlit container.
         with chatlog_placeholder.container():
 
-
-            if st.session_state.good_size == False:
-                st.error(' too many tokens: total number of tokens (prompt and prediction) cannot exceed 2048. Try using a shorter prompt or a smaller max_tokens value')
-            st.session_state.good_size = True
-
+            # Check status of the reply and show an output message
+            if st.session_state.reply_status == 'Error':
+                st.error(st.session_state.output_message)
+            elif st.session_state.reply_status == 'Warning':
+                st.warning(st.session_state.output_message)
 
             # Iterate through the chatlog. This is done in reverse order to
             # ensure that recent messages displayed are anchored at the bottom
