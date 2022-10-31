@@ -177,5 +177,5 @@ def draw_prompt_view(json: bool = False) -> None:
                 st.session_state.bot.get_current_prompt("{Your message here}"),
                 language="markdown",
             )
-            if len(st.session_state.bot.chat_history) > 0:
+            if st.session_state.bot.chat_history:
                 st.write(f"_(includes the current chat history)_")
