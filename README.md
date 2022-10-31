@@ -107,7 +107,7 @@ bot = PromptChatbot.from_persona("math-teacher", client=client)
 bot.reply("Hello, World!")
 ```
 
-From there, it's also possible to launch the Streamlit app:
+From there, it's also possible to launch the [Streamlit](https://docs.streamlit.io/) app:
 
 ```
 from conversant.utils import demo_utils
