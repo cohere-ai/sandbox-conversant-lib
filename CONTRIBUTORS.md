@@ -84,7 +84,7 @@ pdoc conversant -o docs/ --docformat google
 
 ### Key components
 - *Persona:* Defines a specific chatbot personality, which consists of a bot description and a dialogue sample, as well as a bot name, a user name, a maximum number of context lines
-- *Chat log:* Maintained over time to track the history of the conversation, contains user queries and bot replies
+- *Chat history:* Maintained over time to track the history of the conversation, contains user queries and bot replies
     - *User queries:* Submitted at each turn, and are added to the prompt before passing it into `co.generate()`
     - *Bot replies:* Generated responses from the chatbot
 
@@ -110,9 +110,9 @@ pdoc conversant -o docs/ --docformat google
     *This small example shows the structure of the starter prompt passed to co.generate(). The prompt starts with a description of the bot. The six lines that follow represent an example conversation. The penultimate line shows the user hypothetically saying “Hello”. In the last line, the label “Bot:” prompts co.generate() to produce an appropriate greeting to start the conversation.*
 
 2. The generated output is returned to the user, such that the user sees the bot’s response (but not the hypothetical ‘Hello’ that was inserted at the end of the prompt).
-3. The response from the bot is added to the chat log (technically, the hypothetical ‘Hello’ is as well, but it is immediately removed).
+3. The response from the bot is added to the chat history (technically, the hypothetical ‘Hello’ is as well, but it is immediately removed).
 4. The user replies with a novel query.
-5. The bot description, example turns, chat log, and user query are concatenated into a single prompt, and the chat log + user query are truncated based on max context lines.
+5. The bot description, example turns, chat history, and user query are concatenated into a single prompt, and the chat history + user query are truncated based on max context lines.
 
     ```
     <<DESCRIPTION>>
@@ -129,10 +129,10 @@ pdoc conversant -o docs/ --docformat google
     User: Are coconuts tropical?
     Bot:
     ```
-    *An example of a new prompt. Note that the hypothetical ‘Hello’ is no longer in the prompt, but all previous statements from the bot and user are included as part of the chat log.*
+    *An example of a new prompt. Note that the hypothetical ‘Hello’ is no longer in the prompt, but all previous statements from the bot and user are included as part of the chat history.*
 
 6. Prompt is passed to `co.generate()` to produce the response from the bot.
-7. The user query & response from the bot are added to the chat log.
+7. The user query & response from the bot are added to the chat history.
 
 ![A diagram that shows how conversant constructs prompts before they are passed to co.generate() in order to craft a reply from the bot.](images/sandox-conversant%402x.png)
 
