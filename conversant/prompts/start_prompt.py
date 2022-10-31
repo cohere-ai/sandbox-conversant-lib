@@ -100,8 +100,10 @@ class StartPrompt(Prompt):
             f"{self.headers[field]}: {example[field]}\n" for field in example.keys()
         )
 
+
     def _validate_dialogue(self) -> None:
         """Validates that the examples conform to a 2-person dialogue.
+
 
         There should only be 2 speakers in the examples, and each speaker's utterance
         should not be prefixed with their name.
