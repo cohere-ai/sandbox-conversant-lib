@@ -48,14 +48,15 @@ def draw_disclaimer() -> None:
     """Adds a disclaimer about the personas in this demo."""
     if st.session_state.persona != "parrot":
         st.write(
-            "_Each persona is powered by [Cohere](https://cohere.com)'s large language models, \
-            and these examples are meant purely for demonstrative purposes. \
+            "_Each persona is powered by [Cohere](https://cohere.com)'s large language \
+            models, and these examples are meant purely for demonstrative purposes. \
             These personas are works of fiction, are not factually grounded, and \
             should not be taken too seriously!_"
         )
     else:
         st.write(
-            "_The Parrot persona does not make use of [Cohere](https://cohere.com)'s large language models._"
+            "_The Parrot persona does not make use of [Cohere](https://cohere.com)'s \
+            large language models._"
         )
 
 
@@ -90,7 +91,8 @@ def draw_client_config_form() -> None:
     )
     if model != model_id_override:
         st.warning(
-            "WARNING: This demo does not validate that the model ID used for override is valid.",
+            "WARNING: This demo does not validate that the model ID used for override"
+            "is valid.",
         )
     max_tokens = st.slider(
         label="max_tokens", min_value=50, max_value=250, value=config["max_tokens"]
@@ -241,7 +243,7 @@ def draw_prompt_json_editor(max_height: int) -> None:
             If set to None, height will auto adjust to editor's content.
             None by default.
     """
-    st.write(f"**Prompt (JSON):**")
+    st.write("**Prompt (JSON):**")
     st_ace(
         value=f"{st.session_state.bot.prompt.to_json_string()}",
         placeholder="Enter a JSON representation of a prompt.",
@@ -261,11 +263,12 @@ def draw_prompt_view(json: bool = False) -> None:
         json (bool): Whether to render the prompt as a JSON object.
     """
     if json:
-        st.write(f"**Prompt (JSON):**")
+        st.write("**Prompt (JSON):**")
         st.json(st.session_state.bot.prompt.to_dict())
     else:
         st.write(
-            f"**{st.session_state.bot.prompt.bot_name} responds to you using the prompt below:**"
+            f"**{st.session_state.bot.prompt.bot_name} responds to you using the prompt"
+            "below:**"
         )
         # If the current JSON string is malformed, show the error to the user to help
         # with debugging.
@@ -277,4 +280,4 @@ def draw_prompt_view(json: bool = False) -> None:
                 language="markdown",
             )
             if len(st.session_state.bot.chat_history) > 0:
-                st.write(f"_(includes the current chat history)_")
+                st.write("_(includes the current chat history)_")

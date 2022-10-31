@@ -50,12 +50,6 @@ class PromptChatbot(Chatbot):
     """Use prompt templates and LLM generation to define a chatbot.
 
     This bot makes no use of external knowledge sources.
-
-    Warning: The `fields` of the Prompt that the PromptChatbot uses must be defined
-    in this manner. Indices indicated with `[i]`.
-        [0]: The query posed to the model.
-        [1]: The generation expected from the model.
-        [2+]: Any contextual arguments the model is expected to use.
     """
 
     def __init__(
@@ -72,8 +66,10 @@ class PromptChatbot(Chatbot):
             client (cohere.Client): Cohere client for API
             prompt (Prompt): Prompt object to direct behavior.
             persona_name (str, optional): Bot's persona name. Defaults to empty string.
-            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to empty dict.
-            client_config (Dict[str, Any], optional): Bot's client config. Defaults to empty dict.
+            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to
+                empty dict.
+            client_config (Dict[str, Any], optional): Bot's client config. Defaults to
+                empty dict.
         """
 
         super().__init__(client)
@@ -103,7 +99,8 @@ class PromptChatbot(Chatbot):
     def bot_name(self):
         """
         Returns:
-            str: The name of the chatbot, defined in the prompt. Defaults to "PromptChatbot".
+            str: The name of the chatbot, defined in the prompt. Defaults to
+                "PromptChatbot".
         """
         if hasattr(self.prompt, "bot_name"):
             return self.prompt.bot_name
@@ -155,7 +152,8 @@ class PromptChatbot(Chatbot):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
 
-        # We need to remember the current response in the chat history for future responses.
+        # We need to remember the current response in the chat history for future
+        # responses.
         self.chat_history.append(self.prompt.create_interaction(query, response))
         self.prompt_history.append(current_prompt)
 
@@ -178,8 +176,8 @@ class PromptChatbot(Chatbot):
             else []
         )
         # TODO when prompt is updated, the history is mutated
-        # as it is recreated using the new prompt. A possible fix is to save the old prompt
-        # in history and use it when recreating.
+        # as it is recreated using the new prompt. A possible fix is to save the old
+        # prompt in history and use it when recreating.
         for turn in trimmed_chat_history:
             context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
         context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
@@ -250,7 +248,7 @@ class PromptChatbot(Chatbot):
             client (cohere.Client): Cohere client for API
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
+        persona_path = os.path.join(persona_dir, persona_name, "config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
@@ -273,7 +271,8 @@ class PromptChatbot(Chatbot):
         """Serializes this instance into a Python dictionary.
 
         Returns:
-            Dict[str, Any]: Dictionary of attributes that defines this instance of a PromptChatbot.
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a
+                PromptChatbot.
         """
         return {
             "co": self.co,
