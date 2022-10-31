@@ -60,7 +60,8 @@ def mock_prompt_config() -> Dict[str, Any]:
     """A Prompt config fixture for tests.
 
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a Prompt.
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
+            Prompt.
     """
     return {
         "preamble": "This is a prompt.",
@@ -82,7 +83,7 @@ def mock_prompt_config() -> Dict[str, Any]:
                 "generation": "This is a second generation.",
             },
         ],
-        "REQUIRED_FIELDS": ["query", "context", "generation"],
+        "REQUIRED_KEYS": ["query", "context", "generation"],
     }
 
 
@@ -101,7 +102,8 @@ def mock_start_prompt_config() -> Dict[str, Any]:
     """A StartPrompt config fixture for tests.
 
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a StartPrompt.
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
+            StartPrompt.
     """
     return {
         "preamble": "This is a start prompt.",
@@ -122,7 +124,8 @@ def mock_start_prompt(mock_start_prompt_config: Dict[str, Any]) -> StartPrompt:
     """A StartPrompt config fixture for tests.
 
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a StartPrompt.
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
+            StartPrompt.
     """
     return StartPrompt(**mock_start_prompt_config)
 
@@ -132,7 +135,8 @@ def mock_rewrite_prompt_config() -> Dict[str, Any]:
     """A RewritePrompt config fixture for tests.
 
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a RewritePrompt.
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
+            RewritePrompt.
     """
     return {
         "preamble": "This is a rewrite prompt.",
@@ -162,7 +166,8 @@ def mock_rewrite_prompt(mock_rewrite_prompt_config: Dict[str, Any]) -> RewritePr
     """A RewritePrompt config fixture for tests.
 
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a RewritPrompt.
+        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
+            RewritPrompt.
     """
     return RewritePrompt(**mock_rewrite_prompt_config)
 
