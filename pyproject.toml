@@ -21,6 +21,9 @@ black = "^22.6.0"
 pre-commit = "^2.20.0"
 pdoc = "^12.1.0"
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.82"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -18,12 +18,14 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
     for key in ["model", "max_tokens", "temperature", "stop_seq"]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
-                f"{key} not in config of {prompt_chatbot.__class__.__name__} but is required for co.generate"
+                f"{key} not in config of {prompt_chatbot.__class__.__name__} \
+                    but is required for co.generate"
             )
 
 
 def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
-    """Tests end to end that a prompt_chatbot is initialized correctly from class constructor.
+    """Tests end to end that a prompt_chatbot is initialized
+    correctly from class constructor.
 
     Args:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
