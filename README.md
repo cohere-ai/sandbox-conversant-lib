@@ -21,6 +21,12 @@
 ################################################################################
 ```
 
+**Maintainer Team:** [Cohere ConvAI Team](mailto:convai@cohere.com) \
+**Project maintained until at least (YYYY-MM-DD):** 2023-03-01
+
+# conversant
+A framework for building conversational agents on top of the [Cohere API](https://docs.cohere.ai/). 
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -118,12 +124,6 @@ If you would like to contribute to this project, please read [`CONTRIBUTORS.md`]
 in this repository, and sign the Contributor License Agreement before submitting
 any pull requests. A link to sign the Cohere CLA will be generated the first time 
 you make a pull request to a Cohere repository.
-
-In addition to guidelines around submitting code to this repository, [`CONTRIBUTORS.md`](CONTRIBUTORS.md) contains a walkthrough to help developers get started, as well as schematics that explain how `conversant` works under the hood. :wrench:
-
-## Maintainers
-**Maintainer Team:** [Cohere ConvAI Team](mailto:convai@cohere.com) \
-**Project maintained until at least (YYYY-MM-DD):** 2023-03-01
 
 ## License
 `conversant` has an [MIT License](LICENSE).
