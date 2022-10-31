@@ -136,7 +136,7 @@ class Prompt:
         Returns:
             str: String representation of an example.
         """
-        example = self.create_example(*args, **kwargs) if len(args) > 0 else kwargs
+        example = self.create_example(*args, **kwargs) if args else kwargs
         return f"{self.example_separator}" + "".join(
             f"{self.headers[field]}{example[field]}\n" for field in example.keys()
         )
