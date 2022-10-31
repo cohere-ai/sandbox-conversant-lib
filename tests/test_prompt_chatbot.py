@@ -11,7 +11,6 @@ import itertools
 import pytest
 
 from conversant.prompt_chatbot import PromptChatbot
-from conversant.prompts.chat_prompt import ChatPrompt
 
 
 def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
@@ -26,12 +25,14 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
     ]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
-                f"{key} not in config of {prompt_chatbot.__class__.__name__} but is required for co.generate"
+                f"{key} not in config of {prompt_chatbot.__class__.__name__} \
+                    but is required for co.generate"
             )
 
 
 def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
-    """Tests end to end that a prompt_chatbot is initialized correctly from class constructor.
+    """Tests end to end that a prompt_chatbot is initialized
+    correctly from class constructor.
 
     Args:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
@@ -98,15 +99,15 @@ def test_prompt_chatbot_get_current_prompt(
         # chat prompt
         f"{mock_prompt_chatbot.prompt.preamble}\n"
         + f"{mock_prompt_chatbot.prompt.example_separator}"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][0]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][0]['bot']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][1]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][1]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][0]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][1]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][1]['bot']}\n"  # noqa
         + f"{mock_prompt_chatbot.prompt.example_separator}"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][0]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][0]['bot']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][1]['user']}\n"
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][1]['bot']}\n"
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][0]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][1]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][1]['bot']}\n"  # noqa
         # context prompt
         + f"{mock_prompt_chatbot.prompt.example_separator}"
         + "".join(

@@ -72,8 +72,10 @@ class PromptChatbot(Chatbot):
             client (cohere.Client): Cohere client for API
             prompt (Prompt): Prompt object to direct behavior.
             persona_name (str, optional): Bot's persona name. Defaults to empty string.
-            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to empty dict.
-            client_config (Dict[str, Any], optional): Bot's client config. Defaults to empty dict.
+            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to
+                empty dict.
+            client_config (Dict[str, Any], optional): Bot's client config. Defaults to
+                empty dict.
         """
 
         super().__init__(client)
@@ -103,7 +105,8 @@ class PromptChatbot(Chatbot):
     def bot_name(self):
         """
         Returns:
-            str: The name of the chatbot, defined in the prompt. Defaults to "PromptChatbot".
+            str: The name of the chatbot, defined in the prompt. Defaults to
+                "PromptChatbot".
         """
         if hasattr(self.prompt, "bot_name"):
             return self.prompt.bot_name
@@ -155,7 +158,8 @@ class PromptChatbot(Chatbot):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
 
-        # We need to remember the current response in the chat history for future responses.
+        # We need to remember the current response in the chat history for future
+        # responses.
         self.chat_history.append(self.prompt.create_interaction(query, response))
         self.prompt_history.append(current_prompt)
 
@@ -178,8 +182,8 @@ class PromptChatbot(Chatbot):
             else []
         )
         # TODO when prompt is updated, the history is mutated
-        # as it is recreated using the new prompt. A possible fix is to save the old prompt
-        # in history and use it when recreating.
+        # as it is recreated using the new prompt. A possible fix is to save the old
+        # prompt in history and use it when recreating.
         for turn in trimmed_chat_history:
             context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
         context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
@@ -194,7 +198,8 @@ class PromptChatbot(Chatbot):
         """Configures chatbot options.
 
         Args:
-            chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults to {}.
+            chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults
+            to {}.
         """
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
@@ -206,7 +211,8 @@ class PromptChatbot(Chatbot):
             self.chatbot_config.update(chatbot_config)
         else:
             raise TypeError(
-                f"chatbot_config must be of type Dict, but was passed in as {type(chatbot_config)}"
+                f"chatbot_config must be of type Dict, but was passed in as \
+                    {type(chatbot_config)}"
             )
 
     def configure_client(self, client_config: Dict = {}) -> None:
@@ -230,7 +236,8 @@ class PromptChatbot(Chatbot):
             self.client_config.update(client_config)
         else:
             raise TypeError(
-                f"client_config must be of type Dict, but was passed in as {type(client_config)}"
+                f"client_config must be of type Dict, but was passed in as \
+                    {type(client_config)}"
             )
 
     @classmethod
@@ -247,7 +254,7 @@ class PromptChatbot(Chatbot):
             client (cohere.Client): Cohere client for API
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
+        persona_path = os.path.join(persona_dir, persona_name, "config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
@@ -270,7 +277,8 @@ class PromptChatbot(Chatbot):
         """Serializes this instance into a Python dictionary.
 
         Returns:
-            Dict[str, Any]: Dictionary of attributes that defines this instance of a PromptChatbot.
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a
+                PromptChatbot.
         """
         return {
             "co": self.co,
@@ -297,7 +305,8 @@ class PromptChatbot(Chatbot):
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
             raise jsonschema.exceptions.ValidationError(
-                f"Type of values in given dictionary (persona from {persona_path}) do not match schema': {e}"
+                f"Type of values in given dictionary (persona from {persona_path}) \
+                    do not match schema': {e}"
             )
         except KeyError as e:
             raise KeyError(
@@ -305,5 +314,6 @@ class PromptChatbot(Chatbot):
             )
         except Exception as e:
             raise Exception(
-                f"Failed to validate persona in given dictionary (persona from {persona_path}): {e}"
+                f"Failed to validate persona in given dictionary \
+                    (persona from {persona_path}): {e}"
             )

@@ -24,9 +24,12 @@ class ChatPrompt(Prompt):
         bot: The Chatbot itself.
 
     Constants:
-        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt. (default: `["user", "bot"]`)
-        MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `1`)
-        MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in. (default: `1`)
+        REQUIRED_FIELDS (List[str]): The list of required fields for the prompt.
+            (default: `["user", "bot"]`)
+        MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble.
+            (default: `1`)
+        MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in.
+            (default: `1`)
     """
 
     examples: List[List[Dict[str, str]]]
@@ -38,8 +41,9 @@ class ChatPrompt(Prompt):
     def __post_init__(self) -> None:
         """Validators for the chat prompt.
 
-        Validates that the prompt follows the requirements of the validators listed below.
-        Minimally, the ChatPrompt needs to follow the requirements of its parent class.
+        Validates that the prompt follows the requirements of the validators listed
+        below. Minimally, the ChatPrompt needs to follow the requirements of its parent
+        class.
         """
         super()._validate_preamble()
         super()._validate_example_separator()
@@ -112,8 +116,8 @@ class ChatPrompt(Prompt):
         """Creates a string representation of the conversation prompt.
 
         The string representation is assembled from the preamble and examples.
-        Each example is created from a `create_conversation_string` method and is demarcated
-        by an `example_separator`.
+        Each example is created from a `create_conversation_string` method and is
+        demarcated by an `example_separator`.
 
         Examples will look like the following:
 
@@ -149,16 +153,23 @@ class ChatPrompt(Prompt):
             for interaction in example:
                 if any(field not in interaction for field in self.REQUIRED_FIELDS):
                     raise ValueError(
-                        f"Missing required field.\nInteraction's fields: {interaction.keys()}\nRequired: {self.REQUIRED_FIELDS}"
+                        (
+                            "Missing required field.\nInteraction's fields:"
+                            f"{interaction.keys()}\nRequired: {self.REQUIRED_FIELDS}"
+                        )
                     )
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for {self.__class__.__name__}"
+                (
+                    f"At least {self.MIN_NUM_EXAMPLES} example must be given for"
+                    f"{self.__class__.__name__}"
+                )
             )
 
     def _validate_dialogue(self) -> None:
         """Validates that the examples conform to a 2-person dialogue.
+
 
         There should only be 2 speakers in the examples, and each speaker's utterance
         should not be prefixed with their name.
@@ -186,7 +197,8 @@ class ChatPrompt(Prompt):
                 if colon_prefixed or hyphen_prefixed:
                     # This might false-positive, so we only log a warning
                     logging.warning(
-                        "Did you mistakenly prefix the example dialogue turns with user/bot names?"
+                        "Did you mistakenly prefix the example dialogue turns with"
+                        "user/bot names?"
                     )
 
                 user_prefixed = all(
@@ -197,7 +209,9 @@ class ChatPrompt(Prompt):
                     turn.lstrip().startswith(self.bot_name) for turn in bot_turns
                 )
                 if user_prefixed and bot_prefixed:
-                    # It's hard to think of any genuine case where all utterances begin with self-names.
+                    # It's hard to think of any genuine case where all utterances begin
+                    # with self-names.
                     raise ValueError(
-                        "Conversation interactions should not be prefixed with user/bot names!"
+                        "Conversation interactions should not be prefixed with user/bot"
+                        "names!"
                     )

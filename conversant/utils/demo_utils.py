@@ -35,7 +35,6 @@ def decode_object(obj_string: str) -> object:
 
 
 def launch_streamlit(bot: Type[Chatbot]) -> None:
-
     """Launches a demo of a chatbot using Streamlit.
 
     The bot will be a persona available for chatting using the interface
