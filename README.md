@@ -103,7 +103,7 @@ Once `conversant` is installed, it's also possible to create a bot outside of St
 from conversant import PromptChatbot
 
 client = cohere.Client("<YOUR API KEY HERE>")
-bot = conversant.PromptChatbot.from_persona("math-teacher", client=client)
+bot = PromptChatbot.from_persona("math-teacher", client=client)
 bot.reply("Hello world")
 ```
 
