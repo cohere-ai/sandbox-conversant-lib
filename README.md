@@ -115,9 +115,17 @@ demo_utils.launch_streamlit(bot)
 ```
 
 ## Creating a Custom Persona
-Once you've followed the steps in [Getting Started](#getting-started), you can begin experimenting with creating custom personas! Check out the configuration JSONs for each persona in the [personas directory](/conversant/personas/). You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file (as an example, check out the [config file for the fortune teller persona](/conversant/personas/fortune-teller/config.json)). 
+Once you've followed the steps in [Getting Started](#getting-started), you can begin experimenting with creating custom personas! Check out the configuration JSONs for each persona in the [personas directory](/conversant/personas/). You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file. The directory structure should look like this:
 
-This file contains a description of the persona, a few example rounds of conversation, as well as a name for your bot, and `conversant` will take care of the rest! When you launch the Streamlit app, the new persona will appear in the drop down menu.
+```
+conversant/personas
+├── fortune-teller
+│   └── config.json
+└── your-persona-name
+    └── config.json
+```
+
+The config file contains a description of the persona, a few example rounds of conversation, as well as a name for your bot, and `conversant` will take care of the rest! As an example, check out the [config file for the fortune teller persona](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
 
 ## Contributing Guidelines
 If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
