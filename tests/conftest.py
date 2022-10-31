@@ -44,8 +44,8 @@ class MockCo:
         return Embeddings(embeddings=[[1.0, 1.0]])
 
     def tokenize(*args,**kwargs) -> Tokens:
-        tokens = [x for x in range(len(args.split()))]
-        tokens_strings = args.split()
+        tokens = [x for x in range(len(args[1].split()))]
+        tokens_strings = args[1].split()
 
         return Tokens(tokens,tokens_strings)
 
