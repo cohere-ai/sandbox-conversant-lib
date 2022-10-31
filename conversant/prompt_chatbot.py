@@ -47,12 +47,6 @@ class PromptChatbot(Chatbot):
     """Use prompt templates and LLM generation to define a chatbot.
 
     This bot makes no use of external knowledge sources.
-
-    Warning: The `fields` of the Prompt that the PromptChatbot uses must be defined
-    in this manner. Indices indicated with `[i]`.
-        [0]: The query posed to the model.
-        [1]: The generation expected from the model.
-        [2+]: Any contextual arguments the model is expected to use.
     """
 
     def __init__(
@@ -69,8 +63,10 @@ class PromptChatbot(Chatbot):
             client (cohere.Client): Cohere client for API
             prompt (Prompt): Prompt object to direct behavior.
             persona_name (str, optional): Bot's persona name. Defaults to empty string.
-            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to empty dict.
-            client_config (Dict[str, Any], optional): Bot's client config. Defaults to empty dict.
+            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to
+                empty dict.
+            client_config (Dict[str, Any], optional): Bot's client config. Defaults to
+                empty dict.
         """
 
         super().__init__(client)
@@ -100,7 +96,8 @@ class PromptChatbot(Chatbot):
     def bot_name(self):
         """
         Returns:
-            str: The name of the chatbot, defined in the prompt. Defaults to "PromptChatbot".
+            str: The name of the chatbot, defined in the prompt. Defaults to
+                "PromptChatbot".
         """
         if hasattr(self.prompt, "bot_name"):
             return self.prompt.bot_name
@@ -150,7 +147,8 @@ class PromptChatbot(Chatbot):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
 
-        # We need to remember the current response in the chat history for future responses.
+        # We need to remember the current response in the chat history for future
+        # responses.
         self.chat_history.append(self.prompt.create_example(query, response))
         self.prompt_history.append(current_prompt)
 
