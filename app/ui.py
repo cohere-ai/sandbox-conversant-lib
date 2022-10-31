@@ -23,7 +23,7 @@ def draw_chat_history() -> None:
     """
     # The chat history is iterated in reverse order to ensure that recent messages
     # displayed are anchored at the bottom of the Streamlit demo.
-    for i, turn in enumerate(st.session_state.bot.chat_history[::-1]):
+    for i, turn in enumerate(reversed(st.session_state.bot.chat_history)):
 
         # If we are at the first conversation turn, we remove the
         # injected user utterance of "Hello" from displaying.
