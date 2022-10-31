@@ -8,9 +8,11 @@
 
 import json
 from dataclasses import field
-from typing import Any, Dict, List
+from typing import Any, Dict, List, NewType
 
 from pydantic.dataclasses import dataclass
+
+Interaction = NewType("Interaction", Dict[str, str])
 
 
 @dataclass
@@ -37,7 +39,7 @@ class Prompt:
     preamble: str
     example_separator: str
     headers: Dict[str, str]
-    examples: List[Dict[str, str]]
+    examples: List[Interaction]
 
     REQUIRED_KEYS: List[str] = field(default_factory=lambda: [])
     MIN_PREAMBLE_LENGTH: int = 1
@@ -76,7 +78,7 @@ class Prompt:
         """
         return list(self.headers.values())
 
-    def create_interaction(self, *args, **kwargs) -> Dict[str, str]:
+    def create_interaction(self, *args, **kwargs) -> Interaction:
         """Creates a new dictionary representation of an interaction.
 
         The order of args here should correspond to the order of the keys in `headers`.

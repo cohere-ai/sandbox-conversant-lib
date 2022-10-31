@@ -8,11 +8,13 @@
 
 import logging
 from dataclasses import field
-from typing import Dict, List
+from typing import List, NewType
 
 from pydantic.dataclasses import dataclass
 
-from conversant.prompts.prompt import Prompt
+from conversant.prompts.prompt import Interaction, Prompt
+
+Conversation = NewType("Conversation", List[Interaction])
 
 
 @dataclass
@@ -31,7 +33,7 @@ class StartPrompt(Prompt):
             (default: `1`)
     """
 
-    examples: List[List[Dict[str, str]]]
+    examples: List[Conversation]
 
     REQUIRED_KEYS: List[str] = field(default_factory=lambda: ["user", "bot"])
     MIN_PREAMBLE_LENGTH: int = 10
@@ -106,7 +108,7 @@ class StartPrompt(Prompt):
             f"{self.headers[key]}: {interaction[key]}\n" for key in interaction.keys()
         )
 
-    def create_conversation_string(self, conversation: List[Dict[str, str]]):
+    def create_conversation_string(self, conversation: List[Interaction]) -> str:
         """Creates a string represenation of a conversation.
 
         Conversations will look like the following:
