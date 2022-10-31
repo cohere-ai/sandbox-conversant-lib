@@ -51,7 +51,8 @@ class LocalSearcher(Searcher):
 
         if max_similarity < threshold:
             logging.warning(
-                f"Max search similarity {max_similarity} below threshold {threshold}; no document returned."
+                f"Max search similarity {max_similarity} below threshold {threshold}; \
+                    no document returned."
             )
             return None
 
