@@ -104,7 +104,7 @@ from conversant import PromptChatbot
 
 client = cohere.Client("<YOUR API KEY HERE>")
 bot = PromptChatbot.from_persona("math-teacher", client=client)
-bot.reply("Hello world")
+bot.reply("Hello, World!")
 ```
 
 From there, it's also possible to launch the Streamlit app:
