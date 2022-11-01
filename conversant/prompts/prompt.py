@@ -139,7 +139,7 @@ class Prompt:
             str: String representation of an interaction.
         """
         interaction = (
-            self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
+            self.create_interaction(*args, **kwargs) if args else kwargs
         )
         return "".join(
             f"{self.headers[key]}{interaction[key]}\n" for key in interaction.keys()
