@@ -25,7 +25,7 @@ def draw_chat_history() -> None:
     """
     # The chat history is iterated in reverse order to ensure that recent messages
     # displayed are anchored at the bottom of the Streamlit demo.
-    for i, turn in enumerate(st.session_state.bot.chat_history[::-1]):
+    for i, turn in enumerate(reversed(st.session_state.bot.chat_history)):
 
         # If we are at the first conversation turn, we remove the
         # injected user utterance of "Hello" from displaying.
@@ -327,5 +327,5 @@ def draw_prompt_view(json: bool = False) -> None:
                 st.session_state.bot.get_current_prompt("{Your message here}"),
                 language="markdown",
             )
-            if len(st.session_state.bot.chat_history) > 0:
-                st.write("_(includes the current chat history)_")
+            if st.session_state.bot.chat_history:
+                st.write(f"_(includes the current chat history)_")
