@@ -65,7 +65,7 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     list(
         filter(
             lambda items: items[0] <= items[1],
-            itertools.product(list(range(20)), list(range(50))),
+            itertools.product(list(range(0, 20, 4)), list(range(0, 50, 10))),
         )
     ),
 )
