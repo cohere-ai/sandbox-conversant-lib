@@ -10,11 +10,12 @@ from typing import Any, Dict
 
 import pytest
 
+from conversant.chatbot import Interaction
 from conversant.prompts.chat_prompt import ChatPrompt
 
 
 @pytest.fixture
-def new_interaction() -> Dict[str, str]:
+def new_interaction() -> Interaction:
     """Instantiates a fixture for a new ChatPrompt example.
 
     Returns:
@@ -104,7 +105,7 @@ def test_chat_prompt_init_fails(
 
 
 def test_chat_prompt_create_interaction_string(
-    mock_chat_prompt: ChatPrompt, new_interaction: Dict[str, str]
+    mock_chat_prompt: ChatPrompt, new_interaction: Interaction
 ) -> None:
     """Tests ChatPrompt.create_interaction_string
 

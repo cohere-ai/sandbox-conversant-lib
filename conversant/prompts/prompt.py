@@ -12,6 +12,8 @@ from typing import Any, Dict, List
 
 from pydantic.dataclasses import dataclass
 
+from conversant.chatbot import Interaction
+
 
 @dataclass
 class Prompt:
@@ -23,7 +25,7 @@ class Prompt:
         example_separator (str): A separator for each example.
         headers (Dict[str, str]): A dictionary mapping from keys in examples to the
             values that will substitute them.
-        examples (List[Dict[str, str]]): A list of examples to illustrate the intended
+        examples (List[Interaction]): A list of examples to illustrate the intended
             behaviour.
 
     Constants:
@@ -37,7 +39,7 @@ class Prompt:
     preamble: str
     example_separator: str
     headers: Dict[str, str]
-    examples: List[Dict[str, str]]
+    examples: List[Interaction]
 
     REQUIRED_KEYS: List[str] = field(default_factory=lambda: [])
     MIN_PREAMBLE_LENGTH: int = 1
@@ -61,8 +63,8 @@ class Prompt:
 
     def __str__(self) -> str:
         return self.to_string()
-        
-    def create_interaction(self, *args, **kwargs) -> Dict[str, str]:
+
+    def create_interaction(self, *args, **kwargs) -> Interaction:
         """Creates a new dictionary representation of an interaction.
 
         The order of args here should correspond to the order of the keys in `headers`.
@@ -79,7 +81,7 @@ class Prompt:
             kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            Dict[str, str]: Dictionary representation of an interaction.
+            Interaction: Dictionary representation of an interaction.
         """
         new_interaction = {
             key: args[i] if i < len(args) else ""
@@ -122,9 +124,7 @@ class Prompt:
         Returns:
             str: String representation of an interaction.
         """
-        interaction = (
-            self.create_interaction(*args, **kwargs) if len(args) > 0 else kwargs
-        )
+        interaction = self.create_interaction(*args, **kwargs) if args else kwargs
         return "".join(
             f"{self.headers[key]}{interaction[key]}\n" for key in interaction.keys()
         )
