@@ -124,7 +124,7 @@ class StartPrompt(Prompt):
             {bot_name}: {utterance}\n
 
         Args:
-            conversation (List[Interaction]): Am
+            conversation (Conversation): List of interactions.
         """
         return "".join(
             self.create_interaction_string(**interaction)
