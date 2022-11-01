@@ -171,8 +171,8 @@ class PromptChatbot(Chatbot):
             else []
         )
         # TODO when prompt is updated, the history is mutated
-        # as it is recreated using the new prompt. A possible fix is to save the old prompt
-        # in history and use it when recreating.
+        # as it is recreated using the new prompt. A possible fix is to save the old
+        # prompt in history and use it when recreating.
         for turn in trimmed_chat_history:
             context_prompt_lines.append(self.prompt.create_example_string(**turn))
         context_prompt = "".join(context_prompt_lines)
@@ -242,7 +242,7 @@ class PromptChatbot(Chatbot):
             persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
+        persona_path = os.path.join(persona_dir, persona_name, "config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
@@ -265,7 +265,8 @@ class PromptChatbot(Chatbot):
         """Serializes this instance into a Python dictionary.
 
         Returns:
-            Dict[str, Any]: Dictionary of attributes that defines this instance of a PromptChatbot.
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a
+                PromptChatbot.
         """
         return {
             "co": self.co,
