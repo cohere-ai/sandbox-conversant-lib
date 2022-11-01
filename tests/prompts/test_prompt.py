@@ -10,15 +10,16 @@ from typing import Any, Dict
 
 import pytest
 
+from conversant.chatbot import Interaction
 from conversant.prompts.prompt import Prompt
 
 
 @pytest.fixture
-def new_interaction() -> Dict[str, str]:
+def new_interaction() -> Interaction:
     """Instantiates a fixture for a new Prompt interaction.
 
     Returns:
-        Dict[str, str]: New Prompt interaction fixture.
+        Interaction: New Prompt interaction fixture.
     """
     return {
         "query": "A new query!",
@@ -125,7 +126,7 @@ def test_prompt_init_fails(
 
 
 def test_prompt_create_interaction(
-    mock_prompt: Prompt, new_interaction: Dict[str, str]
+    mock_prompt: Prompt, new_interaction: Interaction
 ) -> None:
     """Tests Prompt.create_interaction
 
@@ -154,7 +155,7 @@ def test_prompt_create_interaction(
 
 
 def test_prompt_create_interaction_string(
-    mock_prompt: Prompt, new_interaction: Dict[str, str]
+    mock_prompt: Prompt, new_interaction: Interaction
 ) -> None:
     """Tests Prompt.create_interaction_string
 

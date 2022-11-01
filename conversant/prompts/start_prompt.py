@@ -12,7 +12,8 @@ from typing import List, NewType
 
 from pydantic.dataclasses import dataclass
 
-from conversant.prompts.prompt import Interaction, Prompt
+from conversant.chatbot import Interaction
+from conversant.prompts.prompt import Prompt
 
 Conversation = NewType("Conversation", List[Interaction])
 
@@ -123,7 +124,7 @@ class StartPrompt(Prompt):
             {bot_name}: {utterance}\n
 
         Args:
-            conversation (List[Dict[str, str]]): Am
+            conversation (List[Interaction]): Am
         """
         return "".join(
             self.create_interaction_string(**interaction)

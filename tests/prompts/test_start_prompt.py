@@ -10,15 +10,16 @@ from typing import Any, Dict
 
 import pytest
 
+from conversant.chatbot import Interaction
 from conversant.prompts.start_prompt import StartPrompt
 
 
 @pytest.fixture
-def new_interaction() -> Dict[str, str]:
+def new_interaction() -> Interaction:
     """Instantiates a fixture for a new StartPrompt example.
 
     Returns:
-        Dict[str, str]: New StartPrompt interaction fixture.
+        Interaction: New StartPrompt interaction fixture.
     """
     return {"user": "Nice to meet you!", "bot": "You too!"}
 
@@ -106,7 +107,7 @@ def test_start_prompt_init_fails(
 
 
 def test_start_prompt_create_interaction_string(
-    mock_start_prompt: StartPrompt, new_interaction: Dict[str, str]
+    mock_start_prompt: StartPrompt, new_interaction: Interaction
 ) -> None:
     """Tests StartPrompt.create_interaction_string
 

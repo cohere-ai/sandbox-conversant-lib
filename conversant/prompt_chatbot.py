@@ -14,7 +14,7 @@ from typing import Any, Dict
 import cohere
 import jsonschema
 
-from conversant.chatbot import Chatbot
+from conversant.chatbot import Chatbot, Interaction
 from conversant.prompts.prompt import Prompt
 from conversant.prompts.start_prompt import StartPrompt
 
@@ -113,7 +113,7 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def reply(self, query: str) -> Dict[str, str]:
+    def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.
 
         The reply is then generated directly from a call to a LLM.
@@ -122,8 +122,7 @@ class PromptChatbot(Chatbot):
             query (str): A query passed to the prompt chatbot.
 
         Returns:
-            Dict[str, str]: Generated LLM response with "speaker_name" and
-            "utterance" keys
+            Interaction: Dictionary of query and generated LLM response
         """
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
