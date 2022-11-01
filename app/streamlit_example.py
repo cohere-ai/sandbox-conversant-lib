@@ -12,6 +12,7 @@ import copy
 import sys
 
 import cohere
+import emoji
 import streamlit as st
 
 from app import ui, utils
