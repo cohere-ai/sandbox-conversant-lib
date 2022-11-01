@@ -159,6 +159,9 @@ class PromptChatbot(Chatbot):
 
         Args:
             query (str): The current user query.
+
+        Returns:
+            str: The current prompt given a query.
         """
         # get base prompt
         base_prompt = self.prompt.to_string() + "\n"
