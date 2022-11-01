@@ -49,7 +49,7 @@ conda activate conversant
 
 Install `poetry`:
 ```
-pip install poetry==1.2.0
+pip install poetry==1.3.2
 ```
 
 Set `poetry` to use the Python installed in the `conversant` environment:
@@ -134,7 +134,7 @@ pdoc conversant -o docs/ --docformat google
 6. Prompt is passed to `co.generate()` to produce the response from the bot.
 7. The user query & response from the bot are added to the chat history.
 
-![A diagram that shows how conversant constructs prompts before they are passed to co.generate() in order to craft a reply from the bot.](images/sandox-conversant%402x.png)
+![A diagram that shows how conversant constructs prompts before they are passed to co.generate() in order to craft a reply from the bot.](images/conversant-diagram.png)
 
 ### A note about search & grounded question answering
 
