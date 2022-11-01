@@ -13,7 +13,12 @@ import pytest
 from conversant.prompt_chatbot import PromptChatbot
 
 
-def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
+def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot) -> None:
+    """Checks that required parameters are in the chatbot and client config.
+
+    Args:
+        prompt_chatbot (PromptChatbot): The instance of PromptChatbot to check.
+    """
     __tracebackhide__ = True
     for key in [
         "model",
@@ -31,8 +36,7 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot):
 
 
 def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
-    """Tests end to end that a prompt_chatbot is initialized
-    correctly from class constructor.
+    """Tests end to end that a PromptChatbot is initialized correctly from constructor.
 
     Args:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
@@ -82,6 +86,8 @@ def test_prompt_chatbot_get_current_prompt(
 
     Args:
         prompt_chatbot (PromptChatbot): Bot test fixture
+        max_context_examples (int): The maximum number of examples to keep as context.
+        history_length (int): The length of the chat history.
     """
     chat_history = [
         {"user": f"Hello! {i}", "bot": f"Hello back! {i}"}

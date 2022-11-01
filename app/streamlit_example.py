@@ -222,7 +222,7 @@ if __name__ == "__main__":
             # We can get the chatbot to begin the conversation with this.
             # The session's state needs to be manually updated since we are not
             # refreshing the entire Streamlit app.
-            if  not st.session_state.bot.chat_history:
+            if not st.session_state.bot.chat_history:
                 st.session_state.bot.reply(
                     query="Hello",
                 )
