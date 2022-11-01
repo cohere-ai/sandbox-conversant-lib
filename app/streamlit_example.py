@@ -24,8 +24,7 @@ USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 def get_reply() -> None:
     """Replies query from the message input, and resets the message input"""
 
-    _ = st.session_state.bot.reply(query=st.session_state.user_input)
-    response = st.session_state.bot.reply(query=st.session_state.user_input)
+    response = st.session_state.bot.reply(query=st.session_state.message_input)
     _ = response.get('data')
 
     # Stores the reply status value and the output message
@@ -35,8 +34,6 @@ def get_reply() -> None:
 
     # Reset user input
     st.session_state.user_input = ""
-
-
 
 def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
@@ -248,8 +245,6 @@ if __name__ == "__main__":
                     ui.draw_client_config_form()
                 with st.expander("Chatbot Config"):
                     ui.draw_chatbot_config_form()
-
-
 
                 with st.expander("Prompt (JSON)"):
                     ui.draw_prompt_view(json=True)
