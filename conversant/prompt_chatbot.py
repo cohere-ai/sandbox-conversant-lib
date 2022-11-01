@@ -75,7 +75,11 @@ class PromptChatbot(Chatbot):
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
-        self.prompt_history = []
+        self.chat_history = []
+        self.prompt_history = [self.prompt.to_string()]
+
+    def __repr__(self) -> Dict[str, Any]:
+        return json.dumps(self.to_dict(), indent=4, default=str)
 
     @property
     def user_name(self):
@@ -100,6 +104,15 @@ class PromptChatbot(Chatbot):
         else:
             return "PromptChatbot"
 
+    @property
+    def latest_prompt(self) -> str:
+        """Retrieves the latest prompt.
+
+        Returns:
+            str: The prompt most recently added to the prompt history.
+        """
+        return self.prompt_history[-1]
+
     def reply(self, query: str) -> Dict[str, str]:
         """Replies to a query given a chat history.
 
@@ -115,9 +128,7 @@ class PromptChatbot(Chatbot):
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
         # and from the current query
-        current_prompt = self.get_current_prompt(
-            query, self.chatbot_config["max_context_examples"]
-        )
+        current_prompt = self.get_current_prompt(query)
 
         # Make a call to Cohere's co.generate API
         generated_object = self.co.generate(
@@ -143,20 +154,23 @@ class PromptChatbot(Chatbot):
 
         return response
 
-    def get_current_prompt(self, query: str, max_context_examples: int) -> str:
+    def get_current_prompt(self, query) -> str:
         """Stitches the prompt with a trailing window of the chat.
 
         Args:
             query (str): The current user query.
-            max_context_examples (int): The maximum number of example to consider
-                as the context window in the prompt.
         """
         # get base prompt
-        base_prompt = self.prompt.to_string()
+        base_prompt = self.prompt.to_string() + "\n"
 
         # get context prompt
         context_prompt_lines = []
-        trimmed_chat_history = self.chat_history[-max_context_examples:]
+        trimmed_chat_history = self.chat_history[
+            -self.chatbot_config["max_context_examples"] :
+        ]
+        # TODO when prompt is updated, the history is mutated
+        # as it is recreated using the new prompt. A possible fix is to save the old prompt
+        # in history and use it when recreating.
         for turn in trimmed_chat_history:
             context_prompt_lines.append(self.prompt.create_example_string(**turn))
         context_prompt = "".join(context_prompt_lines)
@@ -244,6 +258,20 @@ class PromptChatbot(Chatbot):
             chatbot_config=persona["chatbot_config"],
             client_config=persona["client_config"],
         )
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serializes this instance into a Python dictionary.
+
+        Returns:
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a PromptChatbot.
+        """
+        return {
+            "co": self.co,
+            "prompt": self.prompt.to_dict(),
+            "persona_name": self.persona_name,
+            "chatbot_config": self.chatbot_config,
+            "client_config": self.client_config,
+        }
 
     @staticmethod
     def _validate_persona_dict(persona: Dict[str, Any], persona_path: str) -> None:

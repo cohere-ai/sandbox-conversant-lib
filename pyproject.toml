@@ -12,6 +12,7 @@ pydantic = "^1.10.2"
 streamlit-chat = {git = "https://github.com/yichern/st-chat.git"}
 emoji = "^2.1.0"
 emojificate = "^0.6.0"
+streamlit-ace = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 wandb = "^0.13.0"
