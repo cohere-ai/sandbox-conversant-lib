@@ -141,7 +141,7 @@ def mock_chat_prompt(mock_chat_prompt_config: Dict[str, Any]) -> ChatPrompt:
 
     Args:
         mock_chat_prompt_config (Dict[str, Any]): A config used to instantiate a
-            StartPrompt fixture.
+            ChatPrompt fixture.
 
     Returns:
         ChatPrompt: A mock ChatPrompt object fixture for tests.
@@ -200,7 +200,7 @@ def mock_prompt_chatbot(mock_co: object, mock_chat_prompt: ChatPrompt) -> Prompt
 
     Args:
         mock_co (object): A mock Cohere client.
-        mock_start_prompt (StartPrompt): A mock StartPrompt.
+        mock_chat_prompt (ChatPrompt): A mock ChatPrompt.
 
     Returns:
         PromptChatbot: A simple mock of a chatbot that works through prompts.

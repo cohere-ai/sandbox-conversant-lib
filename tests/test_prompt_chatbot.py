@@ -79,9 +79,9 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
 def test_prompt_chatbot_get_current_prompt(
     mock_prompt_chatbot: PromptChatbot, max_context_examples: int, history_length: int
 ) -> None:
-    """Tests assembly of starter prompts and context.
+    """Tests assembly of prompts and context.
 
-    Starter prompts should be preserved and context
+    Prompts should be preserved and context
     should have line-level trimming applied.
 
     Args:
