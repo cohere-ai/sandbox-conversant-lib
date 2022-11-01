@@ -192,7 +192,8 @@ class Prompt:
         """Serializes this instance into a Python dictionary.
 
         Returns:
-            Dict[str, Any]: Dictionary of attributes that defines this instance of a Prompt.
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a
+                Prompt.
         """
         return {
             "preamble": self.preamble,
