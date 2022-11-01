@@ -108,7 +108,7 @@ class StartPrompt(Prompt):
             f"{self.headers[key]}: {interaction[key]}\n" for key in interaction.keys()
         )
 
-    def create_conversation_string(self, conversation: List[Interaction]) -> str:
+    def create_conversation_string(self, conversation: Conversation) -> str:
         """Creates a string represenation of a conversation.
 
         Conversations will look like the following:
