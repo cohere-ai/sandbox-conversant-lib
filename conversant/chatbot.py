@@ -7,7 +7,7 @@
 # level of this repository.
 
 from abc import ABC, abstractmethod
-from typing import Dict, NewType
+from typing import Dict, List, NewType
 
 import cohere
 
@@ -30,7 +30,7 @@ class Chatbot(ABC):
         # List[Interaction]. Each dict object represents a
         # conversation turn and has two keys: "speaker_name" and
         # "utterance".
-        self.chat_history = []
+        self.chat_history: List[Dict[str, str]] = []
 
     @abstractmethod
     def reply(self, query: str) -> Interaction:

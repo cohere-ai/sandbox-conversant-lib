@@ -91,8 +91,12 @@ def mock_prompt_config() -> Dict[str, Any]:
 def mock_prompt(mock_prompt_config: Dict[str, Any]) -> Prompt:
     """Instantiates a Prompt fixture for tests.
 
+    Args:
+        mock_prompt_config (Dict[str, Any]): A config used to instantiate a Prompt
+            fixture.
+
     Returns:
-        Prompt: A Prompt object fixture for tests.
+        Prompt: A mock Prompt object fixture for tests.
     """
     return Prompt(**mock_prompt_config)
 
@@ -135,9 +139,12 @@ def mock_start_prompt_config() -> Dict[str, Any]:
 def mock_start_prompt(mock_start_prompt_config: Dict[str, Any]) -> StartPrompt:
     """A StartPrompt config fixture for tests.
 
+    Args:
+        mock_start_prompt_config (Dict[str, Any]): A config used to instantiate a
+            StartPrompt fixture.
+
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
-            StartPrompt.
+        StartPrompt: A mock StartPrompt object fixture for tests.
     """
     return StartPrompt(**mock_start_prompt_config)
 
@@ -177,9 +184,12 @@ def mock_rewrite_prompt_config() -> Dict[str, Any]:
 def mock_rewrite_prompt(mock_rewrite_prompt_config: Dict[str, Any]) -> RewritePrompt:
     """A RewritePrompt config fixture for tests.
 
+    Args:
+        mock_rewrite_prompt_config (Dict[str, Any]): A config used to instantiate a
+            RewritePrompt fixture.
+
     Returns:
-        Dict[str, Any]: Dictionary that can be used to construct to instantiate a
-            RewritPrompt.
+        RewritePrompt: A mock RewritePrompt fixture for tests.
     """
     return RewritePrompt(**mock_rewrite_prompt_config)
 
@@ -189,6 +199,10 @@ def mock_prompt_chatbot(
     mock_co: object, mock_start_prompt: StartPrompt
 ) -> PromptChatbot:
     """Instantiates a single bot fixture for tests.
+
+    Args:
+        mock_co (object): A mock Cohere client.
+        mock_start_prompt (StartPrompt): A mock StartPrompt.
 
     Returns:
         PromptChatbot: A simple mock of a chatbot that works through prompts.
