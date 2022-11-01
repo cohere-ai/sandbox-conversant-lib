@@ -21,6 +21,9 @@ def encode_object(obj: object) -> str:
 
     Args:
         obj (object): a Python object
+
+    Returns:
+        obj_string
     """
     return codecs.encode(pickle.dumps(obj), "base64").decode()
 
@@ -30,6 +33,9 @@ def decode_object(obj_string: str) -> object:
 
     Args:
         obj_string: a base-64 string encoding
+
+    Returns:
+        object: a Python object
     """
     return pickle.loads(codecs.decode(obj_string.encode(), "base64"))
 
