@@ -347,7 +347,13 @@ class PromptChatbot(Chatbot):
         
         self.start_prompt_size = len(self.co.tokenize(self.get_current_prompt([])))
         if self.start_prompt_size > self.max_prompt_size:
-            raise ValueError(f"The start prompt config has too many tokens. The total number of tokens cannot exceed 2048 - received {self.start_prompt_size + self.client_config['max_tokens']}. Try using a smaller description or texts in the example turns.")
+            raise ValueError(
+                "The prompt given to PromptChatbot has too many tokens. The total "
+                "number of tokens "
+                f"({self.start_prompt_size + self.client_config['max_tokens']}) cannot "
+                f"exceed {MAX_PROMPT_SIZE}. Try using a shorter preamble or less "
+                "examples."
+            )
 
 
     @staticmethod
