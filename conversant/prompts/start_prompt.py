@@ -12,7 +12,8 @@ from typing import List, NewType
 
 from pydantic.dataclasses import dataclass
 
-from conversant.prompts.prompt import Interaction, Prompt
+from conversant.chatbot import Interaction
+from conversant.prompts.prompt import Prompt
 
 Conversation = NewType("Conversation", List[Interaction])
 
@@ -20,6 +21,10 @@ Conversation = NewType("Conversation", List[Interaction])
 @dataclass
 class StartPrompt(Prompt):
     """A start prompt given to a Chatbot.
+
+    The examples in a `StartPrompt` are a list of `Conversation`s themselves a list of
+    `Interaction`s. This is one level of nesting further as compared to those in
+    `Prompt`, which are a list of `Interaction`s.
 
     Required keys:
         user: An entity speaking to the bot.
@@ -94,7 +99,7 @@ class StartPrompt(Prompt):
             f"{self.headers[key]}: {interaction[key]}\n" for key in interaction.keys()
         )
 
-    def create_conversation_string(self, conversation: List[Interaction]) -> str:
+    def create_conversation_string(self, conversation: Conversation) -> str:
         """Creates a string represenation of a conversation.
 
         Conversations will look like the following:
@@ -105,7 +110,7 @@ class StartPrompt(Prompt):
             {bot_name}: {utterance}\n
 
         Args:
-            conversation (List[Dict[str, str]]): Am
+            conversation (Conversation): List of interactions.
         """
         return "".join(
             self.create_interaction_string(**interaction)

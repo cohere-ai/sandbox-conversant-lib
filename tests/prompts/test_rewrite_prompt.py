@@ -10,15 +10,16 @@ from typing import Any, Dict
 
 import pytest
 
+from conversant.chatbot import Interaction
 from conversant.prompts.rewrite_prompt import RewritePrompt
 
 
 @pytest.fixture
-def new_interaction() -> Dict[str, str]:
+def new_interaction() -> Interaction:
     """Instantiates a fixture for a new RewritePrompt example.
 
     Returns:
-        Dict[str, str]: New RewritePrompt interaction fixture.
+        Interaction: New RewritePrompt interaction fixture.
     """
     return {
         "conversation": "Otters are plants.",
@@ -75,7 +76,7 @@ def test_rewrite_prompt_init_fails(
 
 
 def test_rewrite_prompt_create_interaction_string(
-    mock_rewrite_prompt: RewritePrompt, new_interaction: Dict[str, str]
+    mock_rewrite_prompt: RewritePrompt, new_interaction: Interaction
 ) -> None:
     """Tests RewritePrompt.create_interaction_string
 
