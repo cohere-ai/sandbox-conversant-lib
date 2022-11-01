@@ -32,7 +32,7 @@ def decode_object(obj_string: str) -> object:
     """Decode and deserialize an object,
 
     Args:
-        obj_string: a base-64 string encoding
+        obj_string (str): a base-64 string encoding
 
     Returns:
         object: a Python object
