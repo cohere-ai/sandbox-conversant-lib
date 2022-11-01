@@ -6,7 +6,7 @@ authors = ["Cohere ConvAI <convai@cohere.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-cohere = "^2.4.2"
+cohere = "^2.8.0"
 toml = "^0.10.2"
 pydantic = "^1.10.2"
 streamlit-chat = {git = "https://github.com/yichern/st-chat.git"}
