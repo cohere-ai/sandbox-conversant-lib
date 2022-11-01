@@ -21,6 +21,10 @@ Conversation = NewType("Conversation", List[Interaction])
 class StartPrompt(Prompt):
     """A start prompt given to a Chatbot.
 
+    The examples in a `StartPrompt` are a list of `Conversation`s themselves a list of
+    `Interaction`s. This is one level of nesting further as compared to those in
+    `Prompt`, which are a list of `Interaction`s.
+
     Required keys:
         user: An entity speaking to the bot.
         bot: The Chatbot itself.
