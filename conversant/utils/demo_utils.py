@@ -23,7 +23,7 @@ def encode_object(obj: object) -> str:
         obj (object): a Python object
 
     Returns:
-        obj_string
+        str: object as a base-64 string
     """
     return codecs.encode(pickle.dumps(obj), "base64").decode()
 
