@@ -79,7 +79,7 @@ def test_prompt_chatbot_get_current_prompt(
 
     Args:
         prompt_chatbot (PromptChatbot): Bot test fixture
-        max_context_exampels (int): The maximum number of examples to keep as context.
+        max_context_examples (int): The maximum number of examples to keep as context.
         history_length (int): The length of the chat history.
     """
     chat_history = [
