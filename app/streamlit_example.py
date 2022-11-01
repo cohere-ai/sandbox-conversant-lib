@@ -56,6 +56,12 @@ def update_session_with_prompt() -> None:
         st.session_state.snapshot_prompt_config = copy.deepcopy(
             st.session_state.bot.prompt.to_dict()
         )
+        st.session_state.snapshot_chatbot_config = copy.deepcopy(
+            st.session_state.bot.chatbot_config
+        )
+        st.session_state.snapshot_client_config = copy.deepcopy(
+            st.session_state.bot.client_config
+        )
 
 
 def update_prompt_from_json() -> None:
@@ -172,6 +178,10 @@ if __name__ == "__main__":
                     update_prompt_from_json()
 
                 with settings_placeholder.container():
+                    with st.expander("Client Config"):
+                        ui.draw_client_config_form()
+                    with st.expander("Chatbot Config"):
+                        ui.draw_chatbot_config_form()
                     ui.draw_prompt_form(disabled=True)
 
                 with prompt_string_placeholder.container():
@@ -184,6 +194,10 @@ if __name__ == "__main__":
                 # the displayed JSON values in prompt JSON placeholder
                 # take reference from the form.
                 with settings_placeholder.container():
+                    with st.expander("Client Config"):
+                        ui.draw_client_config_form()
+                    with st.expander("Chatbot Config"):
+                        ui.draw_chatbot_config_form()
                     ui.draw_prompt_form(disabled=False)
 
                 with prompt_json_view_placeholder.container():
@@ -217,6 +231,11 @@ if __name__ == "__main__":
 
             # Draw UI elements for the sidebar
             with settings_placeholder.container():
+
+                with st.expander("Client Config"):
+                    ui.draw_client_config_form()
+                with st.expander("Chatbot Config"):
+                    ui.draw_chatbot_config_form()
 
                 with st.expander("Prompt (JSON)"):
                     ui.draw_prompt_view(json=True)
