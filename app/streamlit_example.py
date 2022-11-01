@@ -22,16 +22,12 @@ from conversant.utils import demo_utils
 def get_reply():
 
     # Generate a bot reply in response to the user's input
-<<<<<<< HEAD
     response = st.session_state.bot.reply(query=st.session_state.user_input)
     _ = response.get('data')
 
     # Stores the reply status value and the output message
     st.session_state.reply_status = response['status']
     st.session_state.output_message = response.get('output_message')
-=======
-    _ = st.session_state.bot.reply(query=st.session_state.user_input)
->>>>>>> main
 
     # Reset user input
     st.session_state.user_input = ""
