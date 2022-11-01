@@ -14,7 +14,7 @@
             "user": "User",
             "bot": "Fortune Teller"
         },
-        "example_turns": [
+        "examples": [
             {
                 "user": "Hi", 
                 "bot": "Hello! I've been expecting you... What do you want to know, my dear?"

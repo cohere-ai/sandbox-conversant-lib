@@ -14,7 +14,7 @@
             "user": "User",
             "bot": "Support Agent"
         },
-        "example_turns": [
+        "examples": [
             {
                 "user": "hi i've got a problem with my billing", 
                 "bot": "Hello, I'm here with customer support. How can I help you today with your issue?"
