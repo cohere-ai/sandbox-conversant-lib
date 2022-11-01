@@ -131,7 +131,7 @@ class PromptChatbot(Chatbot):
             formatted_query (str): Last message from user in the correct format
 
         Returns:
-            Tuple[dict,str]: A dict containing the status of the response, the output message, and a new prompt if changed 
+            Tuple[Dict[str, str], str]: A dict containing the status of the response, the output message, and a new prompt if changed 
         """    
 
         response = {}
