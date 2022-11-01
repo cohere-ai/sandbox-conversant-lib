@@ -59,16 +59,19 @@ class ParrotChatbot:
     """
 
     def __init__(self):
-        self.chatlog = []
-        self.user_name = "User"
-        self.bot_name = "Parrot Bot"
-        self.start_prompt = StartPrompt(
-            bot_desc=(
+        self.prompt = StartPrompt(
+            preamble=(
                 "The Parrot Bot repeats back whatever is said to it "
                 "without using Cohere's large language models."
             ),
-            example_turns=[],
+            headers={
+                "user": "User",
+                "bot": "Parrot Bot",
+            },
+            example_separator="",
+            examples=[],
         )
+        self.chat_history = []
 
     def reply(self, query: str) -> str:
         """Replies to a user by stating their query.
@@ -79,17 +82,8 @@ class ParrotChatbot:
         Returns:
             str: a mock reply
         """
-        formatted_query = {
-            "speaker_name": self.user_name,
-            "utterance": query,
-        }
-        formatted_response = {
-            "speaker_name": self.bot_name,
-            "utterance": query,
-        }
-        self.chatlog.append(formatted_query)
-        self.chatlog.append(formatted_response)
-        return formatted_response
+        self.chat_history.append(self.prompt.create_example(query, query))
+        return query
 
 
 # This ensures rendering is prevented upon import of this file.
@@ -106,7 +100,7 @@ if __name__ == "__main__":
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
     # This initializes empty Streamlit containers as placeholders.
-    chatlog_placeholder = st.empty()
+    chat_history_placeholder = st.empty()
     user_input_placeholder = st.empty()
     persona_selection_placeholder = st.empty()
 
@@ -142,7 +136,7 @@ if __name__ == "__main__":
                 f"**More info about your conversations with \
                     {st.session_state.bot.bot_name}:**"
             )
-            st.write(f"> {st.session_state.bot.start_prompt.bot_desc}")
+            st.write(f"> {st.session_state.bot.prompt.preamble}")
 
             # Add disclaimer
             if st.session_state.persona != "parrot":
@@ -158,36 +152,42 @@ if __name__ == "__main__":
 
         # List of Dict[str, str] dialogue turns.
         # Each dictionary contains a "speaker_name" and "utterance" key.
-        # Let the chatbot begin the dialogue if the chatlog is empty.
-        if st.session_state.bot.chatlog == []:
+        # Let the chatbot begin the dialogue if the chat_history is empty.
+        if st.session_state.bot.chat_history == []:
 
             # We can get the chatbot to begin the conversation with this
             st.session_state.bot.reply(
                 query="Hello",
             )
-            st.session_state.bot.chatlog.pop(0)  # Remove injected user utterance
 
         # Places the chat history in a Streamlit container.
-        with chatlog_placeholder.container():
+        with chat_history_placeholder.container():
 
-            # Iterate through the chatlog. This is done in reverse order to
+            # Iterate through the chat_history. This is done in reverse order to
             # ensure that recent messages displayed are anchored at the bottom
             # of the Streamlit demo.
-            for i, turn in enumerate(st.session_state.bot.chatlog[::-1]):
+            for i, turn in enumerate(st.session_state.bot.chat_history[::-1]):
 
-                # Streamlit renders & runs logic by stepping through
-                # Python files procedurally. This is why you have to
-                # render all chat messages in the chatlog. We use streamlit_chat
-                # to render them.
-                if turn["speaker_name"] == st.session_state.bot.bot_name:
-                    stchat.message(turn["utterance"], key=f"{i}_bot")
-                elif turn["speaker_name"] == st.session_state.bot.user_name:
-                    stchat.message(
-                        turn["utterance"],
-                        is_user=True,
-                        key=f"{i}_user",
-                        avatar_style="gridy",
-                    )
+                # If we are at the first conversation turn, we remove the
+                # injected user utterance of "Hello" from displaying.
+                if i == len(st.session_state.bot.chat_history) - 1:
+                    if "bot" in turn:
+                        stchat.message(turn["bot"], key=f"{i}_bot")
+                else:
+
+                    # Streamlit renders & runs logic by stepping through
+                    # Python files procedurally. This is why you have to
+                    # render all chat messages in the chat_history. We use
+                    # streamlit_chat to render them.
+                    if "bot" in turn:
+                        stchat.message(turn["bot"], key=f"{i}_bot")
+                    if "user" in turn:
+                        stchat.message(
+                            turn["user"],
+                            is_user=True,
+                            key=f"{i}_user",
+                            avatar_style="gridy",
+                        )
 
         # Places the user input in a Streamlit container.
         with user_input_placeholder.container():

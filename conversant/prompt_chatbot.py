@@ -9,20 +9,19 @@
 import json
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import cohere
 import jsonschema
 
 from conversant.chatbot import Chatbot
+from conversant.prompts.prompt import Prompt
 from conversant.prompts.start_prompt import StartPrompt
 
 PERSONA_MODEL_DIRECTORY = "conversant/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
     "properties": {
-        "user_name": {"type": "string"},
-        "bot_name": {"type": "string"},
         "chatbot_config": {
             "type": "object",
             "properties": {
@@ -37,7 +36,7 @@ PERSONA_JSON_SCHEMA = {
                 "temperature": {"type": "number"},
             },
         },
-        "start_prompt_config": {
+        "prompt_config": {
             "type": "object",
         },
     },
@@ -53,79 +52,120 @@ class PromptChatbot(Chatbot):
     def __init__(
         self,
         client: cohere.Client,
-        start_prompt: StartPrompt,
-        user_name: str = "User",
-        bot_name: str = "PromptChatbot",
+        prompt: Prompt,
         persona_name: str = "",
         chatbot_config: Dict[str, Any] = {},
         client_config: Dict[str, Any] = {},
     ):
-        """Enriches init by adding a start prompt and user/bot names.
+        """Enriches init by adding a prompt.
 
         Args:
             client (cohere.Client): Cohere client for API
-            start_prompt (StartPrompt): Starter prompt object for dialogue shaping.
-            user_name (str, optional): User's chat handle. Defaults to "User".
-            bot_name (str, optional): Bot's chat handle. Defaults to "PromptChatbot".
+            prompt (Prompt): Prompt object to direct behavior.
             persona_name (str, optional): Bot's persona name. Defaults to empty string.
-            client_config (Dict, optional): Bot's client config. Defaults to empty dict.
+            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to
+                empty dict.
+            client_config (Dict[str, Any], optional): Bot's client config. Defaults to
+                empty dict.
         """
 
         super().__init__(client)
-
-        self.user_name = user_name
-        self.bot_name = bot_name
+        self.prompt = prompt
         self.persona_name = persona_name
-
-        self.start_prompt = start_prompt
-        self._validate_start_dialogue()
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
+        self.prompt_history = []
+
+    @property
+    def user_name(self):
+        """
+        Returns:
+            str: The name of the user, defined in the prompt. Defaults to "User".
+        """
+        if hasattr(self.prompt, "user_name"):
+            return self.prompt.user_name
+        else:
+            return "User"
+
+    @property
+    def bot_name(self):
+        """
+        Returns:
+            str: The name of the chatbot, defined in the prompt. Defaults to
+                "PromptChatbot".
+        """
+        if hasattr(self.prompt, "bot_name"):
+            return self.prompt.bot_name
+        else:
+            return "PromptChatbot"
 
     def reply(self, query: str) -> Dict[str, str]:
-        """Replies to a user's query given a chatlog.
+        """Replies to a query given a chat history.
 
         The reply is then generated directly from a call to a LLM.
 
         Args:
-            query (str): Last message from user
+            query (str): A query passed to the prompt chatbot.
 
         Returns:
             Dict[str, str]: Generated LLM response with "speaker_name" and
             "utterance" keys
         """
-
-        formatted_query = {
-            "speaker_name": self.user_name,
-            "utterance": query,
-        }
-        prompt = self._assemble_prompt(
-            [f"{turn['speaker_name']}: {turn['utterance']}" for turn in self.chatlog]
-            + [f"{formatted_query['speaker_name']}: {formatted_query['utterance']}"]
+        # The current prompt is assembled from the initial prompt,
+        # from the chat history with a maximum of max_context_examples,
+        # and from the current query
+        current_prompt = self.get_current_prompt(
+            query, self.chatbot_config["max_context_examples"]
         )
 
+        # Make a call to Cohere's co.generate API
         generated_object = self.co.generate(
             model=self.client_config["model"],
-            prompt=prompt,
+            prompt=current_prompt,
             max_tokens=self.client_config["max_tokens"],
             temperature=self.client_config["temperature"],
             stop_sequences=self.client_config["stop_seq"],
         )
+
         # If response was cut off by .generate() finding a stop sequence,
         # remove that sequence from the response.
         response = generated_object.generations[0].text
         for stop_seq in self.client_config["stop_seq"]:
             if response.endswith(stop_seq):
                 response = response[: -len(stop_seq)]
-        formatted_response = {
-            "speaker_name": self.bot_name,
-            "utterance": response,
-        }
-        self.chatlog.append(formatted_query)
-        self.chatlog.append(formatted_response)
+        response = response.lstrip()
 
-        return formatted_response
+        # We need to remember the current response in the chat history for future
+        # responses.
+        self.chat_history.append(self.prompt.create_example(query, response))
+        self.prompt_history.append(current_prompt)
+
+        return response
+
+    def get_current_prompt(self, query: str, max_context_examples: int) -> str:
+        """Stitches the prompt with a trailing window of the chat.
+
+        Args:
+            query (str): The current user query.
+            max_context_examples (int): The maximum number of example to consider
+                as the context window in the prompt.
+        """
+        # get base prompt
+        base_prompt = self.prompt.to_string()
+
+        # get context prompt
+        context_prompt_lines = []
+        trimmed_chat_history = self.chat_history[-max_context_examples:]
+        for turn in trimmed_chat_history:
+            context_prompt_lines.append(self.prompt.create_example_string(**turn))
+        context_prompt = "".join(context_prompt_lines)
+
+        # get query prompt
+        query_prompt = self.prompt.create_example_string(query)
+
+        current_prompt = base_prompt + context_prompt + query_prompt
+        return current_prompt.strip()
 
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
         """Configures chatbot options.
@@ -137,9 +177,9 @@ class PromptChatbot(Chatbot):
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
             self.chatbot_config = {
-                "max_context_lines": 20,
+                "max_context_examples": 10,
             }
-        # Override default config values with the config passed in by the user.
+        # Override default config values with the config passed in
         if isinstance(chatbot_config, Dict):
             self.chatbot_config.update(chatbot_config)
         else:
@@ -160,9 +200,9 @@ class PromptChatbot(Chatbot):
                 "model": "xlarge",
                 "max_tokens": 100,
                 "temperature": 0.75,
-                "stop_seq": ["\n"],
+                "stop_seq": self.prompt.stop_sequences,
             }
-        # Override default config values with the config passed in by the user.
+        # Override default config values with the config passed in
         if isinstance(client_config, Dict):
             self.client_config.update(client_config)
         else:
@@ -198,81 +238,11 @@ class PromptChatbot(Chatbot):
 
         return cls(
             client=client,
-            start_prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
-            user_name=persona["user_name"],
-            bot_name=persona["bot_name"],
-            client_config=persona["client_config"],
+            prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
             persona_name=persona_name,
+            chatbot_config=persona["chatbot_config"],
+            client_config=persona["client_config"],
         )
-
-    def _assemble_prompt(self, new_lines: List[str]) -> str:
-        """Stitches the starter prompt with a trailing window of the chat.
-
-        Args:
-            new_lines (List[str]): New lines to append
-        """
-        trimmed_lines = new_lines[-self.chatbot_config["max_context_lines"] :]
-        context_prompt = "\n".join(trimmed_lines)
-
-        stripped_desc = self.start_prompt.bot_desc.strip()
-
-        prepended_turns = [
-            (
-                f"{self.user_name}: {user_query.strip()}",
-                f"{self.bot_name}: {bot_reply.strip()}",
-            )
-            for (user_query, bot_reply) in self.start_prompt.example_turns
-        ]
-
-        stitched_turns = "\n".join(
-            ["\n".join([user, bot]) for (user, bot) in prepended_turns]
-        )
-
-        description_header = "<<DESCRIPTION>>"
-        conversation_header = "<<CONVERSATION>>"
-
-        joined_start_prompt = (
-            f"Below is a series of chats between {self.bot_name} and {self.user_name}."
-            + f"{self.bot_name} responds to {self.user_name} "
-            + f"based on the {description_header}.\n"
-            + f"{description_header}\n"
-            + f"{stripped_desc}\n"
-            + f"{conversation_header}\n"
-            + f"{stitched_turns}\n"
-            + f"{conversation_header}"
-        )
-
-        return f"{joined_start_prompt}\n{context_prompt}\n{self.bot_name}:"
-
-    def _validate_start_dialogue(self) -> None:
-        """Validates formatting of starter dialogue."""
-
-        user_turns = [turn[0] for turn in self.start_prompt.example_turns]
-        bot_turns = [turn[1] for turn in self.start_prompt.example_turns]
-        all_turns = user_turns + bot_turns
-
-        colon_prefixed = all(":" in turn for turn in all_turns)
-        hyphen_prefixed = all("-" in turn for turn in all_turns)
-
-        if colon_prefixed or hyphen_prefixed:
-            # This might false-positive, so we only log a warning
-            logging.warning(
-                "Did you mistakenly prefix the example dialogue turns \
-                    with user/bot names?"
-            )
-
-        user_prefixed = all(
-            turn.lstrip().startswith(self.user_name) for turn in user_turns
-        )
-
-        bot_prefixed = all(
-            turn.lstrip().startswith(self.bot_name) for turn in bot_turns
-        )
-
-        if user_prefixed and bot_prefixed:
-            # It's hard to think of any genuine case where all utterances
-            # start with self-names.
-            raise ValueError("Start turns should not be prefixed with user/bot names!")
 
     @staticmethod
     def _validate_persona_dict(persona: Dict[str, Any], persona_path: str) -> None:

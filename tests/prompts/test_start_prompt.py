@@ -6,93 +6,156 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict
 
-import jsonschema
 import pytest
 
 from conversant.prompts.start_prompt import StartPrompt
 
 
-def test_start_prompt_init() -> None:
-    """Tests proper start prompt initialization."""
-    prompt = StartPrompt(
-        bot_desc="This is an awesome chatbot.",
-        example_turns=[
-            ("hi", "hello"),
-            ("sup?", "nm"),
-        ],
-    )
+@pytest.fixture
+def new_example() -> Dict[str, str]:
+    """Instantiates a fixture for a new StartPrompt example.
 
-    assert len(prompt.bot_desc) > prompt.MIN_DESC_LEN
-    assert prompt.bot_desc == "This is an awesome chatbot."
-    assert prompt.example_turns == [
-        ("hi", "hello"),
-        ("sup?", "nm"),
-    ]
+    Returns:
+        Dict[str, str]: New StartPrompt example fixture.
+    """
+    return {"user": "Nice to meet you!", "bot": "You too!"}
+
+
+def test_start_prompt_init(mock_start_prompt_config: Dict[str, Any]) -> None:
+    """Tests StartPrompt.__init__
+
+    Args:
+        mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
+    """
+    start_prompt = StartPrompt(**mock_start_prompt_config)
+    assert start_prompt.user_name == "User"
+    assert start_prompt.bot_name == "Mock Chatbot"
+    assert start_prompt.stop_sequences == ["\nUser:", "\nMock Chatbot:"]
 
 
 def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -> None:
-    _ = StartPrompt.from_dict(mock_start_prompt_config)
+    """Tests StartPrompt.from_dict
 
-
-def test_empty_fails() -> None:
-    """Test that empty start prompts fail."""
-    with pytest.raises(TypeError):
-        _ = StartPrompt()
-
-
-def test_short_desc_fails() -> None:
-    """Test that short descriptions fail."""
-    with pytest.raises(ValueError):
-        _ = StartPrompt(
-            bot_desc="abcdefg",
-            example_turns=[],
-        )
+    Args:
+        mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
+    """
+    start_prompt = StartPrompt.from_dict(mock_start_prompt_config)
+    assert start_prompt.user_name == "User"
+    assert start_prompt.bot_name == "Mock Chatbot"
+    assert start_prompt.stop_sequences == ["\nUser:", "\nMock Chatbot:"]
 
 
 @pytest.mark.parametrize(
-    "turns",
+    "config",
     [
-        ([("User: Hi",), ("Bot: Hi",)],),
-        ([("Hi", "bye", "hello")],),
-        ([("Hi", "bye"), ("hello",)],),
-        (["hi", "hey"],),
+        # short preamble
+        {"preamble": "short"},
+        # headers do not contain user
+        {"headers": {"bot": "Mock Chatbot"}},
+        # headers do not contain bot
+        {"headers": {"user": "User"}},
+        # examples have no speakers
+        {"examples": [{}]},
+        # examples have one speaker
+        {"examples": [{"user": "user utterance"}, {"bot": "bot utterance"}]},
+        # examples have wrong key
+        {"examples": [{"user": "user utterance", "": "bot utterance"}]},
+        # examples have three speakers
+        {
+            "examples": [
+                {
+                    "user": "user utterance",
+                    "bot": "bot utterance",
+                    "user2": "user2 utterance",
+                }
+            ]
+        },
+        # examples are prefixed by user and bot names
+        {
+            "headers": {"user": "Alice", "bot": "Bob"},
+            "examples": [{"user": "Alice: Hey", "bot": "Bob: Hi"}],
+        },
+    ],
+    ids=[
+        "short-preamble",
+        "headers-no-user",
+        "headers-no-bot",
+        "examples-no-speakers",
+        "examples-one-speaker",
+        "examples-wrong-key",
+        "examples-three-speakers",
+        "examples-prefixed-with-name",
     ],
 )
-def test_bad_turn_formatting_fails(turns: List[Tuple[str, str]]) -> None:
-    """Test that non 2-person & non-tuple dialogue fails."""
-    with pytest.raises(ValueError):
-        _ = StartPrompt(
-            bot_desc="This is a long description of a bot.",
-            example_turns=[turns],
-        )
-
-
-def test_bad_start_prompt_config_schema_fails(
-    mock_start_prompt_config: Dict[str, Any]
+def test_start_prompt_init_fails(
+    mock_start_prompt_config: Dict[str, Any], config
 ) -> None:
-    """Test that wrong types or keys in a prompt config raises validation errors."""
-    # Test for wrong types in the prompt config.
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_start_prompt_config.copy()
-        config["bot_desc"] = 123
-        _ = StartPrompt.from_dict(config)
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_start_prompt_config.copy()
-        config["example_turns"] = {}
-        _ = StartPrompt.from_dict(config)
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_start_prompt_config.copy()
-        config["example_turns"][0] = []
-        _ = StartPrompt.from_dict(config)
-    with pytest.raises(jsonschema.exceptions.ValidationError):
-        config = mock_start_prompt_config.copy()
-        config["example_turns"][0] = {"user": 123, "bot": 123}
-        _ = StartPrompt.from_dict(config)
+    """Tests StartPrompt.__init__ on bad parameters.
 
-    # Test for wrong keys in the start prompt config.
-    with pytest.raises(KeyError):
-        config = mock_start_prompt_config.copy()
-        config["example_turns"][0] = {"usr": "", "bt": ""}
-        _ = StartPrompt.from_dict(config)
+    Args:
+        mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
+        config (Dict[str, Any]): Dictionary of bad parameters.
+    """
+    mock_start_prompt_config.update(config)
+    with pytest.raises(ValueError):
+        _ = StartPrompt(**mock_start_prompt_config)
+
+
+def test_start_prompt_create_example_string(
+    mock_start_prompt: StartPrompt, new_example: Dict[str, str]
+) -> None:
+    """Tests StartPrompt.create_example_string
+
+    Args:
+        mock_start_prompt (StartPrompt): A StartPrompt fixture.
+        new_example (Dict[ str, str]): A new StartPrompt example fixture.
+    """
+    expected = (
+        f"{mock_start_prompt.example_separator}"
+        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
+        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
+    )
+    # create from positional arguments
+    generated_example_str = mock_start_prompt.create_example_string(
+        new_example["user"], new_example["bot"]
+    )
+    assert generated_example_str == expected
+
+    # create from keyword arguments
+    generated_example_str = mock_start_prompt.create_example_string(**new_example)
+    assert generated_example_str == expected
+
+    # generated example string is dependent on the insertion order into the examples
+    # dictionary
+    reordered_example = {}
+    reordered_example["bot"] = new_example["bot"]
+    reordered_example["user"] = new_example["user"]
+    reordered_expected = (
+        f"{mock_start_prompt.example_separator}"
+        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
+        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
+    )
+    generated_reordered_example_str = mock_start_prompt.create_example_string(
+        **reordered_example
+    )
+    assert generated_reordered_example_str == reordered_expected
+
+
+def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:
+    """Tests StartPrompt.to_string
+
+    Args:
+        mock_start_prompt (StartPrompt): A StartPrompt fixture.
+    """
+    expected = (
+        f"{mock_start_prompt.preamble}\n"
+        f"{mock_start_prompt.example_separator}"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0]['user']}\n"  # noqa
+        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[0]['bot']}\n"
+        f"{mock_start_prompt.example_separator}"
+        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1]['user']}\n"  # noqa
+        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[1]['bot']}"
+    )
+    assert mock_start_prompt.to_string() == expected
