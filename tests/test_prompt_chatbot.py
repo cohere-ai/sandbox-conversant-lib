@@ -6,6 +6,7 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
+import itertools
 
 import pytest
 
@@ -55,7 +56,18 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
         )
 
 
-def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -> None:
+@pytest.mark.parametrize(
+    "max_context_examples, history_length",
+    list(
+        filter(
+            lambda items: items[0] <= items[1],
+            itertools.product(list(range(20)), list(range(50))),
+        )
+    ),
+)
+def test_prompt_chatbot_get_current_prompt(
+    mock_prompt_chatbot: PromptChatbot, max_context_examples: int, history_length: int
+) -> None:
     """Tests assembly of starter prompts and context.
 
     Starter prompts should be preserved and context
@@ -64,15 +76,18 @@ def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -
     Args:
         prompt_chatbot (PromptChatbot): Bot test fixture
     """
-
-    max_context_examples = mock_prompt_chatbot.chatbot_config["max_context_examples"]
-    chat_history = [{"user": "Greetings!", "bot": "I greet you"}] * (
-        max_context_examples
-    ) + [{"user": "Hello!", "bot": "Hello back"}] * (max_context_examples)
+    chat_history = [
+        {"user": f"Hello! {i}", "bot": f"Hello back! {i}"}
+        for i in range(history_length + 1)
+    ]
     mock_prompt_chatbot.chat_history = chat_history
+    mock_prompt_chatbot.configure_chatbot(
+        {
+            "max_context_examples": max_context_examples,
+        }
+    )
 
     current_prompt = mock_prompt_chatbot.get_current_prompt(query="Hello!")
-
     expected = (
         # start prompt
         f"{mock_prompt_chatbot.prompt.preamble}\n"
@@ -83,12 +98,18 @@ def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -
         + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1]['user']}\n"  # noqa
         + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}\n"  # noqa
         # context prompt
-        + (
-            f"{mock_prompt_chatbot.prompt.example_separator}"
-            f"{mock_prompt_chatbot.prompt.headers['user']}: Hello!\n"
-            f"{mock_prompt_chatbot.prompt.headers['bot']}: Hello back\n"
+        + "".join(
+            [
+                (
+                    f"{mock_prompt_chatbot.prompt.example_separator}"
+                    f"{mock_prompt_chatbot.prompt.headers['user']}: Hello! {i}\n"
+                    f"{mock_prompt_chatbot.prompt.headers['bot']}: Hello back! {i}\n"
+                )
+                for i in range(
+                    history_length - max_context_examples + 1, history_length + 1
+                )
+            ]
         )
-        * max_context_examples
         # query prompt
         + (
             f"{mock_prompt_chatbot.prompt.example_separator}"
