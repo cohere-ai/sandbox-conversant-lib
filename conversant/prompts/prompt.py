@@ -63,8 +63,8 @@ class Prompt:
 
     def __str__(self) -> str:
         return self.to_string()
-        
-    def create_interaction(self, *args, **kwargs) -> Dict[str, str]:
+
+    def create_interaction(self, *args, **kwargs) -> Interaction:
         """Creates a new dictionary representation of an interaction.
 
         The order of args here should correspond to the order of the keys in `headers`.
