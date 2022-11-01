@@ -55,8 +55,8 @@ def draw_disclaimer() -> None:
         )
     else:
         st.write(
-            "_The Parrot persona does not make use of [Cohere](https://cohere.com)'s \
-            large language models._"
+            "_The Parrot persona does not make use of [Cohere](https://cohere.com)'s "
+            "large language models._"
         )
 
 
@@ -315,8 +315,8 @@ def draw_prompt_view(json: bool = False) -> None:
         st.json(st.session_state.bot.prompt.to_dict())
     else:
         st.write(
-            f"**{st.session_state.bot.prompt.bot_name} responds to you using the prompt"
-            "below:**"
+            f"**{st.session_state.bot.prompt.bot_name} responds to you using the "
+            "prompt below:**"
         )
         # If the current JSON string is malformed, show the error to the user to help
         # with debugging.
@@ -328,4 +328,4 @@ def draw_prompt_view(json: bool = False) -> None:
                 language="markdown",
             )
             if st.session_state.bot.chat_history:
-                st.write(f"_(includes the current chat history)_")
+                st.write("_(includes the current chat history)_")

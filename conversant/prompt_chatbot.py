@@ -81,7 +81,7 @@ class PromptChatbot(Chatbot):
         self.chat_history = []
         self.prompt_history = [self.prompt.to_string()]
 
-    def __repr__(self) -> Dict[str, Any]:
+    def __repr__(self) -> str:
         return json.dumps(self.to_dict(), indent=4, default=str)
 
     @property
@@ -161,8 +161,14 @@ class PromptChatbot(Chatbot):
     def get_current_prompt(self, query) -> str:
         """Stitches the prompt with a trailing window of the chat.
 
-        Args:
-            query (str): The current user query.
+                Args:
+                    query (str): The current user query.
+        <<<<<<< HEAD
+        =======
+
+                Returns:
+                    str: The current prompt given a query.
+        >>>>>>> main
         """
         # get base prompt
         base_prompt = self.prompt.to_string() + "\n"
@@ -245,6 +251,7 @@ class PromptChatbot(Chatbot):
         Args:
             persona (str): Name of persona, corresponding to a .json file.
             client (cohere.Client): Cohere client for API
+            persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
         persona_path = os.path.join(persona_dir, persona_name, "config.json")
