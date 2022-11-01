@@ -23,7 +23,7 @@ def get_reply():
 
     # Generate a bot reply in response to the user's input
     response = st.session_state.bot.reply(query=st.session_state.user_input)
-    reply = response.get('data')
+    _ = response.get('data')
 
     # Stores the reply status value and the output message
     st.session_state.reply_status = response['status']
