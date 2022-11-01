@@ -9,13 +9,14 @@
 import json
 import logging
 import os
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
 
 import cohere
 import jsonschema
 
 
 from conversant.chatbot import Chatbot
+from conversant.prompts.prompt import Prompt
 from conversant.prompts.start_prompt import StartPrompt
 
 MAX_PROMPT_SIZE = 2048
@@ -23,8 +24,6 @@ PERSONA_MODEL_DIRECTORY = "conversant/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
     "properties": {
-        "user_name": {"type": "string"},
-        "bot_name": {"type": "string"},
         "chatbot_config": {
             "type": "object",
             "properties": {
@@ -39,7 +38,7 @@ PERSONA_JSON_SCHEMA = {
                 "temperature": {"type": "number"},
             },
         },
-        "start_prompt_config": {
+        "prompt_config": {
             "type": "object",
         },
     },
@@ -55,40 +54,72 @@ class PromptChatbot(Chatbot):
     def __init__(
         self,
         client: cohere.Client,
-        start_prompt: StartPrompt,
-        user_name: str = "User",
-        bot_name: str = "PromptChatbot",
+        prompt: Prompt,
         persona_name: str = "",
         chatbot_config: Dict[str, Any] = {},
         client_config: Dict[str, Any] = {},
     ):
-        """Enriches init by adding a start prompt and user/bot names.
+        """Enriches init by adding a prompt.
 
         Args:
             client (cohere.Client): Cohere client for API
-            start_prompt (StartPrompt): Starter prompt object for dialogue shaping.
-            user_name (str, optional): User's chat handle. Defaults to "User".
-            bot_name (str, optional): Bot's chat handle. Defaults to "PromptChatbot".
+            prompt (Prompt): Prompt object to direct behavior.
             persona_name (str, optional): Bot's persona name. Defaults to empty string.
-            client_config (Dict, optional): Bot's client config. Defaults to empty dict.
+            chatbot_config: (Dict[str, Any], optional): Bot's chat config. Defaults to
+                empty dict.
+            client_config (Dict[str, Any], optional): Bot's client config. Defaults to
+                empty dict.
         """
 
         super().__init__(client)
-
-        self.user_name = user_name
-        self.bot_name = bot_name
+        self.prompt = prompt
         self.persona_name = persona_name
-
-        self.start_prompt = start_prompt
-        self._validate_start_dialogue()
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
+        self.chat_history = []
+        self.prompt_history = [self.prompt.to_string()]
+
 
         self.max_prompt_size = MAX_PROMPT_SIZE - self.client_config["max_tokens"]
-        self.check_prompt_size()
+        # self.check_prompt_size()
 
-    def check_and_adjust_prompt_size(self, prompt: str, formatted_query: str) -> Tuple[dict,str]:
+    def __repr__(self) -> Dict[str, Any]:
+        return json.dumps(self.to_dict(), indent=4, default=str)
+
+    @property
+    def user_name(self):
+        """
+        Returns:
+            str: The name of the user, defined in the prompt. Defaults to "User".
+        """
+        if hasattr(self.prompt, "user_name"):
+            return self.prompt.user_name
+        else:
+            return "User"
+
+    @property
+    def bot_name(self):
+        """
+        Returns:
+            str: The name of the chatbot, defined in the prompt. Defaults to
+                "PromptChatbot".
+        """
+        if hasattr(self.prompt, "bot_name"):
+            return self.prompt.bot_name
+        else:
+            return "PromptChatbot"
+
+    @property
+    def latest_prompt(self) -> str:
+        """Retrieves the latest prompt.
+
+        Returns:
+            str: The prompt most recently added to the prompt history.
+        """
+        return self.prompt_history[-1]
+
+    def check_and_adjust_prompt_size(self, prompt: str, query:str) -> Tuple[dict,str]:
         """Check if the prompt size is smaller than the max prompt size.
             
         If not, try to adjust max_context_lines until a possible prompt size.
@@ -117,9 +148,7 @@ class PromptChatbot(Chatbot):
             
             # if the size of chat is less than the max_context_lines start from there
             self.chatbot_config["max_context_lines"] = min(self.chatbot_config["max_context_lines"]-1,len(self.chatlog))
-            prompt = self._assemble_prompt(
-                                [f"{turn['speaker_name']}: {turn['utterance']}" for turn in self.chatlog]
-                                + [f"{formatted_query['speaker_name']}: {formatted_query['utterance']}"])
+            prompt = self.get_current_prompt(query)
             
             curr_size = self.co.tokenize(prompt).length
 
@@ -136,39 +165,32 @@ class PromptChatbot(Chatbot):
 
         return response, prompt             
 
-
-
     def reply(self, query: str) -> Dict:
-        """Replies to a user's query given a chatlog.
+        """Replies to a query given a chat history.
 
         The reply is then generated directly from a call to a LLM.
 
         Args:
-            query (str): Last message from user
+            query (str): A query passed to the prompt chatbot.
 
         Returns:
-            Dict: Response containing the status, the reply generated by .generate 
-            and output message if the status is not success
-        """    
+            Dict[str, str]: Generated LLM response with "speaker_name" and
+            "utterance" keys
+        """
 
-        formatted_query = {
-            "speaker_name": self.user_name,
-            "utterance": query,
-        }
-
-        prompt = self._assemble_prompt(
-            [f"{turn['speaker_name']}: {turn['utterance']}" for turn in self.chatlog]
-            + [f"{formatted_query['speaker_name']}: {formatted_query['utterance']}"]
-        )
-
-        final_response,prompt = self.check_and_adjust_prompt_size(prompt,formatted_query)
-
+        # The current prompt is assembled from the initial prompt,
+        # from the chat history with a maximum of max_context_examples,
+        # and from the current query
+        current_prompt = self.get_current_prompt(query)
+        final_response,current_prompt = self.check_and_adjust_prompt_size(current_prompt, query)
+        
         if final_response["status"] == "Error":
             return final_response
-        
+
+        # Make a call to Cohere's co.generate API
         generated_object = self.co.generate(
             model=self.client_config["model"],
-            prompt=prompt,
+            prompt=current_prompt,
             max_tokens=self.client_config["max_tokens"],
             temperature=self.client_config["temperature"],
             stop_sequences=self.client_config["stop_seq"],
@@ -180,20 +202,45 @@ class PromptChatbot(Chatbot):
         for stop_seq in self.client_config["stop_seq"]:
             if response.endswith(stop_seq):
                 response = response[: -len(stop_seq)]
-                
-        formatted_response = {
-            "speaker_name": self.bot_name,
-            "utterance": response,
-        }
+        response = response.lstrip()
 
-        final_response["data"] = formatted_response
+        final_response["data"] = response
         
-        self.chatlog.append(formatted_query)
-        self.chatlog.append(formatted_response)
+        self.chat_history.append(self.prompt.create_example(query, response))
+        self.prompt_history.append(current_prompt)
 
-        return final_response
+        return response
 
+    def get_current_prompt(self, query) -> str:
+            """Stitches the prompt with a trailing window of the chat.
+            Args:
+                query (str): The current user query.
+            Returns:
+                str: The current prompt given a query.
+            """
+            # get base prompt
+            base_prompt = self.prompt.to_string() + "\n"
 
+            # get context prompt
+            context_prompt_lines = []
+            trimmed_chat_history = (
+                self.chat_history[-self.chatbot_config["max_context_examples"] :]
+                if self.chatbot_config["max_context_examples"] > 0
+                else []
+            )
+            # TODO when prompt is updated, the history is mutated
+            # as it is recreated using the new prompt. A possible fix is to save the old
+            # prompt in history and use it when recreating.
+            for turn in trimmed_chat_history:
+                context_prompt_lines.append(self.prompt.create_example_string(**turn))
+            context_prompt = "".join(context_prompt_lines)
+
+            # get query prompt
+            query_prompt = self.prompt.create_example_string(query)
+
+            current_prompt = base_prompt + context_prompt + query_prompt
+            return current_prompt.strip()
+    
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
         """Configures chatbot options.
 
@@ -204,9 +251,9 @@ class PromptChatbot(Chatbot):
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
             self.chatbot_config = {
-                "max_context_lines": 20,
+                "max_context_examples": 10,
             }
-        # Override default config values with the config passed in by the user.
+        # Override default config values with the config passed in
         if isinstance(chatbot_config, Dict):
             self.chatbot_config.update(chatbot_config)
         else:
@@ -227,9 +274,9 @@ class PromptChatbot(Chatbot):
                 "model": "xlarge",
                 "max_tokens": 100,
                 "temperature": 0.75,
-                "stop_seq": ["\n"],
+                "stop_seq": self.prompt.stop_sequences,
             }
-        # Override default config values with the config passed in by the user.
+        # Override default config values with the config passed in
         if isinstance(client_config, Dict):
             self.client_config.update(client_config)
         else:
@@ -239,24 +286,25 @@ class PromptChatbot(Chatbot):
             )
 
     @classmethod
-    def from_persona(cls, persona_name: str, client: cohere.Client):
+    def from_persona(
+        cls,
+        persona_name: str,
+        client: cohere.Client,
+        persona_dir: str = PERSONA_MODEL_DIRECTORY,
+    ):
         """Initializes a PromptChatbot using a persona.
 
         Args:
             persona (str): Name of persona, corresponding to a .json file.
             client (cohere.Client): Cohere client for API
+            persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(
-            PERSONA_MODEL_DIRECTORY, persona_name, "config.json"
-        )
+        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
-            raise FileNotFoundError(
-                f"config.json cannot be found in \
-                    {PERSONA_MODEL_DIRECTORY}/{persona_name}"
-            )
+            raise FileNotFoundError(f"{persona_path} cannot be found.")
         with open(persona_path) as f:
             persona = json.load(f)
 
@@ -265,88 +313,37 @@ class PromptChatbot(Chatbot):
 
         return cls(
             client=client,
-            start_prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
-            user_name=persona["user_name"],
-            bot_name=persona["bot_name"],
-            client_config=persona["client_config"],
+            prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
             persona_name=persona_name,
+            chatbot_config=persona["chatbot_config"],
+            client_config=persona["client_config"],
         )
 
-    def _assemble_prompt(self, new_lines: List[str]) -> str:
-        """Stitches the starter prompt with a trailing window of the chat.
+    def to_dict(self) -> Dict[str, Any]:
+        """Serializes this instance into a Python dictionary.
 
-        Args:
-            new_lines (List[str]): New lines to append
+        Returns:
+            Dict[str, Any]: Dictionary of attributes that defines this instance of a PromptChatbot.
         """
+        return {
+            "co": self.co,
+            "prompt": self.prompt.to_dict(),
+            "persona_name": self.persona_name,
+            "chatbot_config": self.chatbot_config,
+            "client_config": self.client_config,
+            "chat_history": self.chat_history,
+            "prompt_history": self.prompt_history,
+            "user_name": self.user_name,
+            "bot_name": self.bot_name,
+            "latest_prompt": self.latest_prompt,
+        }
 
-        trimmed_lines = new_lines[-self.chatbot_config["max_context_lines"] :]
-        context_prompt = "\n".join(trimmed_lines)
-
-        stripped_desc = self.start_prompt.bot_desc.strip()
-
-        prepended_turns = [
-            (
-                f"{self.user_name}: {user_query.strip()}",
-                f"{self.bot_name}: {bot_reply.strip()}",
-            )
-            for (user_query, bot_reply) in self.start_prompt.example_turns
-        ]
-
-        stitched_turns = "\n".join(
-            ["\n".join([user, bot]) for (user, bot) in prepended_turns]
-        )
-
-        description_header = "<<DESCRIPTION>>"
-        conversation_header = "<<CONVERSATION>>"
-
-        joined_start_prompt = (
-            f"Below is a series of chats between {self.bot_name} and {self.user_name}."
-            + f"{self.bot_name} responds to {self.user_name} "
-            + f"based on the {description_header}.\n"
-            + f"{description_header}\n"
-            + f"{stripped_desc}\n"
-            + f"{conversation_header}\n"
-            + f"{stitched_turns}\n"
-            + f"{conversation_header}"
-        )
-
-        return f"{joined_start_prompt}\n{context_prompt}\n{self.bot_name}:"
-
-    def _validate_start_dialogue(self) -> None:
-        """Validates formatting of starter dialogue."""
-
-        user_turns = [turn[0] for turn in self.start_prompt.example_turns]
-        bot_turns = [turn[1] for turn in self.start_prompt.example_turns]
-        all_turns = user_turns + bot_turns
-
-        colon_prefixed = all(":" in turn for turn in all_turns)
-        hyphen_prefixed = all("-" in turn for turn in all_turns)
-
-        if colon_prefixed or hyphen_prefixed:
-            # This might false-positive, so we only log a warning
-            logging.warning(
-                "Did you mistakenly prefix the example dialogue turns \
-                    with user/bot names?"
-            )
-
-        user_prefixed = all(
-            turn.lstrip().startswith(self.user_name) for turn in user_turns
-        )
-
-        bot_prefixed = all(
-            turn.lstrip().startswith(self.bot_name) for turn in bot_turns
-        )
-
-        if user_prefixed and bot_prefixed:
-            # It's hard to think of any genuine case where all utterances
-            # start with self-names.
-            raise ValueError("Start turns should not be prefixed with user/bot names!")
-
-    def check_prompt_size(self) -> None:
+    
+    # def check_prompt_size(self) -> None:
         
-        self.start_prompt_size = len(self.co.tokenize(self._assemble_prompt([])))
-        if self.start_prompt_size > self.max_prompt_size:
-            raise ValueError(f"The start prompt config has too many tokens. The total number of tokens cannot exceed 2048 - received {self.start_prompt_size + self.client_config['max_tokens']}. Try using a smaller description or texts in the example turns.")
+    #     self.start_prompt_size = len(self.co.tokenize(self._assemble_prompt([])))
+    #     if self.start_prompt_size > self.max_prompt_size:
+    #         raise ValueError(f"The start prompt config has too many tokens. The total number of tokens cannot exceed 2048 - received {self.start_prompt_size + self.client_config['max_tokens']}. Try using a smaller description or texts in the example turns.")
 
     @staticmethod
     def _validate_persona_dict(persona: Dict[str, Any], persona_path: str) -> None:

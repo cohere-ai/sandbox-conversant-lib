@@ -1,4 +1,53 @@
-div.css-12oz5g7.egzxvld2 {
+/* Style the overall app container */
+div.css-18e3th9.egzxvld2 {
+    padding: 1rem 1rem 1rem;
+}
+
+/* Style chat_history_placeholder so overflow messages are scrollable */
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 65vh;
+}
+
+/* Style prompt_json_view_placeholder header so it is aligned. */
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) p {
+    margin-left: 8px;
+}
+
+/* Style prompt_json_view_placeholder so overflow is scrollable */
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 955px;
+    margin-top: 8px;
+    margin-left: 8px;
+}
+
+/* Style prompt_string_placeholder so overflow is scrollable */
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(2) .stCodeBlock {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 955px;
+    margin-top: 8px;
+}
+
+/* Remove "Press enter to apply" from text input */
+.stTextInput div.css-1li7dat.effi0qh1 {
+    visibility: hidden;
+}
+
+/* Make markdown code wrapped */
+code.language-markdown {
+    white-space: pre-wrap !important ;       
+}
+
+/* Make padding smaller on st.sidebar */
+div.css-hxt7ib.e1fqkh3o5 {
+    padding-top: 2rem;
+}div.css-12oz5g7.egzxvld2 {
     display: flex;
     align-items: flex-end;
     overflow: visible;
