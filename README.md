@@ -49,9 +49,9 @@
 
 
 ## Conversant
-Conversant is a framework for building dialogue agents on top of the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers and software developers alike. 
+Conversant is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with end users with a variety of different bot personalities. The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
 
-This is a work-in-progress tool that facilitates the creation of dialogue agents with unique personas, which can answer a variety of user queries including those that rely on knowledge available in reference materials. The fastest way to see what `conversant` can do for you is to start talking to a chatbot! 
+Dialogue agents have the potential to transform how humans engage with computers, including faster responses to support queries and free-form interactions with fictional characters, along with many other possibilities. The fastest way to see what `conversant` can do for you is to start talking to a chatbot!
 
 ## Getting Started
 
