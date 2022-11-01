@@ -75,10 +75,9 @@ class PromptChatbot(Chatbot):
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
-        self.chat_history = []
         self.prompt_history = [self.prompt.to_string()]
 
-    def __repr__(self) -> Dict[str, Any]:
+    def __repr__(self) -> str:
         return json.dumps(self.to_dict(), indent=4, default=str)
 
     @property
