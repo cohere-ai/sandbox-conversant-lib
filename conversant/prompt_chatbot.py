@@ -239,6 +239,7 @@ class PromptChatbot(Chatbot):
         Args:
             persona (str): Name of persona, corresponding to a .json file.
             client (cohere.Client): Cohere client for API
+            persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
         persona_path = os.path.join(persona_dir, persona_name, f"config.json")
