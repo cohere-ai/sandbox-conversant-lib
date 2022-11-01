@@ -48,6 +48,11 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
 
+    with pytest.raises(FileNotFoundError):
+        _ = PromptChatbot.from_persona(
+            "watch-sales-agent", client=mock_co, persona_dir=""
+        )
+
 
 def test_prompt_chatbot_get_current_prompt(mock_prompt_chatbot: PromptChatbot) -> None:
     """Tests assembly of starter prompts and context.

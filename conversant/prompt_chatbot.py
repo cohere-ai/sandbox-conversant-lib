@@ -212,24 +212,25 @@ class PromptChatbot(Chatbot):
             )
 
     @classmethod
-    def from_persona(cls, persona_name: str, client: cohere.Client):
+    def from_persona(
+        cls,
+        persona_name: str,
+        client: cohere.Client,
+        persona_dir: str = PERSONA_MODEL_DIRECTORY,
+    ):
         """Initializes a PromptChatbot using a persona.
 
         Args:
             persona (str): Name of persona, corresponding to a .json file.
             client (cohere.Client): Cohere client for API
+            persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(
-            PERSONA_MODEL_DIRECTORY, persona_name, "config.json"
-        )
+        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
-            raise FileNotFoundError(
-                f"config.json cannot be found in \
-                    {PERSONA_MODEL_DIRECTORY}/{persona_name}"
-            )
+            raise FileNotFoundError(f"{persona_path} cannot be found.")
         with open(persona_path) as f:
             persona = json.load(f)
 
