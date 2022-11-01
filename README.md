@@ -24,9 +24,6 @@
 **Maintainer Team:** [Cohere ConvAI Team](mailto:convai@cohere.com) \
 **Project maintained until at least (YYYY-MM-DD):** 2023-03-01
 
-# conversant
-A framework for building dialogue agents on top of the [Cohere API](https://docs.cohere.ai/). 
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
