@@ -52,8 +52,9 @@ Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversa
    5. [Editing a Persona on the Demo](#editing-a-persona-on-the-demo)
    6. [Usage](#usage)
 2. [How Conversant Works](#how-conversant-works)
-3. [Contributing Guidelines](#contributing-guidelines)
-4. [License](#license)
+3. [Documentation](#documentation)
+4. [Contributing Guidelines](#contributing-guidelines)
+5. [License](#license)
 
 ## Installation and Usage
 
@@ -165,6 +166,10 @@ demo_utils.launch_streamlit(shakespeare_bot)
 Each user message and chatbot response is appended to a chat history so that future responses are conditioned on the dialogue context at that point in time.
 
 In the future, we plan to add functionality for a chatbot be factually grounded using text that is retrieved from a local document cache.
+
+## Documentation
+Full documentation can be found [here](https://cohere-ai.github.io/sandbox-conversant-lib/).
+
 ## Contributing Guidelines
 If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
 in this repository, and sign the Contributor License Agreement before submitting
