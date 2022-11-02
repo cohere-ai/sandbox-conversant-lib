@@ -38,7 +38,11 @@ def draw_chat_history() -> None:
                 )
         else:
             if "bot" in turn:
-                st_message(turn["bot"], key=f"{i}_bot")
+                st_message(
+                    turn["bot"],
+                    key=f"{i}_bot",
+                    avatar_style=st.session_state.bot_avatar,
+                )
             if "user" in turn:
                 st_message(
                     turn["user"],
