@@ -166,7 +166,7 @@ demo_utils.launch_streamlit(shakespeare_bot)
 
 Each user message and chatbot response is appended to a chat history so that future responses are conditioned on the dialogue context at that point in time.
 
-In the future, we plan to add functionality for a chatbot be factually grounded using text that is retrieved from a local document cache.
+In the future, we plan to add functionality for a chatbot to be factually grounded using text that is retrieved from a local document cache.
 
 For more information, refer to [this section in `CONTRIBUTORS.md`](CONTRIBUTORS.md#conversant-schematic).
 
