@@ -120,10 +120,9 @@ You can also edit a persona on the Streamlit app!
 With `conversant`, you can create a chatbot powered by [Cohere](https://cohere.ai/)'s large language models with just the following code snippet.
 ```python
 import cohere
-from conversant import PromptChatbot
 
 co = cohere.Client("YOUR_API_KEY_HERE")
-bot = PromptChatbot.from_persona("fantasy-wizard", client=co)
+bot = conversant.PromptChatbot.from_persona("fantasy-wizard", client=co)
 print(bot.reply("Hello!"))
 >>> "Well met, fair traveller. What bringest thou to mine village?"
 ```
