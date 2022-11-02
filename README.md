@@ -25,7 +25,9 @@
 **Project maintained until at least (YYYY-MM-DD):** 2023-03-01
 
 # Conversant
-[![test](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![tests](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)
+[![PyPI](https://img.shields.io/pypi/v/conversant.svg)](https://img.shields.io/pypi/v/conversant.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Build conversational AI on top of [Cohere](https://cohere.ai/)'s [large language models](https://docs.cohere.ai/generate-reference/)
 - 🗣 Use large language models quickly with Cohere's [API](https://docs.cohere.ai/api-reference/)
@@ -53,14 +55,15 @@ Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversa
    6. [Usage](#usage)
 2. [How Conversant Works](#how-conversant-works)
 3. [Documentation](#documentation)
-4. [Contributing Guidelines](#contributing-guidelines)
-5. [License](#license)
+4. [Get Support](#get-support)
+5. [Contributing Guidelines](#contributing-guidelines)
+6. [License](#license)
 
 ## Installation and Usage
 
 ### Installation
 
-`conversant` is available on PyPI, and is tested on Python 3.8+ and [Cohere](https://pypi.org/project/cohere/) 2.8.0+.
+`conversant` is available [on PyPI](https://pypi.org/project/conversant/), and is tested on Python 3.8+ and [Cohere](https://pypi.org/project/cohere/) 2.8.0+.
 ```
 pip install conversant
 ```
@@ -166,12 +169,16 @@ demo_utils.launch_streamlit(shakespeare_bot)
 
 Each user message and chatbot response is appended to a chat history so that future responses are conditioned on the dialogue context at that point in time.
 
-In the future, we plan to add functionality for a chatbot be factually grounded using text that is retrieved from a local document cache.
+In the future, we plan to add functionality for a chatbot to be factually grounded using text that is retrieved from a local document cache.
 
 For more information, refer to [this section in `CONTRIBUTORS.md`](CONTRIBUTORS.md#conversant-schematic).
 
 ## Documentation
 Full documentation can be found [here](https://cohere-ai.github.io/sandbox-conversant-lib/).
+
+## Get Support
+
+If you have any questions or comments, please file an issue or reach out to us on [Discord](discord.gg/co-mmunity).
 
 ## Contributing Guidelines
 If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
