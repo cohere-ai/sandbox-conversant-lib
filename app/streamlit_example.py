@@ -12,6 +12,7 @@ import copy
 import sys
 
 import cohere
+import emoji
 import streamlit as st
 
 from app import ui, utils
@@ -39,7 +40,8 @@ def initialize_chatbot() -> None:
         st.session_state.bot = utils.ParrotChatbot()
     else:
         st.session_state.bot = PromptChatbot.from_persona(
-            st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
+            emoji.replace_emoji(st.session_state.persona, "").strip(),
+            client=cohere.Client(st.secrets.COHERE_API_KEY),
         )
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
@@ -160,6 +162,14 @@ if __name__ == "__main__":
 
     # Check if bot has been initialized in the Streamlit session.
     if "bot" in st.session_state and st.session_state.bot:
+
+        # Initialize the bot avatar
+        bot_avatar_string = st.session_state.bot.chatbot_config["avatar"]
+        st.session_state.bot_avatar = (
+            utils.get_twemoji_url_from_shortcode(bot_avatar_string)
+            if emoji.is_emoji(emoji.emojize(bot_avatar_string, language="alias"))
+            else bot_avatar_string
+        )
 
         # Editor view for the prompt
         if st.session_state.edit_prompt:

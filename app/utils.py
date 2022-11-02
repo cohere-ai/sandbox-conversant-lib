@@ -7,6 +7,7 @@
 # level of this repository.
 
 
+import json
 import os
 import re
 from typing import List
@@ -65,13 +66,13 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
     """Converts an emoji shortcode to its corresponding Twemoji URL.
 
     Args:
-        shortcode (str): Emoji shortcode
+        shortcode (str): Emoji shortcode.
 
     Returns:
         str: The string that is the Twemoji URL corresponding to the emoji.
     """
     # Emojize returns the unicode representation of that emoji from its shortcode.
-    unicode = emoji.emojize(shortcode)
+    unicode = emoji.emojize(shortcode, language="alias")
     # Emojificate returns html <img /> tag.
     img_html_tag = emojificate(unicode)
     # Find the URL from the html tag.
@@ -91,7 +92,25 @@ def get_persona_options() -> List[str]:
         List[str]: A list of persona names.
     """
     # Initialize the list of personas for Streamlit
-    persona_options = [""] + os.listdir(PERSONA_MODEL_DIRECTORY)  # + ["parrot"]
+    persona_names = os.listdir(PERSONA_MODEL_DIRECTORY)
+    persona_names_maybe_with_emojis = []
+    for persona_name in persona_names:
+        persona_path = os.path.join(
+            PERSONA_MODEL_DIRECTORY, persona_name, "config.json"
+        )
+        with open(persona_path) as f:
+            persona = json.load(f)
+            avatar = (
+                emoji.emojize(persona["chatbot_config"]["avatar"], language="alias")
+                if "avatar" in persona["chatbot_config"]
+                else ""
+            )
+            persona_names_maybe_with_emojis.append(
+                f"{avatar} {persona_name}"
+            ) if emoji.is_emoji(avatar) else persona_names_maybe_with_emojis.append(
+                persona_name
+            )
+    persona_options = [""] + persona_names_maybe_with_emojis  # + ["parrot"]
     return persona_options
 
 
