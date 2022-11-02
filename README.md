@@ -53,8 +53,9 @@ Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversa
    6. [Usage](#usage)
 2. [How Conversant Works](#how-conversant-works)
 3. [Documentation](#documentation)
-4. [Contributing Guidelines](#contributing-guidelines)
-5. [License](#license)
+4. [Get Support](#get-support)
+5. [Contributing Guidelines](#contributing-guidelines)
+6. [License](#license)
 
 ## Installation and Usage
 
@@ -172,6 +173,10 @@ For more information, refer to [this section in `CONTRIBUTORS.md`](CONTRIBUTORS.
 
 ## Documentation
 Full documentation can be found [here](https://cohere-ai.github.io/sandbox-conversant-lib/).
+
+## Get Support
+
+If you have any questions or comments, please file an issue or reach out to us on [Discord](discord.gg/co-mmunity).
 
 ## Contributing Guidelines
 If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
