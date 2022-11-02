@@ -163,9 +163,9 @@ class PromptChatbot(Chatbot):
             # Change status and set a output message
             response["status"] = "Warning"
             response["output_message"] = (
-                "The parameter max_context_lines was reduced"
-                f"from {original_max_context_examples} to"
-                f"{self.chatbot_config['max_context_lines']}"
+                "The parameter max_context_examples was reduced"
+                f"from {original_max_context_examples} to "
+                f"{self.chatbot_config['max_context_examples']} "
                 f"so that the total amount of tokens does not exceed {MAX_PROMPT_SIZE}."
             )
 
@@ -175,14 +175,14 @@ class PromptChatbot(Chatbot):
             response["status"] = "Error"
             self.chatbot_config["max_context_examples"] = original_max_context_examples
             response["output_message"] = (
-                "The total number of tokens (prompt and prediction) cannot exceed"
-                f"{MAX_PROMPT_SIZE}.Try using a shorter start prompt, sending "
+                "The total number of tokens (prompt and prediction) cannot exceed "
+                f"{MAX_PROMPT_SIZE}. Try using a shorter start prompt, sending "
                 "smaller text messages in the chat, or setting a smaller value "
                 "for the parameter max_tokens. More details: \n"
                 f" - Start Prompt: {self.start_prompt_size} tokens \n"
                 f" - Messages sent in chat: {original_size - self.start_prompt_size} "
                 f" tokens \n - Parameter max_tokens: {self.client_config['max_tokens']}"
-                "tokens"
+                " tokens"
             )
 
         return response, prompt
