@@ -5,13 +5,18 @@
 #
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
+import cohere
 
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
 
-def test_encode_decode_object(mock_prompt_chatbot: PromptChatbot) -> None:
+def test_encode_decode_mock(
+    mock_prompt_chatbot: PromptChatbot, mock_co: cohere.Client
+) -> None:
     assert isinstance(
-        demo_utils.decode_object(demo_utils.encode_object(mock_prompt_chatbot)),
+        demo_utils.decode_chatbot(
+            demo_utils.encode_chatbot(mock_prompt_chatbot), client=mock_co
+        ),
         PromptChatbot,
     )

@@ -80,7 +80,7 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
     return url
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def get_persona_options() -> List[str]:
     """Initializes a list of personas.
 
