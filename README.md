@@ -41,7 +41,7 @@ We provide several custom personas for you, including 🧑‍💼 a client suppo
 
 <!-- Read more about `conversant` on our [launch blog post]() and [threads](), and how it is part of the [Cohere Sandbox](). -->
 
-Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/). 🎉
+Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
 
 ## Table of Contents
 1. [Installation and Usage](#installation-and-usage)
