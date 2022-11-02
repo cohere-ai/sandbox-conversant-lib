@@ -10,41 +10,40 @@ from typing import Any, Dict
 
 import pytest
 
-from conversant.prompts.start_prompt import StartPrompt
+from conversant.chatbot import Interaction
+from conversant.prompts.chat_prompt import ChatPrompt
 
 
 @pytest.fixture
-def new_example() -> Dict[str, str]:
-    """Instantiates a fixture for a new StartPrompt example.
+def new_interaction() -> Interaction:
+    """Instantiates a fixture for a new ChatPrompt example.
 
     Returns:
-        Dict[str, str]: New StartPrompt example fixture.
+        Interaction: New ChatPrompt interaction fixture.
     """
     return {"user": "Nice to meet you!", "bot": "You too!"}
 
 
-def test_start_prompt_init(mock_start_prompt_config: Dict[str, Any]) -> None:
-    """Tests StartPrompt.__init__
+def test_chat_prompt_init(mock_chat_prompt_config: Dict[str, Any]) -> None:
+    """Tests ChatPrompt.__init__
 
     Args:
-        mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
+        mock_chat_prompt_config (Dict[str, Any]): A ChatPrompt config fixture.
     """
-    start_prompt = StartPrompt(**mock_start_prompt_config)
-    assert start_prompt.user_name == "User"
-    assert start_prompt.bot_name == "Mock Chatbot"
-    assert start_prompt.stop_sequences == ["\nUser:", "\nMock Chatbot:"]
+    chat_prompt = ChatPrompt(**mock_chat_prompt_config)
+    assert chat_prompt.user_name == "User"
+    assert chat_prompt.bot_name == "Mock Chatbot"
 
 
-def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -> None:
-    """Tests StartPrompt.from_dict
+def test_chat_prompt_init_from_dict(mock_chat_prompt_config: Dict[str, Any]) -> None:
+    """Tests ChatPrompt.from_dict
 
     Args:
-        mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
+        mock_chat_prompt_config (Dict[str, Any]): A ChatPrompt config fixture.
     """
-    start_prompt = StartPrompt.from_dict(mock_start_prompt_config)
-    assert start_prompt.user_name == "User"
-    assert start_prompt.bot_name == "Mock Chatbot"
-    assert start_prompt.stop_sequences == ["\nUser:", "\nMock Chatbot:"]
+    chat_prompt = ChatPrompt.from_dict(mock_chat_prompt_config)
+    assert chat_prompt.user_name == "User"
+    assert chat_prompt.bot_name == "Mock Chatbot"
 
 
 @pytest.mark.parametrize(
@@ -59,23 +58,25 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         # examples have no speakers
         {"examples": [{}]},
         # examples have one speaker
-        {"examples": [{"user": "user utterance"}, {"bot": "bot utterance"}]},
+        {"examples": [[{"user": "user utterance"}, {"bot": "bot utterance"}]]},
         # examples have wrong key
-        {"examples": [{"user": "user utterance", "": "bot utterance"}]},
+        {"examples": [[{"user": "user utterance", "": "bot utterance"}]]},
         # examples have three speakers
         {
             "examples": [
-                {
-                    "user": "user utterance",
-                    "bot": "bot utterance",
-                    "user2": "user2 utterance",
-                }
+                [
+                    {
+                        "user": "user utterance",
+                        "bot": "bot utterance",
+                        "user2": "user2 utterance",
+                    }
+                ]
             ]
         },
         # examples are prefixed by user and bot names
         {
             "headers": {"user": "Alice", "bot": "Bob"},
-            "examples": [{"user": "Alice: Hey", "bot": "Bob: Hi"}],
+            "examples": [[{"user": "Alice: Hey", "bot": "Bob: Hi"}]],
         },
     ],
     ids=[
@@ -89,73 +90,77 @@ def test_start_prompt_init_from_dict(mock_start_prompt_config: Dict[str, Any]) -
         "examples-prefixed-with-name",
     ],
 )
-def test_start_prompt_init_fails(
-    mock_start_prompt_config: Dict[str, Any], config
+def test_chat_prompt_init_fails(
+    mock_chat_prompt_config: Dict[str, Any], config
 ) -> None:
-    """Tests StartPrompt.__init__ on bad parameters.
+    """Tests ChatPrompt.__init__ on bad parameters.
 
     Args:
-        mock_start_prompt_config (Dict[str, Any]): A StartPrompt config fixture.
+        mock_chat_prompt_config (Dict[str, Any]): A ChatPrompt config fixture.
         config (Dict[str, Any]): Dictionary of bad parameters.
     """
-    mock_start_prompt_config.update(config)
+    mock_chat_prompt_config.update(config)
     with pytest.raises(ValueError):
-        _ = StartPrompt(**mock_start_prompt_config)
+        _ = ChatPrompt(**mock_chat_prompt_config)
 
 
-def test_start_prompt_create_example_string(
-    mock_start_prompt: StartPrompt, new_example: Dict[str, str]
+def test_chat_prompt_create_interaction_string(
+    mock_chat_prompt: ChatPrompt, new_interaction: Interaction
 ) -> None:
-    """Tests StartPrompt.create_example_string
+    """Tests ChatPrompt.create_interaction_string
 
     Args:
-        mock_start_prompt (StartPrompt): A StartPrompt fixture.
-        new_example (Dict[ str, str]): A new StartPrompt example fixture.
+        mock_chat_prompt (ChatPrompt): A ChatPrompt fixture.
+        new_interaction (Interaction): A new ChatPrompt interaction fixture.
     """
     expected = (
-        f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
-        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
+        f"{mock_chat_prompt.headers['user']}: {new_interaction['user']}\n"
+        f"{mock_chat_prompt.headers['bot']}: {new_interaction['bot']}\n"
     )
     # create from positional arguments
-    generated_example_str = mock_start_prompt.create_example_string(
-        new_example["user"], new_example["bot"]
+    generated_interaction_str = mock_chat_prompt.create_interaction_string(
+        new_interaction["user"], new_interaction["bot"]
     )
-    assert generated_example_str == expected
+    assert generated_interaction_str == expected
 
     # create from keyword arguments
-    generated_example_str = mock_start_prompt.create_example_string(**new_example)
-    assert generated_example_str == expected
+    generated_interaction_str = mock_chat_prompt.create_interaction_string(
+        **new_interaction
+    )
+    assert generated_interaction_str == expected
 
     # generated example string is dependent on the insertion order into the examples
     # dictionary
-    reordered_example = {}
-    reordered_example["bot"] = new_example["bot"]
-    reordered_example["user"] = new_example["user"]
+    reordered_interaction = {}
+    reordered_interaction["bot"] = new_interaction["bot"]
+    reordered_interaction["user"] = new_interaction["user"]
     reordered_expected = (
-        f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['bot']}: {new_example['bot']}\n"
-        f"{mock_start_prompt.headers['user']}: {new_example['user']}\n"
+        f"{mock_chat_prompt.headers['bot']}: {new_interaction['bot']}\n"
+        f"{mock_chat_prompt.headers['user']}: {new_interaction['user']}\n"
     )
-    generated_reordered_example_str = mock_start_prompt.create_example_string(
-        **reordered_example
+    generated_reordered_interaction_str = mock_chat_prompt.create_interaction_string(
+        **reordered_interaction
     )
-    assert generated_reordered_example_str == reordered_expected
+    assert generated_reordered_interaction_str == reordered_expected
 
 
-def test_start_prompt_to_string(mock_start_prompt: StartPrompt) -> None:
-    """Tests StartPrompt.to_string
+def test_chat_prompt_to_string(mock_chat_prompt: ChatPrompt) -> None:
+    """Tests ChatPrompt.to_string
 
     Args:
-        mock_start_prompt (StartPrompt): A StartPrompt fixture.
+        mock_chat_prompt (ChatPrompt): A ChatPrompt fixture.
     """
     expected = (
-        f"{mock_start_prompt.preamble}\n"
-        f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[0]['user']}\n"  # noqa
-        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[0]['bot']}\n"
-        f"{mock_start_prompt.example_separator}"
-        f"{mock_start_prompt.headers['user']}: {mock_start_prompt.examples[1]['user']}\n"  # noqa
-        f"{mock_start_prompt.headers['bot']}: {mock_start_prompt.examples[1]['bot']}"
+        f"{mock_chat_prompt.preamble}\n"
+        f"{mock_chat_prompt.example_separator}"
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[0][0]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[0][0]['bot']}\n"  # noqa
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[0][1]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[0][1]['bot']}\n"  # noqa
+        f"{mock_chat_prompt.example_separator}"
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[1][0]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[1][0]['bot']}\n"  # noqa
+        f"{mock_chat_prompt.headers['user']}: {mock_chat_prompt.examples[1][1]['user']}\n"  # noqa
+        f"{mock_chat_prompt.headers['bot']}: {mock_chat_prompt.examples[1][1]['bot']}"
     )
-    assert mock_start_prompt.to_string() == expected
+    assert mock_chat_prompt.to_string() == expected

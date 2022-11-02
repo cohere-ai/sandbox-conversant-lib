@@ -14,9 +14,9 @@ from typing import Any, Dict
 import cohere
 import jsonschema
 
-from conversant.chatbot import Chatbot
+from conversant.chatbot import Chatbot, Interaction
+from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
-from conversant.prompts.start_prompt import StartPrompt
 
 PERSONA_MODEL_DIRECTORY = "conversant/personas"
 PERSONA_JSON_SCHEMA = {
@@ -25,7 +25,8 @@ PERSONA_JSON_SCHEMA = {
         "chatbot_config": {
             "type": "object",
             "properties": {
-                "max_context_lines": {"type": "integer"},
+                "max_context_examples": {"type": "integer"},
+                "avatar": {"type": "string"},
             },
         },
         "client_config": {
@@ -34,6 +35,9 @@ PERSONA_JSON_SCHEMA = {
                 "model": {"type": "string"},
                 "max_tokens": {"type": "integer"},
                 "temperature": {"type": "number"},
+                "frequency_penalty": {"type": "number"},
+                "presence_penalty": {"type": "number"},
+                "stop_sequences": {"type": "array"},
             },
         },
         "prompt_config": {
@@ -75,6 +79,7 @@ class PromptChatbot(Chatbot):
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
+        self.chat_history = []
         self.prompt_history = [self.prompt.to_string()]
 
     def __repr__(self) -> str:
@@ -112,7 +117,7 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def reply(self, query: str) -> Dict[str, str]:
+    def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.
 
         The reply is then generated directly from a call to a LLM.
@@ -121,8 +126,7 @@ class PromptChatbot(Chatbot):
             query (str): A query passed to the prompt chatbot.
 
         Returns:
-            Dict[str, str]: Generated LLM response with "speaker_name" and
-            "utterance" keys
+            Interaction: Dictionary of query and generated LLM response
         """
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
@@ -135,20 +139,22 @@ class PromptChatbot(Chatbot):
             prompt=current_prompt,
             max_tokens=self.client_config["max_tokens"],
             temperature=self.client_config["temperature"],
-            stop_sequences=self.client_config["stop_seq"],
+            frequency_penalty=self.client_config["frequency_penalty"],
+            presence_penalty=self.client_config["presence_penalty"],
+            stop_sequences=self.client_config["stop_sequences"],
         )
 
         # If response was cut off by .generate() finding a stop sequence,
         # remove that sequence from the response.
         response = generated_object.generations[0].text
-        for stop_seq in self.client_config["stop_seq"]:
+        for stop_seq in self.client_config["stop_sequences"]:
             if response.endswith(stop_seq):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
 
         # We need to remember the current response in the chat history for future
         # responses.
-        self.chat_history.append(self.prompt.create_example(query, response))
+        self.chat_history.append(self.prompt.create_interaction(query, response))
         self.prompt_history.append(current_prompt)
 
         return response
@@ -176,11 +182,11 @@ class PromptChatbot(Chatbot):
         # as it is recreated using the new prompt. A possible fix is to save the old
         # prompt in history and use it when recreating.
         for turn in trimmed_chat_history:
-            context_prompt_lines.append(self.prompt.create_example_string(**turn))
-        context_prompt = "".join(context_prompt_lines)
+            context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
+        context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
 
         # get query prompt
-        query_prompt = self.prompt.create_example_string(query)
+        query_prompt = self.prompt.create_interaction_string(query)
 
         current_prompt = base_prompt + context_prompt + query_prompt
         return current_prompt.strip()
@@ -190,20 +196,18 @@ class PromptChatbot(Chatbot):
 
         Args:
             chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults
-            to {}.
+                to {}.
         """
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
-            self.chatbot_config = {
-                "max_context_examples": 10,
-            }
+            self.chatbot_config = {"max_context_examples": 10, "avatar": ":robot:"}
         # Override default config values with the config passed in
         if isinstance(chatbot_config, Dict):
             self.chatbot_config.update(chatbot_config)
         else:
             raise TypeError(
-                f"chatbot_config must be of type Dict, but was passed in as \
-                    {type(chatbot_config)}"
+                "chatbot_config must be of type Dict, but was passed in as "
+                f"{type(chatbot_config)}"
             )
 
     def configure_client(self, client_config: Dict = {}) -> None:
@@ -218,15 +222,17 @@ class PromptChatbot(Chatbot):
                 "model": "xlarge",
                 "max_tokens": 100,
                 "temperature": 0.75,
-                "stop_seq": self.prompt.stop_sequences,
+                "frequency_penalty": 0.0,
+                "presence_penalty": 0.0,
+                "stop_sequences": ["\n"],
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
             self.client_config.update(client_config)
         else:
             raise TypeError(
-                f"client_config must be of type Dict, but was passed in as \
-                    {type(client_config)}"
+                "client_config must be of type Dict, but was passed in as "
+                f"{type(client_config)}"
             )
 
     @classmethod
@@ -257,7 +263,7 @@ class PromptChatbot(Chatbot):
 
         return cls(
             client=client,
-            prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
+            prompt=ChatPrompt.from_dict(persona["chat_prompt_config"]),
             persona_name=persona_name,
             chatbot_config=persona["chatbot_config"],
             client_config=persona["client_config"],
@@ -295,8 +301,8 @@ class PromptChatbot(Chatbot):
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
             raise jsonschema.exceptions.ValidationError(
-                f"Type of values in given dictionary (persona from {persona_path}) \
-                    do not match schema': {e}"
+                f"Type of values in given dictionary (persona from {persona_path}) do "
+                f"not match schema': {e}"
             )
         except KeyError as e:
             raise KeyError(
@@ -304,6 +310,6 @@ class PromptChatbot(Chatbot):
             )
         except Exception as e:
             raise Exception(
-                f"Failed to validate persona in given dictionary \
-                    (persona from {persona_path}): {e}"
+                "Failed to validate persona in given dictionary (persona from "
+                f"{persona_path}): {e}"
             )

@@ -20,11 +20,25 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot) -> None:
         prompt_chatbot (PromptChatbot): The instance of PromptChatbot to check.
     """
     __tracebackhide__ = True
-    for key in ["model", "max_tokens", "temperature", "stop_seq"]:
+    for key in [
+        "model",
+        "max_tokens",
+        "temperature",
+        "frequency_penalty",
+        "presence_penalty",
+        "stop_sequences",
+    ]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
-                f"{key} not in config of {prompt_chatbot.__class__.__name__} \
-                    but is required for co.generate"
+                f"{key} not in config of {prompt_chatbot.__class__.__name__} "
+                "but is required for co.generate"
+            )
+
+    for key in ["max_context_examples", "avatar"]:
+        if key not in prompt_chatbot.chatbot_config:
+            pytest.fail(
+                f"{key} not in chatbot config of {prompt_chatbot.__class__.__name__} "
+                "but is required."
             )
 
 
@@ -72,9 +86,9 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
 def test_prompt_chatbot_get_current_prompt(
     mock_prompt_chatbot: PromptChatbot, max_context_examples: int, history_length: int
 ) -> None:
-    """Tests assembly of starter prompts and context.
+    """Tests assembly of prompts and context.
 
-    Starter prompts should be preserved and context
+    Prompts should be preserved and context
     should have line-level trimming applied.
 
     Args:
@@ -95,19 +109,23 @@ def test_prompt_chatbot_get_current_prompt(
 
     current_prompt = mock_prompt_chatbot.get_current_prompt(query="Hello!")
     expected = (
-        # start prompt
+        # chat prompt
         f"{mock_prompt_chatbot.prompt.preamble}\n"
         + f"{mock_prompt_chatbot.prompt.example_separator}"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0]['user']}\n"  # noqa
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][0]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][1]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[0][1]['bot']}\n"  # noqa
         + f"{mock_prompt_chatbot.prompt.example_separator}"
-        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1]['user']}\n"  # noqa
-        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][0]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][0]['bot']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[1][1]['user']}\n"  # noqa
+        + f"{mock_prompt_chatbot.prompt.headers['bot']}: {mock_prompt_chatbot.prompt.examples[1][1]['bot']}\n"  # noqa
         # context prompt
+        + f"{mock_prompt_chatbot.prompt.example_separator}"
         + "".join(
             [
                 (
-                    f"{mock_prompt_chatbot.prompt.example_separator}"
                     f"{mock_prompt_chatbot.prompt.headers['user']}: Hello! {i}\n"
                     f"{mock_prompt_chatbot.prompt.headers['bot']}: Hello back! {i}\n"
                 )
@@ -118,7 +136,6 @@ def test_prompt_chatbot_get_current_prompt(
         )
         # query prompt
         + (
-            f"{mock_prompt_chatbot.prompt.example_separator}"
             f"{mock_prompt_chatbot.prompt.headers['user']}: Hello!\n"
             f"{mock_prompt_chatbot.prompt.headers['bot']}:"
         )

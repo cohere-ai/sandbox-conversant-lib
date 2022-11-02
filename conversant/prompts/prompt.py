@@ -12,6 +12,8 @@ from typing import Any, Dict, List
 
 from pydantic.dataclasses import dataclass
 
+from conversant.chatbot import Interaction
+
 
 @dataclass
 class Prompt:
@@ -23,7 +25,7 @@ class Prompt:
         example_separator (str): A separator for each example.
         headers (Dict[str, str]): A dictionary mapping from keys in examples to the
             values that will substitute them.
-        examples (List[Dict[str, str]]): A list of examples to illustrate the intended
+        examples (List[Interaction]): A list of examples to illustrate the intended
             behaviour.
 
     Constants:
@@ -37,7 +39,7 @@ class Prompt:
     preamble: str
     example_separator: str
     headers: Dict[str, str]
-    examples: List[Dict[str, str]]
+    examples: List[Interaction]
 
     REQUIRED_KEYS: List[str] = field(default_factory=lambda: [])
     MIN_PREAMBLE_LENGTH: int = 1
@@ -62,23 +64,8 @@ class Prompt:
     def __str__(self) -> str:
         return self.to_string()
 
-    @property
-    def stop_sequences(self) -> List[str]:
-        """A (partial) list of stop sequences on which the model will stop generation.
-
-        By default, models should cut off generation when encountering
-        any variable already defined in the prompt. More stop sequences can be added
-        external to Prompt, before passing them as an argument to a generation client.
-
-        Returns:
-            List[str]: A list of stop sequences corresponding to the headers of the
-                prompt.
-        """
-        return list(self.headers.values())
-
-    def create_example(self, *args, **kwargs) -> Dict[str, str]:
-        """Creates a new dictionary representation of an example from positional
-        and keyword arguments.
+    def create_interaction(self, *args, **kwargs) -> Interaction:
+        """Creates a new dictionary representation of an interaction.
 
         The order of args here should correspond to the order of the keys in `headers`.
         The i-th positional argument passed in corresponds to the i-th key, up to
@@ -90,22 +77,21 @@ class Prompt:
         arguments.
 
         Args:
-            args: Positional arguments for the new example.
-            kwargs: Keyword arguments for the new example.
+            args: Positional arguments for the new interaction.
+            kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            Dict[str, str]: Dictionary representation of an example.
+            Interaction: Dictionary representation of an interaction.
         """
-        new_example = {
+        new_interaction = {
             key: args[i] if i < len(args) else ""
             for i, key in enumerate(self.headers.keys())
         }
-        new_example.update(kwargs)
-        return new_example
+        new_interaction.update(kwargs)
+        return new_interaction
 
-    def create_example_string(self, *args, **kwargs) -> str:
-        """Creates a string representation of an example from positional and
-        keyword arguments.
+    def create_interaction_string(self, *args, **kwargs) -> str:
+        """Creates a string representation of an interaction.
 
         The order of args here should correspond to the order of the keys in `headers`.
         The i-th positional argument passed in corresponds to the i-th key, up to
@@ -123,13 +109,8 @@ class Prompt:
         new example dictionary is created from the positional arguments and the ordering
         is dependent on the order of the `headers`.
 
-        Examples will look like the following:
+        Interactions will look like the following:
 
-            {example_separator}
-            {header}{value}\n
-            {header}{value}\n
-            ...
-            {example_separator}
             {header}{value}\n
             {header}{value}\n
 
@@ -137,30 +118,42 @@ class Prompt:
         overrides this method.
 
         Args:
-            args: Positional arguments for the new example.
-            kwargs: Keyword arguments for the new example.
+            args: Positional arguments for the new interaction.
+            kwargs: Keyword arguments for the new interaction.
 
         Returns:
-            str: String representation of an example.
+            str: String representation of an interaction.
         """
-        example = self.create_example(*args, **kwargs) if args else kwargs
-        return f"{self.example_separator}" + "".join(
-            f"{self.headers[key]}{example[key]}\n" for key in example.keys()
+        interaction = self.create_interaction(*args, **kwargs) if args else kwargs
+        return "".join(
+            f"{self.headers[key]}{interaction[key]}\n" for key in interaction.keys()
         )
 
     def to_string(self) -> str:
         """Creates a string representation of the prompt.
 
         The string representation is assembled from the preamble and examples.
-        Each example is created from a `create_example_string` method and is demarcated
-        by an `example_separator`.
+        Each example is created from a `create_interaction_string` method and is
+        demarcated by an `example_separator`.
+
+        Examples will look like the following:
+
+            {preamble}\n
+            {example_separator}
+            {field}{value}\n
+            {field}{value}\n
+            {example_separator}
+            {field}{value}\n
+            {field}{value}\n
+            ...
 
         Returns:
             str: String representation of the prompt.
         """
         lines = [f"{self.preamble}\n"]
-        for example in self.examples:
-            lines.append(self.create_example_string(**example))
+        lines += self.example_separator + f"{self.example_separator}".join(
+            self.create_interaction_string(**example) for example in self.examples
+        )
         return "".join(lines).strip()
 
     def update(self, config: Dict[str, Any]) -> None:
@@ -236,8 +229,8 @@ class Prompt:
         """
         if any(key not in self.headers.keys() for key in self.REQUIRED_KEYS):
             raise ValueError(
-                f"Missing required key.\nHeader keys: {self.headers.keys()}.\nRequired:"
-                f"{self.REQUIRED_KEYS}."
+                f"Missing required key.\nHeader keys: {self.headers.keys()}.\n"
+                f"Required: {self.REQUIRED_KEYS}."
             )
 
     def _validate_example_separator(self) -> None:
@@ -250,7 +243,7 @@ class Prompt:
         """
         if not isinstance(self.example_separator, str):
             raise ValueError(
-                "example_separator must be a string. Current type:"
+                "example_separator must be a string. Current type: "
                 f"{type(self.example_separator)}"
             )
 
@@ -267,13 +260,13 @@ class Prompt:
         for example in self.examples:
             if any(key not in example for key in self.REQUIRED_KEYS):
                 raise ValueError(
-                    f"Missing required key.\nHeader keys: {example.keys()}\nRequired:"
-                    f"{self.REQUIRED_KEYS}"
+                    f"Missing required key.\nHeader keys: {self.headers.keys()}.\n"
+                    f"Required: {self.REQUIRED_KEYS}."
                 )
 
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for"
+                f"At least {self.MIN_NUM_EXAMPLES} example must be given for "
                 f"{self.__class__.__name__}"
             )

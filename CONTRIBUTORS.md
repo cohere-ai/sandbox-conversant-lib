@@ -134,7 +134,7 @@ pdoc conversant -o docs/ --docformat google
 6. Prompt is passed to `co.generate()` to produce the response from the bot.
 7. The user query & response from the bot are added to the chat history.
 
-![A diagram that shows how conversant constructs prompts before they are passed to co.generate() in order to craft a reply from the bot.](images/conversant-diagram.png)
+![A diagram that shows how conversant constructs prompts before they are passed to co.generate() in order to craft a reply from the bot.](static/conversant-diagram.png)
 
 ### A note about search & grounded question answering
 

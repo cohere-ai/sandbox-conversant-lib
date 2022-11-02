@@ -7,6 +7,7 @@
 # level of this repository.
 
 
+import json
 import os
 import re
 from typing import List
@@ -16,7 +17,7 @@ import streamlit as st
 from emojificate.filter import emojificate
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
-from conversant.prompts.start_prompt import StartPrompt
+from conversant.prompts.chat_prompt import ChatPrompt
 
 
 class ParrotChatbot(PromptChatbot):
@@ -29,7 +30,7 @@ class ParrotChatbot(PromptChatbot):
     def __init__(self):
         super().__init__(
             client=None,
-            prompt=StartPrompt(
+            prompt=ChatPrompt(
                 preamble=(
                     "The Parrot Bot repeats back whatever is said to it "
                     "without using Cohere's large language models."
@@ -54,7 +55,7 @@ class ParrotChatbot(PromptChatbot):
             str: a mock reply that repeats the user's query.
         """
         current_prompt = self.get_current_prompt(query)
-        self.chat_history.append(self.prompt.create_example(query, query))
+        self.chat_history.append(self.prompt.create_interaction(query, query))
         self.prompt_history.append(current_prompt)
         return query
 
@@ -65,13 +66,13 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
     """Converts an emoji shortcode to its corresponding Twemoji URL.
 
     Args:
-        shortcode (str): Emoji shortcode
+        shortcode (str): Emoji shortcode.
 
     Returns:
         str: The string that is the Twemoji URL corresponding to the emoji.
     """
     # Emojize returns the unicode representation of that emoji from its shortcode.
-    unicode = emoji.emojize(shortcode)
+    unicode = emoji.emojize(shortcode, language="alias")
     # Emojificate returns html <img /> tag.
     img_html_tag = emojificate(unicode)
     # Find the URL from the html tag.
@@ -91,7 +92,25 @@ def get_persona_options() -> List[str]:
         List[str]: A list of persona names.
     """
     # Initialize the list of personas for Streamlit
-    persona_options = [""] + os.listdir(PERSONA_MODEL_DIRECTORY) + ["parrot"]
+    persona_names = os.listdir(PERSONA_MODEL_DIRECTORY)
+    persona_names_maybe_with_emojis = []
+    for persona_name in persona_names:
+        persona_path = os.path.join(
+            PERSONA_MODEL_DIRECTORY, persona_name, "config.json"
+        )
+        with open(persona_path) as f:
+            persona = json.load(f)
+            avatar = (
+                emoji.emojize(persona["chatbot_config"]["avatar"], language="alias")
+                if "avatar" in persona["chatbot_config"]
+                else ""
+            )
+            persona_names_maybe_with_emojis.append(
+                f"{avatar} {persona_name}"
+            ) if emoji.is_emoji(avatar) else persona_names_maybe_with_emojis.append(
+                persona_name
+            )
+    persona_options = [""] + persona_names_maybe_with_emojis  # + ["parrot"]
     return persona_options
 
 
@@ -102,3 +121,27 @@ def style_using_css(style: str) -> None:
         style (str): String representation of CSS style. Assumes it is well-formed.
     """
     st.markdown(f"<style>{style}</style>", unsafe_allow_html=True)
+
+
+def escape_string(string: str) -> str:
+    """Utility function to add '\' to escape sequences in a string.
+
+    Args:
+        string (str): Unescaped string.
+
+    Returns:
+        str: Escaped string
+    """
+    return string.encode("unicode_escape").decode("raw_unicode_escape")
+
+
+def unescape_string(string: str) -> str:
+    """Utility function to remove '\' from escape sequences in a string.
+
+    Args:
+        string (str): Escaped string.
+
+    Returns:
+        str: Unescaped string
+    """
+    return string.encode("raw_unicode_escape").decode("unicode_escape")
