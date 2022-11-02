@@ -31,7 +31,7 @@ Build conversational AI on top of [Cohere](https://cohere.ai/)'s [large language
 - 🗣 Use large language models quickly with Cohere's [API](https://docs.cohere.ai/api-reference/)
 - 😃 Customize personas
 - 💁 Leave management of chat history up to `conversant`
-- 🪨 Grounded in your provided facts (soon!)
+- 🪨 Ground conversations in your provided facts (soon!)
 - 🐍 Install `conversant` with pip
 
 `conversant` is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with users with a variety of different chatbot personas. `conversant` aims
