@@ -91,7 +91,7 @@ def get_persona_options() -> List[str]:
         List[str]: A list of persona names.
     """
     # Initialize the list of personas for Streamlit
-    persona_options = [""] + os.listdir(PERSONA_MODEL_DIRECTORY) + ["parrot"]
+    persona_options = [""] + os.listdir(PERSONA_MODEL_DIRECTORY)  # + ["parrot"]
     return persona_options
 
 
