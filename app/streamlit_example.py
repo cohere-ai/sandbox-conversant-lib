@@ -12,7 +12,8 @@ import copy
 import sys
 
 import cohere
-import emoji
+
+# import emoji
 import streamlit as st
 
 from app import ui, utils
@@ -21,19 +22,20 @@ from conversant.utils import demo_utils
 
 USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
+
 def get_reply() -> None:
     """Replies query from the message input, and resets the message input"""
 
     response = st.session_state.bot.reply(query=st.session_state.message_input)
-    _ = response.get('data')
+    _ = response.get("data")
 
     # Stores the reply status value and the output message
-    st.session_state.reply_status = response['status']
-    st.session_state.output_message = response.get('output_message')
-
+    st.session_state.reply_status = response["status"]
+    st.session_state.output_message = response.get("output_message")
 
     # Reset user input
-    st.session_state.user_input = ""
+    st.session_state.message_input = ""
+
 
 def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
@@ -49,7 +51,7 @@ def initialize_chatbot() -> None:
         st.session_state.bot = PromptChatbot.from_persona(
             st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
         )
-    st.session_state.reply_status = 'Success'
+    st.session_state.reply_status = "Success"
     st.session_state.output_message = None
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
@@ -232,7 +234,7 @@ if __name__ == "__main__":
             # We can get the chatbot to begin the conversation with this.
             # The session's state needs to be manually updated since we are not
             # refreshing the entire Streamlit app.
-            if  not st.session_state.bot.chat_history:
+            if not st.session_state.bot.chat_history:
                 st.session_state.bot.reply(
                     query="Hello",
                 )
@@ -255,9 +257,9 @@ if __name__ == "__main__":
             # Draw chat history.
             with chat_history_placeholder.container():
                 # Check status of the reply and show an output message
-                if st.session_state.reply_status == 'Error':
+                if st.session_state.reply_status == "Error":
                     st.error(st.session_state.output_message)
-                elif st.session_state.reply_status == 'Warning':
+                elif st.session_state.reply_status == "Warning":
                     st.warning(st.session_state.output_message)
                 ui.draw_chat_history()
 
