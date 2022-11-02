@@ -26,12 +26,7 @@ USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 def get_reply() -> None:
     """Replies query from the message input, and resets the message input"""
 
-    response = st.session_state.bot.reply(query=st.session_state.message_input)
-    _ = response.get("data")
-
-    # Stores the reply status value and the output message
-    st.session_state.reply_status = response["status"]
-    st.session_state.output_message = response.get("output_message")
+    _ = st.session_state.bot.reply(query=st.session_state.message_input)
 
     # Reset user input
     st.session_state.message_input = ""
@@ -51,7 +46,6 @@ def initialize_chatbot() -> None:
         st.session_state.bot = PromptChatbot.from_persona(
             st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
         )
-    st.session_state.reply_status = "Success"
     st.session_state.output_message = None
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
@@ -257,10 +251,6 @@ if __name__ == "__main__":
             # Draw chat history.
             with chat_history_placeholder.container():
                 # Check status of the reply and show an output message
-                if st.session_state.reply_status == "Error":
-                    st.error(st.session_state.output_message)
-                elif st.session_state.reply_status == "Warning":
-                    st.warning(st.session_state.output_message)
                 ui.draw_chat_history()
 
             # Draw the message input field and a disclaimer.

@@ -9,9 +9,9 @@
 import json
 import logging
 
-# import warnings
+import warnings
 import os
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 
 import cohere
 import jsonschema
@@ -124,33 +124,20 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def check_and_adjust_prompt_size(self, prompt: str, query: str) -> Tuple[dict, str]:
-        """Check if the prompt size is smaller than the max prompt size.
+    def update_max_context_examples(self, prompt_size: int) -> int:
+        """Adjust max_context_examples until a possible prompt size.
 
-        If not, try to adjust max_context_examples until a possible prompt size.
-
-        if this is not possible, just send an error message.
+        if this is not possible, send an error message.
 
         Args:
-            prompt (str): Prompt that will be send to .generate
-            formatted_query (str): Last message from user in the correct format
+            prompt_size (str): Number of tokens of the prompt
 
         Returns:
-            Tuple[dict, str]: A tuple containing a dict mapping from "status" and
-            "output_message" keys to their respective values, and a prompt that
-            has been adjusted if necessary
+           int: updated max_context_examples
         """
 
-        response = {}
-        response["status"] = "Success"
-
-        curr_size = self.co.tokenize(prompt).length
-
-        if curr_size <= self.max_prompt_size:
-            return response, prompt
-
         # Store original values
-        original_size = curr_size
+        original_size = prompt_size
         original_max_context_examples = self.chatbot_config["max_context_examples"]
 
         # Reduce max_context_examples until the number of token of the prompt
@@ -164,22 +151,20 @@ class PromptChatbot(Chatbot):
         )
 
         for i in range(start_point, end_point):
-            curr_size = curr_size - self.chat_history_sizes[i]
-            if curr_size <= self.max_prompt_size:
-                self.chatbot_config["max_context_examples"] = end_point - 1 - i
-                response["status"] = "Warning"
-                response["output_message"] = (
+            prompt_size = prompt_size - self.chat_history_sizes[i]
+            if prompt_size <= self.max_prompt_size:
+                max_context_examples = end_point - 1 - i
+
+                warnings.warn(
                     "The parameter max_context_examples was reduced "
                     f"from {original_max_context_examples} to "
                     f"{self.chatbot_config['max_context_examples']} so that"
                     f"the total amount of tokens does not exceed {MAX_PROMPT_SIZE}."
                 )
-                current_prompt = self.get_current_prompt(query)
-                return response, current_prompt
 
-        response["status"] = "Error"
-        self.chatbot_config["max_context_examples"] = original_max_context_examples
-        response["output_message"] = (
+                return max_context_examples
+
+        raise ValueError(
             "The total number of tokens (prompt and prediction) cannot exceed "
             f"{MAX_PROMPT_SIZE}. Try using a shorter start prompt, sending "
             "smaller text messages in the chat, or setting a smaller value "
@@ -189,10 +174,6 @@ class PromptChatbot(Chatbot):
             f" tokens \n - Parameter max_tokens: {self.client_config['max_tokens']}"
             " tokens"
         )
-        return response, prompt
-
-        # if response["status"] == "Warning":
-        #     warnings.warn('Oi')
 
     def reply(self, query: str) -> Dict:
         """Replies to a query given a chat history.
@@ -211,12 +192,14 @@ class PromptChatbot(Chatbot):
         # from the chat history with a maximum of max_context_examples,
         # and from the current query
         current_prompt = self.get_current_prompt(query)
-        final_response, current_prompt = self.check_and_adjust_prompt_size(
-            current_prompt, query
-        )
 
-        if final_response["status"] == "Error":
-            return final_response
+        current_prompt_size = self.co.tokenize(current_prompt).length
+
+        if current_prompt_size > self.max_prompt_size:
+            self.chatbot_config[
+                "max_context_examples"
+            ] = self.update_max_context_examples(current_prompt_size)
+            current_prompt = self.get_current_prompt(query)
 
         # Make a call to Cohere's co.generate API
 
@@ -235,8 +218,6 @@ class PromptChatbot(Chatbot):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
 
-        final_response["data"] = response
-
         # We need to remember the current response in the chat history for future
         # responses.
         self.chat_history.append(self.prompt.create_example(query, response))
@@ -245,7 +226,7 @@ class PromptChatbot(Chatbot):
         )
         self.prompt_history.append(current_prompt)
 
-        return final_response
+        return response
 
     def get_current_prompt(self, query) -> str:
         """Stitches the prompt with a trailing window of the chat.
