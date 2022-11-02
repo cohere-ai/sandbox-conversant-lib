@@ -392,10 +392,9 @@ class PromptChatbot(Chatbot):
         # Checks if the parameter does not exceed MAX_PROMPT_SIZE
         if persona["client_config"]["max_tokens"] >= MAX_PROMPT_SIZE:
             raise ValueError(
-                "The parameter max_tokens cannot exceed 2048."
+                f"The parameter max_tokens cannot exceed {MAX_PROMPT_SIZE}."
                 " Try using a smaller value."
             )
-
         try:
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
