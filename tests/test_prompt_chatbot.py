@@ -20,14 +20,7 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot) -> None:
         prompt_chatbot (PromptChatbot): The instance of PromptChatbot to check.
     """
     __tracebackhide__ = True
-    for key in [
-        "model",
-        "max_tokens",
-        "temperature",
-        "frequency_penalty",
-        "presence_penalty",
-        "stop_sequences",
-    ]:
+    for key in ["model", "max_tokens", "temperature", "stop_seq"]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
                 f"{key} not in config of {prompt_chatbot.__class__.__name__} \

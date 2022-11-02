@@ -64,6 +64,20 @@ class Prompt:
     def __str__(self) -> str:
         return self.to_string()
 
+    @property
+    def stop_sequences(self) -> List[str]:
+        """A (partial) list of stop sequences on which the model will stop generation.
+
+        By default, models should cut off generation when encountering
+        any variable already defined in the prompt. More stop sequences can be added
+        external to Prompt, before passing them as an argument to a generation client.
+
+        Returns:
+            List[str]: A list of stop sequences corresponding to the headers of the
+                prompt.
+        """
+        return list(self.headers.values())
+
     def create_interaction(self, *args, **kwargs) -> Interaction:
         """Creates a new dictionary representation of an interaction.
 

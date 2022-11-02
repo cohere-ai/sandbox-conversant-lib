@@ -34,9 +34,6 @@ PERSONA_JSON_SCHEMA = {
                 "model": {"type": "string"},
                 "max_tokens": {"type": "integer"},
                 "temperature": {"type": "number"},
-                "frequency_penalty": {"type": "number"},
-                "presence_penalty": {"type": "number"},
-                "stop_sequences": {"type": "array"},
             },
         },
         "prompt_config": {
@@ -138,15 +135,13 @@ class PromptChatbot(Chatbot):
             prompt=current_prompt,
             max_tokens=self.client_config["max_tokens"],
             temperature=self.client_config["temperature"],
-            frequency_penalty=self.client_config["frequency_penalty"],
-            presence_penalty=self.client_config["presence_penalty"],
-            stop_sequences=self.client_config["stop_sequences"],
+            stop_sequences=self.client_config["stop_seq"],
         )
 
         # If response was cut off by .generate() finding a stop sequence,
         # remove that sequence from the response.
         response = generated_object.generations[0].text
-        for stop_seq in self.client_config["stop_sequences"]:
+        for stop_seq in self.client_config["stop_seq"]:
             if response.endswith(stop_seq):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
@@ -223,9 +218,7 @@ class PromptChatbot(Chatbot):
                 "model": "xlarge",
                 "max_tokens": 100,
                 "temperature": 0.75,
-                "frequency_penalty": 0.0,
-                "presence_penalty": 0.0,
-                "stop_sequences": ["\n"],
+                "stop_seq": self.prompt.stop_sequences,
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
