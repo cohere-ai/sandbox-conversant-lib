@@ -15,7 +15,7 @@ import cohere
 import emoji
 import streamlit as st
 
-from app import ui, utils
+from conversant.demo import ui, utils
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     # define styling in a custom CSS file and inject it into the Streamlit DOM.
     # This is brittle and dependent on the DOM structure. Any changes to the layout
     # will break the styling defined in this file.
-    with open("app/styles.css") as f:
+    with open("conversant/demo/styles.css") as f:
         utils.style_using_css(f.read())
 
     # We use the :bust_in_silhouette: emoji as a neutral user avatar.
