@@ -19,10 +19,10 @@ Conversation = NewType("Conversation", List[Interaction])
 
 
 @dataclass
-class StartPrompt(Prompt):
-    """A start prompt given to a Chatbot.
+class ChatPrompt(Prompt):
+    """A chat prompt given to a Chatbot.
 
-    The examples in a `StartPrompt` are a list of `Conversation`s themselves a list of
+    The examples in a `ChatPrompt` are a list of `Conversation`s themselves a list of
     `Interaction`s. This is one level of nesting further as compared to those in
     `Prompt`, which are a list of `Interaction`s.
 
@@ -31,8 +31,8 @@ class StartPrompt(Prompt):
         bot: The Chatbot itself.
 
     Constants:
-        REQUIRED_KEYS (List[str]): The list of required keys for the prompt.(default:
-            `["user", "bot"]`)
+        REQUIRED_KEYS (List[str]): The list of required keys for the chat prompt.
+            (default: `["user", "bot"]`)
         MIN_PREAMBLE_LENGTH (int): The minimum length of the preamble. (default: `1`)
         MIN_NUM_EXAMPLES (int): The minimum number of examples that should be passed in.
             (default: `1`)
@@ -45,10 +45,10 @@ class StartPrompt(Prompt):
     MIN_NUM_EXAMPLES: int = 0
 
     def __post_init__(self) -> None:
-        """Validators for the start prompt.
+        """Validators for the chat prompt.
 
         Validates that the prompt follows the requirements of the validators listed
-        below. Minimally, the StartPrompt needs to follow the requirements of its parent
+        below. Minimally, the ChatPrompt needs to follow the requirements of its parent
         class.
         """
         super()._validate_preamble()
@@ -62,7 +62,7 @@ class StartPrompt(Prompt):
         """
         Returns:
             str: The name of the user that interacts with the chatbot who uses this
-                StartPrompt. Typically this should be set to `'User'`.
+                ChatPrompt. Typically this should be set to `'User'`.
         """
         return self.headers["user"]
 
@@ -70,23 +70,9 @@ class StartPrompt(Prompt):
     def bot_name(self):
         """
         Returns:
-            str: The name of the chatbot who uses this StartPrompt.
+            str: The name of the chatbot who uses this ChatPrompt.
         """
         return self.headers["bot"]
-
-    @property
-    def stop_sequences(self) -> List[str]:
-        """A (partial) list of stop sequences upon which the chatbot will cut off
-        generation.
-
-        The chatbot will stop generation when it encounters a newline followed by
-        a user or bot's name.
-
-        Returns:
-            List[str]: A list of stop sequences corresponding to the headers of the
-                prompt.
-        """
-        return [f"\n{self.headers[speaker]}:" for speaker in self.headers]
 
     def create_interaction_string(self, *args, **kwargs) -> str:
         """Creates a string representation of an interaction.
@@ -172,13 +158,13 @@ class StartPrompt(Prompt):
             for interaction in example:
                 if any(key not in interaction for key in self.REQUIRED_KEYS):
                     raise ValueError(
-                        f"Missing required key.\nHeader keys: {interaction.keys()}\n"
-                        f"Required: {self.REQUIRED_KEYS}"
+                        "Missing required key.\nInteraction's keys:"
+                        f"{interaction.keys()}\nRequired: {self.REQUIRED_KEYS}"
                     )
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for"
+                f"At least {self.MIN_NUM_EXAMPLES} example(s) must be given for"
                 f"{self.__class__.__name__}"
             )
 
@@ -224,7 +210,7 @@ class StartPrompt(Prompt):
                     turn.lstrip().startswith(self.bot_name) for turn in bot_turns
                 )
                 if user_prefixed and bot_prefixed:
-                    # It's hard to think of any genuine case where all utterances start
+                    # It's hard to think of any genuine case where all utterances begin
                     # with self-names.
                     raise ValueError(
                         "Conversation interactions should not be prefixed with user/bot"

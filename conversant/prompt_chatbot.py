@@ -15,8 +15,8 @@ import cohere
 import jsonschema
 
 from conversant.chatbot import Chatbot, Interaction
+from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
-from conversant.prompts.start_prompt import StartPrompt
 
 PERSONA_MODEL_DIRECTORY = "conversant/personas"
 PERSONA_JSON_SCHEMA = {
@@ -34,6 +34,9 @@ PERSONA_JSON_SCHEMA = {
                 "model": {"type": "string"},
                 "max_tokens": {"type": "integer"},
                 "temperature": {"type": "number"},
+                "frequency_penalty": {"type": "number"},
+                "presence_penalty": {"type": "number"},
+                "stop_sequences": {"type": "array"},
             },
         },
         "prompt_config": {
@@ -135,13 +138,15 @@ class PromptChatbot(Chatbot):
             prompt=current_prompt,
             max_tokens=self.client_config["max_tokens"],
             temperature=self.client_config["temperature"],
-            stop_sequences=self.client_config["stop_seq"],
+            frequency_penalty=self.client_config["frequency_penalty"],
+            presence_penalty=self.client_config["presence_penalty"],
+            stop_sequences=self.client_config["stop_sequences"],
         )
 
         # If response was cut off by .generate() finding a stop sequence,
         # remove that sequence from the response.
         response = generated_object.generations[0].text
-        for stop_seq in self.client_config["stop_seq"]:
+        for stop_seq in self.client_config["stop_sequences"]:
             if response.endswith(stop_seq):
                 response = response[: -len(stop_seq)]
         response = response.lstrip()
@@ -156,11 +161,14 @@ class PromptChatbot(Chatbot):
     def get_current_prompt(self, query) -> str:
         """Stitches the prompt with a trailing window of the chat.
 
-        Args:
-            query (str): The current user query.
+                Args:
+                    query (str): The current user query.
+        <<<<<<< HEAD
+        =======
 
-        Returns:
-            str: The current prompt given a query.
+                Returns:
+                    str: The current prompt given a query.
+        >>>>>>> main
         """
         # get base prompt
         base_prompt = self.prompt.to_string() + "\n"
@@ -218,7 +226,9 @@ class PromptChatbot(Chatbot):
                 "model": "xlarge",
                 "max_tokens": 100,
                 "temperature": 0.75,
-                "stop_seq": self.prompt.stop_sequences,
+                "frequency_penalty": 0.0,
+                "presence_penalty": 0.0,
+                "stop_sequences": ["\n"],
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
@@ -257,7 +267,7 @@ class PromptChatbot(Chatbot):
 
         return cls(
             client=client,
-            prompt=StartPrompt.from_dict(persona["start_prompt_config"]),
+            prompt=ChatPrompt.from_dict(persona["chat_prompt_config"]),
             persona_name=persona_name,
             chatbot_config=persona["chatbot_config"],
             client_config=persona["client_config"],

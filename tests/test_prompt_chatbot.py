@@ -20,7 +20,14 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot) -> None:
         prompt_chatbot (PromptChatbot): The instance of PromptChatbot to check.
     """
     __tracebackhide__ = True
-    for key in ["model", "max_tokens", "temperature", "stop_seq"]:
+    for key in [
+        "model",
+        "max_tokens",
+        "temperature",
+        "frequency_penalty",
+        "presence_penalty",
+        "stop_sequences",
+    ]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
                 f"{key} not in config of {prompt_chatbot.__class__.__name__} \
@@ -72,9 +79,9 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
 def test_prompt_chatbot_get_current_prompt(
     mock_prompt_chatbot: PromptChatbot, max_context_examples: int, history_length: int
 ) -> None:
-    """Tests assembly of starter prompts and context.
+    """Tests assembly of prompts and context.
 
-    Starter prompts should be preserved and context
+    Prompts should be preserved and context
     should have line-level trimming applied.
 
     Args:
@@ -95,7 +102,7 @@ def test_prompt_chatbot_get_current_prompt(
 
     current_prompt = mock_prompt_chatbot.get_current_prompt(query="Hello!")
     expected = (
-        # start prompt
+        # chat prompt
         f"{mock_prompt_chatbot.prompt.preamble}\n"
         + f"{mock_prompt_chatbot.prompt.example_separator}"
         + f"{mock_prompt_chatbot.prompt.headers['user']}: {mock_prompt_chatbot.prompt.examples[0][0]['user']}\n"  # noqa

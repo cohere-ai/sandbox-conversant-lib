@@ -16,7 +16,7 @@ import streamlit as st
 from emojificate.filter import emojificate
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
-from conversant.prompts.start_prompt import StartPrompt
+from conversant.prompts.chat_prompt import ChatPrompt
 
 
 class ParrotChatbot(PromptChatbot):
@@ -29,7 +29,7 @@ class ParrotChatbot(PromptChatbot):
     def __init__(self):
         super().__init__(
             client=None,
-            prompt=StartPrompt(
+            prompt=ChatPrompt(
                 preamble=(
                     "The Parrot Bot repeats back whatever is said to it "
                     "without using Cohere's large language models."
@@ -102,3 +102,27 @@ def style_using_css(style: str) -> None:
         style (str): String representation of CSS style. Assumes it is well-formed.
     """
     st.markdown(f"<style>{style}</style>", unsafe_allow_html=True)
+
+
+def escape_string(string: str) -> str:
+    """Utility function to add '\' to escape sequences in a string.
+
+    Args:
+        string (str): Unescaped string.
+
+    Returns:
+        str: Escaped string
+    """
+    return string.encode("unicode_escape").decode("raw_unicode_escape")
+
+
+def unescape_string(string: str) -> str:
+    """Utility function to remove '\' from escape sequences in a string.
+
+    Args:
+        string (str): Escaped string.
+
+    Returns:
+        str: Unescaped string
+    """
+    return string.encode("raw_unicode_escape").decode("unicode_escape")

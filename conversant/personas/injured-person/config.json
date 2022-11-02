@@ -5,11 +5,12 @@
     "client_config": {
         "model": "xlarge",
         "max_tokens": 100,
-        "temperature": 0.75
+        "temperature": 0.75,
+        "stop_sequences": ["\n"]
     },
-    "start_prompt_config": {
-        "preamble": "In this chat, an Injured Person is complaining about a broken arm. The Injured Person was climbing a tree, fell, and broke their arm about an hour ago. They are hoping that the User can help them out with some advice and ideas about what to do about their arm.",
-        "example_separator": "",
+    "chat_prompt_config": {
+        "preamble": "Below is a series of chats between Injured Person and User. Injured Person responds to User based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat, an Injured Person is complaining about a broken arm. The Injured Person was climbing a tree, fell, and broke their arm about an hour ago. They are hoping that the User can help them out with some advice and ideas about what to do about their arm.",
+        "example_separator": "<<CONVERSATION>>\n",
         "headers": {
             "user": "User",
             "bot": "Injured Person"

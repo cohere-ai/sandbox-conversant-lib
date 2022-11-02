@@ -16,9 +16,9 @@ from cohere.embeddings import Embeddings
 from cohere.generation import Generation, Generations, TokenLikelihood
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
+from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
 from conversant.prompts.rewrite_prompt import RewritePrompt
-from conversant.prompts.start_prompt import StartPrompt
 from conversant.search.document import Document
 from conversant.search.local_searcher import LocalSearcher
 from conversant.search.searcher import Searcher
@@ -102,15 +102,15 @@ def mock_prompt(mock_prompt_config: Dict[str, Any]) -> Prompt:
 
 
 @pytest.fixture
-def mock_start_prompt_config() -> Dict[str, Any]:
-    """A StartPrompt config fixture for tests.
+def mock_chat_prompt_config() -> Dict[str, Any]:
+    """A ChatPrompt config fixture for tests.
 
     Returns:
         Dict[str, Any]: Dictionary that can be used to construct to instantiate a
-            StartPrompt.
+            ChatPrompt.
     """
     return {
-        "preamble": "This is a start prompt.",
+        "preamble": "This is a chat prompt.",
         "example_separator": "\n",
         "headers": {"user": "User", "bot": "Mock Chatbot"},
         "examples": [
@@ -136,17 +136,17 @@ def mock_start_prompt_config() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def mock_start_prompt(mock_start_prompt_config: Dict[str, Any]) -> StartPrompt:
-    """A StartPrompt config fixture for tests.
+def mock_chat_prompt(mock_chat_prompt_config: Dict[str, Any]) -> ChatPrompt:
+    """A ChatPrompt config fixture for tests.
 
     Args:
-        mock_start_prompt_config (Dict[str, Any]): A config used to instantiate a
-            StartPrompt fixture.
+        mock_chat_prompt_config (Dict[str, Any]): A config used to instantiate a
+            ChatPrompt fixture.
 
     Returns:
-        StartPrompt: A mock StartPrompt object fixture for tests.
+        ChatPrompt: A mock ChatPrompt object fixture for tests.
     """
-    return StartPrompt(**mock_start_prompt_config)
+    return ChatPrompt(**mock_chat_prompt_config)
 
 
 @pytest.fixture
@@ -195,21 +195,19 @@ def mock_rewrite_prompt(mock_rewrite_prompt_config: Dict[str, Any]) -> RewritePr
 
 
 @pytest.fixture
-def mock_prompt_chatbot(
-    mock_co: object, mock_start_prompt: StartPrompt
-) -> PromptChatbot:
+def mock_prompt_chatbot(mock_co: object, mock_chat_prompt: ChatPrompt) -> PromptChatbot:
     """Instantiates a single bot fixture for tests.
 
     Args:
         mock_co (object): A mock Cohere client.
-        mock_start_prompt (StartPrompt): A mock StartPrompt.
+        mock_chat_prompt (ChatPrompt): A mock ChatPrompt.
 
     Returns:
         PromptChatbot: A simple mock of a chatbot that works through prompts.
     """
     return PromptChatbot(
         client=mock_co,
-        prompt=mock_start_prompt,
+        prompt=mock_chat_prompt,
     )
 
 
