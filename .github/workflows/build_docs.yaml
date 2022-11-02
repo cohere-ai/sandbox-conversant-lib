@@ -1,10 +1,10 @@
 name: build docs
 
 # build the documentation whenever there are new commits on main
-on:
-  push:
-    branches:
-      - main
+on: [push]
+  # push:
+  #   branches:
+  #     - main
     # Alternative: only build for tags.
     # tags:
     #   - '*'
@@ -17,11 +17,16 @@ jobs:
   # Build the documentation and upload the static HTML files as an artifact.
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version-file: .github/python-version.txt
+          python-version: ${{ matrix.python-version }}
 
       - run: pip install -e .
       - run: pdoc conversant -o docs/ --docformat google
