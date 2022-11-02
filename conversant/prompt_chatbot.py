@@ -161,14 +161,11 @@ class PromptChatbot(Chatbot):
     def get_current_prompt(self, query) -> str:
         """Stitches the prompt with a trailing window of the chat.
 
-                Args:
-                    query (str): The current user query.
-        <<<<<<< HEAD
-        =======
+        Args:
+            query (str): The current user query.
 
-                Returns:
-                    str: The current prompt given a query.
-        >>>>>>> main
+        Returns:
+            str: The current prompt given a query.
         """
         # get base prompt
         base_prompt = self.prompt.to_string() + "\n"
