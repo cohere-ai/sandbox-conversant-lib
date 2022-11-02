@@ -165,8 +165,8 @@ if __name__ == "__main__":
 
         # Initialize the bot avatar
         bot_avatar_string = st.session_state.bot.chatbot_config["avatar"]
-        st.session_state.bot_avatar = utils.get_twemoji_url_from_shortcode(
-            bot_avatar_string
+        st.session_state.bot_avatar = (
+            utils.get_twemoji_url_from_shortcode(bot_avatar_string)
             if emoji.is_emoji(emoji.emojize(bot_avatar_string, language="alias"))
             else bot_avatar_string
         )
