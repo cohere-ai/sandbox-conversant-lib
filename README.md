@@ -74,8 +74,8 @@ Try `conversant` on a Streamlit demo without installing anything [here!](https:/
 When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
 
 <p float="none">
-  <img src="static/fortune-teller-setup.png" alt="Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas." height="500"/>
-  <img src="static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." height="500"/>
+  <img src="static/fortune-teller-setup.png" alt="Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas." height="550"/>
+  <img src="static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." height="550"/>
 </p>
 
 
