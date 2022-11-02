@@ -110,7 +110,9 @@ def get_persona_options() -> List[str]:
             ) if emoji.is_emoji(avatar) else persona_names_maybe_with_emojis.append(
                 persona_name
             )
-    persona_options = [""] + persona_names_maybe_with_emojis  # + ["parrot"]
+    persona_options = [""] + sorted(
+        persona_names_maybe_with_emojis, reverse=True
+    )  # + ["parrot"]
     return persona_options
 
 
