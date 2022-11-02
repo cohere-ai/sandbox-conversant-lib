@@ -30,7 +30,7 @@
 Build conversational AI on top of [Cohere](https://cohere.ai/)'s [large language models](https://docs.cohere.ai/generate-reference/)
 - 🗣 Use large language models quickly with Cohere's [API](https://docs.cohere.ai/api-reference/)
 - 😃 Customize personas
-- 💁 Takes care of dialogue context for you
+- 💁 Leave management of chat history up to `conversant`
 - 🪨 Grounded in your provided facts (soon!)
 - 🐍 Install `conversant` with pip
 
