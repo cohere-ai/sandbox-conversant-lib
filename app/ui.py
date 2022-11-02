@@ -56,7 +56,8 @@ def draw_disclaimer() -> None:
     else:
         st.write(
             "_The Parrot persona does not make use of [Cohere](https://cohere.com)'s "
-            "large language models._"
+            "large language models. Instead, it repeats back whatever message it "
+            "receives._"
         )
 
 
