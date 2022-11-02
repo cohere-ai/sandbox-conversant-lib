@@ -30,8 +30,8 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot) -> None:
     ]:
         if key not in prompt_chatbot.client_config:
             pytest.fail(
-                f"{key} not in config of {prompt_chatbot.__class__.__name__} \
-                    but is required for co.generate"
+                f"{key} not in config of {prompt_chatbot.__class__.__name__} "
+                "but is required for co.generate"
             )
 
 

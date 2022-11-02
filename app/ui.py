@@ -48,10 +48,10 @@ def draw_disclaimer() -> None:
     """Adds a disclaimer about the personas in this demo."""
     if st.session_state.persona != "parrot":
         st.write(
-            "_Each persona is powered by [Cohere](https://cohere.com)'s large language \
-            models, and these examples are meant purely for demonstrative purposes. \
-            These personas are works of fiction, are not factually grounded, and \
-            should not be taken too seriously!_"
+            "_Each persona is powered by [Cohere](https://cohere.com)'s large language "
+            "models, and these examples are meant purely for demonstrative purposes. "
+            "These personas are works of fiction, are not factually grounded, and "
+            "should not be taken too seriously!_"
         )
     else:
         st.write(

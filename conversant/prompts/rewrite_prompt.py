@@ -66,9 +66,7 @@ class RewritePrompt(Prompt):
         Returns:
             str: String representation of an interaction.
         """
-        interaction = (
-            self.create_interaction(*args, **kwargs) if args else kwargs
-        )
+        interaction = self.create_interaction(*args, **kwargs) if args else kwargs
         return "".join(
             f"{self.headers[key]}\n{interaction[key]}\n" for key in interaction.keys()
         )

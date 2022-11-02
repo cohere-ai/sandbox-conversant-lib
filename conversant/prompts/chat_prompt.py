@@ -158,7 +158,7 @@ class ChatPrompt(Prompt):
             for interaction in example:
                 if any(key not in interaction for key in self.REQUIRED_KEYS):
                     raise ValueError(
-                        "Missing required key.\nInteraction's keys:"
+                        "Missing required key.\nInteraction's keys: "
                         f"{interaction.keys()}\nRequired: {self.REQUIRED_KEYS}"
                     )
         # At least `MIN_NUM_EXAMPLES` examples are given.
