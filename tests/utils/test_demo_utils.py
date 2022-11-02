@@ -11,7 +11,7 @@ from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
 
-def test_encode_decode_mock(
+def test_encode_decode_chatbot(
     mock_prompt_chatbot: PromptChatbot, mock_co: cohere.Client
 ) -> None:
     assert isinstance(
