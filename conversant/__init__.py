@@ -6,4 +6,7 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
-__all__ = ["demo_utils"]
+from conversant.chatbot import Chatbot
+from conversant.prompt_chatbot import PromptChatbot
+
+__all__ = ["Chatbot", "PromptChatbot"]
