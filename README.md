@@ -66,7 +66,7 @@ pip install conversant
 ```
 ### Streamlit Demo
 
-Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) 🎉
+Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
 
 <p float="none">
   <img src="static/fortune-teller-setup.png" alt="Screenshot showing the available personas on the Streamlit demo, with the Fortune Teller persona selected by default.." height="550"/>
@@ -75,6 +75,8 @@ Want to see it in action first? You can use `conversant` on a [Streamlit](https:
 
 ### Running Your Own Demo Locally
 
+Cohere uses Streamlit to create its demo applications. If you’re new to Streamlit, you can install it [here](https://docs.streamlit.io/library/get-started/installation) and read more about running Streamlit commands [here](https://docs.streamlit.io/library/get-started/main-concepts).
+
 If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
 You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai). 
 Add the key to `.streamlit/secrets.toml`:
@@ -82,7 +84,7 @@ Add the key to `.streamlit/secrets.toml`:
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
-Start the Streamlit app from `app/streamlit_example.py`:
+ Start the Streamlit app from `app/streamlit_example.py`:
 ```
 streamlit run app/streamlit_example.py
 ```
