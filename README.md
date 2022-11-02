@@ -112,7 +112,7 @@ The config file should contain the following:
 
 ### Editing a Persona on the Demo
 You can also edit a persona on the Streamlit app!
-<img src="static/fortune-teller-edit.png" alt="Screenshot showing the interface for editing a persona on the Streamlit app." height="550"/>
+<img src="static/fortune-teller-edit.png" alt="Screenshot showing the interface for editing a persona on the Streamlit app."/>
 
 ### Usage
 
