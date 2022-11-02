@@ -13,7 +13,7 @@ from typing import Any, Dict, Optional
 import cohere
 import pytest
 from cohere.embeddings import Embeddings
-from cohere.generation import Generation, Generations, TokenLikelihood
+from cohere.generation import Generations
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
 from conversant.prompts.chat_prompt import ChatPrompt
@@ -27,13 +27,7 @@ from conversant.search.searcher import Searcher
 class MockCo:
     def generate(*args, **kwargs) -> Generations:
         return Generations(
-            generations=[
-                Generation(
-                    text="Hello!",
-                    likelihood=1.0,
-                    token_likelihoods=[TokenLikelihood("Hello!", 1.0)],
-                )
-            ],
+            response={"generations": [dict(text="Hello!", likelihood=1.0)]},
             return_likelihoods="NONE",
         )
 

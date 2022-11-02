@@ -70,7 +70,7 @@ After you've selected a persona, the bot will send a greeting. With each respons
 </center>
 
 ### Installation
-`conversant` is tested on Python 3.8+ and Cohere 2.4.2+.
+`conversant` is tested on Python 3.8+ and Cohere 2.8.0+.
 
 ```
 pip install conversant
