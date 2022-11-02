@@ -14,11 +14,12 @@ from typing import Any, Dict
 import cohere
 import jsonschema
 
+import conversant
 from conversant.chatbot import Chatbot, Interaction
 from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
 
-PERSONA_MODEL_DIRECTORY = "conversant/personas"
+PERSONA_MODEL_DIRECTORY = f"{os.path.dirname(conversant.__file__)}/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
     "properties": {
