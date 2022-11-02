@@ -34,6 +34,13 @@ def check_prompt_chatbot_config(prompt_chatbot: PromptChatbot) -> None:
                 "but is required for co.generate"
             )
 
+    for key in ["max_context_examples", "avatar"]:
+        if key not in prompt_chatbot.chatbot_config:
+            pytest.fail(
+                f"{key} not in chatbot config of {prompt_chatbot.__class__.__name__} "
+                "but is required."
+            )
+
 
 def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
     """Tests end to end that a PromptChatbot is initialized correctly from constructor.
