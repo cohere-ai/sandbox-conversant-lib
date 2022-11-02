@@ -87,9 +87,9 @@ Add the key to `.streamlit/secrets.toml`:
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
- Start the Streamlit app from `app/streamlit_example.py`:
+ Start the Streamlit app from `conversant/demo/streamlit_example.py`:
 ```
-streamlit run app/streamlit_example.py
+streamlit run conversant/demo/streamlit_example.py
 ```
 
 ### Creating a Custom Persona
