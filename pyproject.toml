@@ -9,10 +9,10 @@ python = "^3.8"
 cohere = "^2.8.0"
 toml = "^0.10.2"
 pydantic = "^1.10.2"
-streamlit-chat = {git = "https://github.com/yichern/st-chat.git"}
 emoji = "^2.1.0"
 emojificate = "^0.6.0"
 streamlit-ace = "^0.1.1"
+streamlit-talk = "^v0.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
