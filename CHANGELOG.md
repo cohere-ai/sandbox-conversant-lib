@@ -4,6 +4,8 @@
 
 ### Added
 - Added metadata for PyPI homepage
+- Updated README content
+- Updated `__init__.py` files for cleaner imports
 
 ### Changed
 - N/A
