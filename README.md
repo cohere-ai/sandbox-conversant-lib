@@ -21,8 +21,10 @@
 ################################################################################
 ```
 
-**Maintainer Team:** [Cohere ConvAI Team](mailto:convai@cohere.com) \
+**Maintainer:** [Cohere ConvAI Team](mailto:convai@cohere.com) \
 **Project maintained until at least (YYYY-MM-DD):** 2023-03-01
+
+[![test](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <!-- TABLE OF CONTENTS -->
 <details>
