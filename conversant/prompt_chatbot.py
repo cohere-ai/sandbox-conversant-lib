@@ -167,7 +167,6 @@ class PromptChatbot(Chatbot):
             curr_size = curr_size - self.chat_history_sizes[i]
             if curr_size <= self.max_prompt_size:
                 self.chatbot_config["max_context_examples"] = end_point - 1 - i
-                print(self.chatbot_config["max_context_examples"])
                 response["status"] = "Warning"
                 response["output_message"] = (
                     "The parameter max_context_examples was reduced "
@@ -215,8 +214,6 @@ class PromptChatbot(Chatbot):
         final_response, current_prompt = self.check_and_adjust_prompt_size(
             current_prompt, query
         )
-
-        print(current_prompt)
 
         if final_response["status"] == "Error":
             return final_response
