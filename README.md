@@ -37,29 +37,20 @@ Build conversational AI on top of Cohere's LLMs
 `conversant` is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with users with a variety of different chatbot personas. `conversant` aims
 to be modular, flexible and extensible so you can create any kind of chatbots you want.
 
-Read the [launch blog post]()
+Read the [launch blog post]().
 
-Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/). 🎉
+Try `conversant` on our Streamlit app [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/). 🎉
 
 ## Table of Contents
-
-  <ol>
-    <li>
-      <a href="#conversant">Conversant</a>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#installation">Installation</a></li>
-        <li><a href="#running-a-streamlit-demo">Running a Streamlit Demo</a></li>
-        <li><a href="#usage-example">Usage Example</a></li>
-      </ul>
-    </li>
-    <li><a href="#creating-a-custom-persona">Creating a Custom Persona</a></li>
-    <li><a href="#contributing-guidelines">Contributing Guidelines</a></li>
-    <li><a href="#maintainers">Maintainers</a></li>
-    <li><a href="#license">License</a></li>
-  </ol>
+1. [Installation and Usage](#installation-and-usage)
+   1. [Installation](#installation)
+   2. [Streamlit Demo](#streamlit-demo)
+   3. [Local Streamlit Demo](#local-streamlit-demo)
+   4. [Usage](#usage)
+2. [Creating a Custom Persona](#creating-a-custom-persona)
+3. [Contributing Guidelines](#contributing-guidelines)
+4. [Maintainers](#maintainers)
+5. [License](#license)
 
 The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
 
@@ -67,7 +58,7 @@ Dialogue agents have the potential to transform how humans engage with computers
 
 
 
-## Getting Started
+## Installation and Usage
 
 Try `conversant` on a Streamlit demo without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
 
