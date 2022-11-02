@@ -31,7 +31,11 @@ def draw_chat_history() -> None:
         # injected user utterance of "Hello" from displaying.
         if i == len(st.session_state.bot.chat_history) - 1:
             if "bot" in turn:
-                st_message(turn["bot"], key=f"{i}_bot")
+                st_message(
+                    turn["bot"],
+                    key=f"{i}_bot",
+                    avatar_style=st.session_state.bot_avatar,
+                )
         else:
             if "bot" in turn:
                 st_message(turn["bot"], key=f"{i}_bot")
