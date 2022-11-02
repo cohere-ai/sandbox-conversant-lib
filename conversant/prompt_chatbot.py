@@ -25,7 +25,8 @@ PERSONA_JSON_SCHEMA = {
         "chatbot_config": {
             "type": "object",
             "properties": {
-                "max_context_lines": {"type": "integer"},
+                "max_context_examples": {"type": "integer"},
+                "avatar": {"type": "string"},
             },
         },
         "client_config": {
@@ -195,13 +196,11 @@ class PromptChatbot(Chatbot):
 
         Args:
             chatbot_config (Dict, optional): Updates self.chatbot_config. Defaults
-            to {}.
+                to {}.
         """
         # We initialize the chatbot to these default config values.
         if not hasattr(self, "chatbot_config"):
-            self.chatbot_config = {
-                "max_context_examples": 10,
-            }
+            self.chatbot_config = {"max_context_examples": 10, "avatar": ":robot:"}
         # Override default config values with the config passed in
         if isinstance(chatbot_config, Dict):
             self.chatbot_config.update(chatbot_config)
