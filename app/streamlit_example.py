@@ -31,8 +31,8 @@ def get_reply() -> None:
 def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
     if st.session_state.persona.startswith("from launch_demo") and len(sys.argv) > 1:
-        st.session_state.bot = demo_utils.decode_object(
-            sys.argv[1]
+        st.session_state.bot = demo_utils.decode_chatbot(
+            sys.argv[1], client=cohere.Client(st.secrets.COHERE_API_KEY)
         )  # Launched via demo_utils.launch_streamlit() utility function
     elif st.session_state.persona == "":
         st.session_state.bot = None
@@ -109,8 +109,10 @@ if __name__ == "__main__":
 
         # The PromptChatbot passed in should be a base64 encoding of a pickled
         # PromptChatbot object.
-        bot = demo_utils.decode_object(sys.argv[1])
-        if bot.__class__ != PromptChatbot:
+        bot = demo_utils.decode_chatbot(
+            sys.argv[1], cohere.Client(st.secrets.COHERE_API_KEY)
+        )
+        if not isinstance(bot, PromptChatbot):
             raise TypeError("base64 string passed in is not of class PromptChatbot")
         else:
             st.session_state.bot = bot

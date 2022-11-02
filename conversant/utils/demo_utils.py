@@ -11,36 +11,40 @@ import pickle
 import sys
 from typing import Type
 
+import cohere
 from streamlit.web import cli as stcli
 
 from conversant.chatbot import Chatbot
 
 
-def encode_object(obj: object) -> str:
-    """Serialize and encode an object to a base-64 string encoding.
+def encode_chatbot(chatbot: Type[Chatbot]) -> str:
+    """Serialize and encode a Chatbot object to a base-64 string encoding.
 
     Args:
-        obj (object): a Python object
+        chatbot (object): a chatbot of class inherited from Chatbot
 
     Returns:
-        str: object as a base-64 string
+        str: Chatbot object as a base-64 string
     """
-    return codecs.encode(pickle.dumps(obj), "base64").decode()
+    chatbot.co = None
+    return codecs.encode(pickle.dumps(chatbot), "base64").decode()
 
 
-def decode_object(obj_string: str) -> object:
-    """Decode and deserialize an object,
+def decode_chatbot(chatbot_string: str, client: cohere.Client) -> Type[Chatbot]:
+    """Decode and deserialize a Chatbot object.
 
     Args:
         obj_string (str): a base-64 string encoding
 
     Returns:
-        object: a Python object
+        Type[Chatbot]: a chatbot of class inherited rom Chatbot
     """
-    return pickle.loads(codecs.decode(obj_string.encode(), "base64"))
+    chatbot = pickle.loads(codecs.decode(chatbot_string.encode(), "base64"))
+    chatbot.co = client
+    return chatbot
 
 
-def launch_streamlit(bot: Type[Chatbot]) -> None:
+def launch_streamlit(chatbot: Type[Chatbot]) -> None:
     """Launches a demo of a chatbot using Streamlit.
 
     The bot will be a persona available for chatting using the interface
@@ -50,5 +54,5 @@ def launch_streamlit(bot: Type[Chatbot]) -> None:
         bot (Type[Chatbot]): a chatbot of class inherited from Chatbot
     """
     sys.argv = "streamlit run app/streamlit_example.py --".split(" ")
-    sys.argv.append(encode_object(bot))
+    sys.argv.append(encode_chatbot(chatbot))
     sys.exit(stcli.main())
