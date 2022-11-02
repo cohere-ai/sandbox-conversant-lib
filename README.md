@@ -24,11 +24,25 @@
 **Maintainer:** [Cohere ConvAI Team](mailto:convai@cohere.com) \
 **Project maintained until at least (YYYY-MM-DD):** 2023-03-01
 
-[![test](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+# Conversant
+[![test](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
+Build conversational AI on top of Cohere's LLMs
+- 🗣 Use large language models quickly
+- 😃 Customizable personas 
+- 💁 Responds based on messaging history
+- 🪨 Responses grounded in your provided facts (soon!)
+- 🐍 Install `conversant` with pip
+
+`conversant` is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with users with a variety of different chatbot personas. `conversant` aims
+to be modular, flexible and extensible so you can create any kind of chatbots you want.
+
+Read the [launch blog post]()
+
+Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/). 🎉
+
+## Table of Contents
+
   <ol>
     <li>
       <a href="#conversant">Conversant</a>
@@ -46,14 +60,12 @@
     <li><a href="#maintainers">Maintainers</a></li>
     <li><a href="#license">License</a></li>
   </ol>
-</details>
 
-
-
-## Conversant
-`conversant` is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with end users with a variety of different bot personalities. The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
+The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
 
 Dialogue agents have the potential to transform how humans engage with computers, including faster responses to support queries and free-form interactions with fictional characters, along with many other possibilities. The fastest way to see what `conversant` can do for you is to start talking to a chatbot!
+
+
 
 ## Getting Started
 
