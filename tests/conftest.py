@@ -114,11 +114,23 @@ def mock_start_prompt_config() -> Dict[str, Any]:
         "example_separator": "\n",
         "headers": {"user": "User", "bot": "Mock Chatbot"},
         "examples": [
-            {"user": "This is a user utterance", "bot": "This is a bot utterance"},
-            {
-                "user": "This is second user utterance",
-                "bot": "This is second bot utterance",
-            },
+            [
+                {"user": "This is a user utterance", "bot": "This is a bot utterance"},
+                {
+                    "user": "This is second user utterance",
+                    "bot": "This is second bot utterance",
+                },
+            ],
+            [
+                {
+                    "user": "This is a user utterance in the second example.",
+                    "bot": "This is a bot utterance in the second example.",
+                },
+                {
+                    "user": "This is second user utterance in the second example.",
+                    "bot": "This is second bot utterance in the second example.",
+                },
+            ],
         ],
     }
 

@@ -15,26 +15,28 @@
             "bot": "Support Agent"
         },
         "example_turns": [
-            {
-                "user": "hi i've got a problem with my billing", 
-                "bot": "Hello, I'm here with customer support. How can I help you today with your issue?"
-            },
-            {
-                "user": "I got charged on my card but I don't think the order ever shipped",
-                "bot": "I'm so sorry to hear that. Could you tell me the order number?"
-            },
-            {
-                "user": "yeah it's 1234354",
-                "bot": "Understood! I've just checked on the order and it looks like our shipping was delayed. It should be sent out by the end of today."
-            },
-            {
-                "user": "oh sweet thanks",
-                "bot": "No problem at all. Is there anything else I can help you with today?"
-            },
-            {
-                "user": "nah all looks good now!",
-                "bot": "Thank you for your time today and for checking in with us!"
-            }
+            [
+                {
+                    "user": "hi i've got a problem with my billing",
+                    "bot": "Hello, I'm here with customer support. How can I help you today with your issue?"
+                },
+                {
+                    "user": "I got charged on my card but I don't think the order ever shipped",
+                    "bot": "I'm so sorry to hear that. Could you tell me the order number?"
+                },
+                {
+                    "user": "yeah it's 1234354",
+                    "bot": "Understood! I've just checked on the order and it looks like our shipping was delayed. It should be sent out by the end of today."
+                },
+                {
+                    "user": "oh sweet thanks",
+                    "bot": "No problem at all. Is there anything else I can help you with today?"
+                },
+                {
+                    "user": "nah all looks good now!",
+                    "bot": "Thank you for your time today and for checking in with us!"
+                }
+            ]
         ]
     }
 }

@@ -7,9 +7,11 @@
 # level of this repository.
 
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, NewType
 
 import cohere
+
+Interaction = NewType("Interaction", Dict[str, str])
 
 
 class Chatbot(ABC):
@@ -25,19 +27,19 @@ class Chatbot(ABC):
         self.co = client
 
         # Holds the full, formatted chat history with type of
-        # List[Dict[str, str]]. Each dict object represents a
+        # List[Interaction]. Each dict object represents a
         # conversation turn and has two keys: "speaker_name" and
         # "utterance".
         self.chat_history: List[Dict[str, str]] = []
 
     @abstractmethod
-    def reply(self, query: str) -> Dict[str, str]:
+    def reply(self, query: str) -> Interaction:
         """Replies to a user given some input and context.
 
         Args:
             query (str): Most recent message from the user.
 
         Returns:
-            Dict[str, str]: A reply from a Chatbot with "speaker_name" and
-            "utterance" keys
+            Interaction: A dictionary consisting of the interaction, including the
+                query and response.
         """

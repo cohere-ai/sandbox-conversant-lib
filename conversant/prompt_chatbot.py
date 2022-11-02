@@ -14,7 +14,7 @@ from typing import Any, Dict
 import cohere
 import jsonschema
 
-from conversant.chatbot import Chatbot
+from conversant.chatbot import Chatbot, Interaction
 from conversant.prompts.prompt import Prompt
 from conversant.prompts.start_prompt import StartPrompt
 
@@ -75,6 +75,7 @@ class PromptChatbot(Chatbot):
 
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
+        self.chat_history = []
         self.prompt_history = [self.prompt.to_string()]
 
     def __repr__(self) -> str:
@@ -112,7 +113,7 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def reply(self, query: str) -> Dict[str, str]:
+    def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.
 
         The reply is then generated directly from a call to a LLM.
@@ -121,8 +122,7 @@ class PromptChatbot(Chatbot):
             query (str): A query passed to the prompt chatbot.
 
         Returns:
-            Dict[str, str]: Generated LLM response with "speaker_name" and
-            "utterance" keys
+            Interaction: Dictionary of query and generated LLM response
         """
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
@@ -148,7 +148,7 @@ class PromptChatbot(Chatbot):
 
         # We need to remember the current response in the chat history for future
         # responses.
-        self.chat_history.append(self.prompt.create_example(query, response))
+        self.chat_history.append(self.prompt.create_interaction(query, response))
         self.prompt_history.append(current_prompt)
 
         return response
@@ -176,11 +176,11 @@ class PromptChatbot(Chatbot):
         # as it is recreated using the new prompt. A possible fix is to save the old
         # prompt in history and use it when recreating.
         for turn in trimmed_chat_history:
-            context_prompt_lines.append(self.prompt.create_example_string(**turn))
-        context_prompt = "".join(context_prompt_lines)
+            context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
+        context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
 
         # get query prompt
-        query_prompt = self.prompt.create_example_string(query)
+        query_prompt = self.prompt.create_interaction_string(query)
 
         current_prompt = base_prompt + context_prompt + query_prompt
         return current_prompt.strip()

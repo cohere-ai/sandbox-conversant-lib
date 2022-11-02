@@ -10,15 +10,16 @@ from typing import Any, Dict
 
 import pytest
 
+from conversant.chatbot import Interaction
 from conversant.prompts.prompt import Prompt
 
 
 @pytest.fixture
-def new_example() -> Dict[str, str]:
-    """Instantiates a fixture for a new Prompt example.
+def new_interaction() -> Interaction:
+    """Instantiates a fixture for a new Prompt interaction.
 
     Returns:
-        Dict[str, str]: New Prompt example fixture.
+        Interaction: New Prompt interaction fixture.
     """
     return {
         "query": "A new query!",
@@ -124,78 +125,80 @@ def test_prompt_init_fails(
         _ = Prompt(**mock_prompt_config)
 
 
-def test_prompt_create_example(
-    mock_prompt: Prompt, new_example: Dict[str, str]
+def test_prompt_create_interaction(
+    mock_prompt: Prompt, new_interaction: Interaction
 ) -> None:
-    """Tests Prompt.create_example
+    """Tests Prompt.create_interaction
 
     Args:
         mock_prompt (Prompt): A Prompt fixture.
-        new_example (Dict[ str, str]): A new Prompt example fixture.
+        new_interaction (Dict[ str, str]): A new Prompt interaction fixture.
     """
     # create from positional arguments only
-    generated_example = mock_prompt.create_example(
-        new_example["query"], new_example["context"], new_example["generation"]
+    generated_interaction = mock_prompt.create_interaction(
+        new_interaction["query"],
+        new_interaction["context"],
+        new_interaction["generation"],
     )
-    assert generated_example == new_example
+    assert generated_interaction == new_interaction
 
     # create from keyword arguments only
-    generated_example = mock_prompt.create_example(**new_example)
-    assert generated_example == new_example
+    generated_interaction = mock_prompt.create_interaction(**new_interaction)
+    assert generated_interaction == new_interaction
 
     # create from mix of positional and keyword arguments
     kwargs = {"generation": "A new generation!"}
-    generated_example = mock_prompt.create_example(
-        new_example["query"], new_example["context"], **kwargs
+    generated_interaction = mock_prompt.create_interaction(
+        new_interaction["query"], new_interaction["context"], **kwargs
     )
-    assert generated_example == new_example
+    assert generated_interaction == new_interaction
 
 
-def test_prompt_create_example_string(
-    mock_prompt: Prompt, new_example: Dict[str, str]
+def test_prompt_create_interaction_string(
+    mock_prompt: Prompt, new_interaction: Interaction
 ) -> None:
-    """Tests Prompt.create_example_string
+    """Tests Prompt.create_interaction_string
 
     Args:
         mock_prompt (Prompt): A Prompt fixture.
-        new_example (Dict[ str, str]): A new Prompt example fixture.
+        new_interaction (Dict[ str, str]): A new Prompt interaction fixture.
     """
     expected = (
-        f"{mock_prompt.example_separator}"
-        f"{mock_prompt.headers['query']}{new_example['query']}\n"
-        f"{mock_prompt.headers['context']}{new_example['context']}\n"
-        f"{mock_prompt.headers['generation']}{new_example['generation']}\n"
+        f"{mock_prompt.headers['query']}{new_interaction['query']}\n"
+        f"{mock_prompt.headers['context']}{new_interaction['context']}\n"
+        f"{mock_prompt.headers['generation']}{new_interaction['generation']}\n"
     )
     # create from positional arguments
-    generated_example_str = mock_prompt.create_example_string(
-        new_example["query"], new_example["context"], new_example["generation"]
+    generated_interaction_str = mock_prompt.create_interaction_string(
+        new_interaction["query"],
+        new_interaction["context"],
+        new_interaction["generation"],
     )
-    assert generated_example_str == expected
+    assert generated_interaction_str == expected
 
     # create from keyword arguments
-    generated_example_str = mock_prompt.create_example_string(**new_example)
-    assert generated_example_str == expected
+    generated_interaction_str = mock_prompt.create_interaction_string(**new_interaction)
+    assert generated_interaction_str == expected
 
     # create from mix of positional and keyword arguments
     kwargs = {"generation": "A new generation!"}
-    generated_example_str = mock_prompt.create_example_string(
-        new_example["query"], new_example["context"], **kwargs
+    generated_interaction_str = mock_prompt.create_interaction_string(
+        new_interaction["query"], new_interaction["context"], **kwargs
     )
-    assert generated_example_str == expected
+    assert generated_interaction_str == expected
 
     # generated example string is dependent on the insertion order into the examples
     # dictionary
     reordered_example = {}
-    reordered_example["context"] = new_example["context"]
-    reordered_example["query"] = new_example["query"]
-    reordered_example["generation"] = new_example["generation"]
+    reordered_example["context"] = new_interaction["context"]
+    reordered_example["query"] = new_interaction["query"]
+    reordered_example["generation"] = new_interaction["generation"]
     reordered_expected = (
-        f"{mock_prompt.example_separator}"
-        f"{mock_prompt.headers['context']}{new_example['context']}\n"
-        f"{mock_prompt.headers['query']}{new_example['query']}\n"
-        f"{mock_prompt.headers['generation']}{new_example['generation']}\n"
+        f"{mock_prompt.headers['context']}{new_interaction['context']}\n"
+        f"{mock_prompt.headers['query']}{new_interaction['query']}\n"
+        f"{mock_prompt.headers['generation']}{new_interaction['generation']}\n"
     )
-    generated_reordered_example_str = mock_prompt.create_example_string(
+    generated_reordered_example_str = mock_prompt.create_interaction_string(
         **reordered_example
     )
     assert generated_reordered_example_str == reordered_expected

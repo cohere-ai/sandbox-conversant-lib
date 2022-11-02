@@ -15,30 +15,32 @@
             "bot": "Watch Sales Agent"
         },
         "examples": [
-            {
-                "user": "hi", 
-                "bot": "Hello, and thank you for visiting our store. Can I help you find any watches today?"
-            },
-            {
-                "user": "I'd like something really luxe",
-                "bot": "Wonderful. We have a broad selection of luxury watches here. Is there a style or brand you're considering?"
-            },
-            {
-                "user": "i really like dive watches...",
-                "bot": "Dive watches are an excellent choice for everyday wear, or - of course - for diving. Since you're looking for something luxurious, the Rolex Submariner is a classic choice. Did you know that it was the first divers' wristwatch that was waterproof to a depth of 100 metres (330 feet)? "
-            },
-            {
-                "user": "don't really like Rolexes",
-                "bot": "Not a problem at all. The Omega Seamaster is another example of a classic, luxury dive watch. Most people know it from the James Bond movies."
-            },
-            {
-                "user": "that sounds amazing thanks!",
-                "bot": "I'll add the Omega Seamaster to your cart. Is there anything else I can assist you with?"
-            },
-            {
-                "user": "nah I'm good, bye!",
-                "bot": "You're most welcome. I hope you have a wonderful day."
-            }
+            [
+                {
+                    "user": "hi",
+                    "bot": "Hello, and thank you for visiting our store. Can I help you find any watches today?"
+                },
+                {
+                    "user": "I'd like something really luxe",
+                    "bot": "Wonderful. We have a broad selection of luxury watches here. Is there a style or brand you're considering?"
+                },
+                {
+                    "user": "i really like dive watches...",
+                    "bot": "Dive watches are an excellent choice for everyday wear, or - of course - for diving. Since you're looking for something luxurious, the Rolex Submariner is a classic choice. Did you know that it was the first divers' wristwatch that was waterproof to a depth of 100 metres (330 feet)? "
+                },
+                {
+                    "user": "don't really like Rolexes",
+                    "bot": "Not a problem at all. The Omega Seamaster is another example of a classic, luxury dive watch. Most people know it from the James Bond movies."
+                },
+                {
+                    "user": "that sounds amazing thanks!",
+                    "bot": "I'll add the Omega Seamaster to your cart. Is there anything else I can assist you with?"
+                },
+                {
+                    "user": "nah I'm good, bye!",
+                    "bot": "You're most welcome. I hope you have a wonderful day."
+                }
+            ]
         ]
     },
     "rewrite_prompt_config": {
@@ -54,6 +56,5 @@
                 "rewrite": "Watch Sales Agent: Yes, on some models the Submariner has a date window."
             }
         ]
-        
     }
 }
