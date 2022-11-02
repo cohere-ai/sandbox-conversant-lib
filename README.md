@@ -93,7 +93,7 @@ Once you have your own instance of the Streamlit app, you can begin experimentin
 conversant/personas
 ├── fortune-teller
 │   └── config.json
-└── william-shakespeare # new
+└── your-persona-name # new
     └── config.json
 ```
 
@@ -111,7 +111,8 @@ The config file should contain the following:
 `conversant` will take care of the rest! As an example, check out [`fortune-teller/config.jso`n](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
 
 ### Editing a Persona on the Demo
-
+You can also edit a persona on the Streamlit app!
+<img src="static/fortune-teller-edit.png" alt="Screenshot showing the interface for editing a persona on the Streamlit app." height="550"/>
 
 ### Usage
 
@@ -153,7 +154,7 @@ print(shakespeare_bot.reply("Hello!"))
 >>> "Greeteth, and welcome. I am Shakespeare, the great poet, dramatist, and playwright."
 ```
 
-From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app:
+From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected.
 ```python
 from conversant.utils import demo_utils
 demo_utils.launch_streamlit(shakespeare_bot)
