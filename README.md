@@ -60,7 +60,7 @@ Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversa
 
 ### Installation
 
-`conversant` is available on PyPI, and is tested on Python 3.8+ and [Cohere](https://pypi.org/project/cohere/) 2.4.2+.
+`conversant` is available on PyPI, and is tested on Python 3.8+ and [Cohere](https://pypi.org/project/cohere/) 2.8.0+.
 ```
 pip install conversant
 ```
