@@ -229,8 +229,8 @@ class Prompt:
         """
         if any(key not in self.headers.keys() for key in self.REQUIRED_KEYS):
             raise ValueError(
-                f"Missing required key.\nHeader keys: {self.headers.keys()}.\nRequired:"
-                f"{self.REQUIRED_KEYS}."
+                f"Missing required key.\nHeader keys: {self.headers.keys()}.\n"
+                f"Required: {self.REQUIRED_KEYS}."
             )
 
     def _validate_example_separator(self) -> None:
@@ -243,7 +243,7 @@ class Prompt:
         """
         if not isinstance(self.example_separator, str):
             raise ValueError(
-                "example_separator must be a string. Current type:"
+                "example_separator must be a string. Current type: "
                 f"{type(self.example_separator)}"
             )
 
@@ -260,13 +260,13 @@ class Prompt:
         for example in self.examples:
             if any(key not in example for key in self.REQUIRED_KEYS):
                 raise ValueError(
-                    f"Missing required key.\nHeader keys: {example.keys()}\nRequired:"
-                    f"{self.REQUIRED_KEYS}"
+                    f"Missing required key.\nHeader keys: {self.headers.keys()}.\n"
+                    f"Required: {self.REQUIRED_KEYS}."
                 )
 
         # At least `MIN_NUM_EXAMPLES` examples are given.
         if len(self.examples) < self.MIN_NUM_EXAMPLES:
             raise ValueError(
-                f"At least {self.MIN_NUM_EXAMPLES} example must be given for"
+                f"At least {self.MIN_NUM_EXAMPLES} example must be given for "
                 f"{self.__class__.__name__}"
             )
