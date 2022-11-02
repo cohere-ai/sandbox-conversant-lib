@@ -74,20 +74,6 @@ class StartPrompt(Prompt):
         """
         return self.headers["bot"]
 
-    @property
-    def stop_sequences(self) -> List[str]:
-        """A (partial) list of stop sequences upon which the chatbot will cut off
-        generation.
-
-        The chatbot will stop generation when it encounters a newline followed by
-        a user or bot's name.
-
-        Returns:
-            List[str]: A list of stop sequences corresponding to the headers of the
-                prompt.
-        """
-        return [f"\n{self.headers[speaker]}:" for speaker in self.headers]
-
     def create_interaction_string(self, *args, **kwargs) -> str:
         """Creates a string representation of an interaction.
 
