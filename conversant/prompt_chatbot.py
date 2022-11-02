@@ -158,7 +158,7 @@ class PromptChatbot(Chatbot):
                 warnings.warn(
                     "The parameter max_context_examples was reduced "
                     f"from {original_max_context_examples} to "
-                    f"{self.chatbot_config['max_context_examples']} so that"
+                    f"{max_context_examples} so that "
                     f"the total amount of tokens does not exceed {MAX_PROMPT_SIZE}."
                 )
 
