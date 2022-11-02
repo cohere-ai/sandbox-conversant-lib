@@ -80,7 +80,9 @@ class PromptChatbot(Chatbot):
         self.chat_history = []
         self.prompt_history = [self.prompt.to_string()]
 
-        
+        # For the generation models, the maximum token length is 2048
+        # (prompt and generation). So the prompt sent to .generate should be
+        # MAX_PROMPT_SIZE minus max tokens generated
         self.max_prompt_size = MAX_PROMPT_SIZE - self.client_config["max_tokens"]
         self.check_prompt_size()
 
@@ -119,11 +121,11 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def check_and_adjust_prompt_size(self, prompt: str, query:str) -> Tuple[dict,str]:
+    def check_and_adjust_prompt_size(self, prompt: str, query: str) -> Tuple[dict, str]:
         """Check if the prompt size is smaller than the max prompt size.
-            
+
         If not, try to adjust max_context_examples until a possible prompt size.
-            
+
         if this is not possible, just send an error message.
 
         Args:
@@ -131,39 +133,59 @@ class PromptChatbot(Chatbot):
             formatted_query (str): Last message from user in the correct format
 
         Returns:
-            Tuple[dict,str]: A dict containing the status of the response, the output message, and a new prompt if changed 
-        """    
+            Tuple[dict, str]: A tuple containing a dict mapping from "status" and
+            "output_message" keys to their respective values, and a prompt that
+            has been adjusted if necessary
+        """
 
         response = {}
-        response['status'] = 'Success'
+        response["status"] = "Success"
 
         curr_size = self.co.tokenize(prompt).length
 
         # Store original values
         original_size = curr_size
-        original_max_context_examples = self.chatbot_config['max_context_examples']
+        original_max_context_examples = self.chatbot_config["max_context_examples"]
 
-        # Reduce max_context_examples until the size of the prompt is less than maximum or reaches 1
-        while (curr_size > self.max_prompt_size) and (self.chatbot_config['max_context_examples'] > 1):
-            
+        # Reduce max_context_examples until the number of token of the prompt
+        # is less than maximum or reaches 1
+        while (curr_size > self.max_prompt_size) and (
+            self.chatbot_config["max_context_examples"] > 1
+        ):
+
             # if the size of chat is less than the max_context_examples start from there
-            self.chatbot_config["max_context_examples"] = min(self.chatbot_config["max_context_examples"]-1,len(self.chat_history))
+            self.chatbot_config["max_context_examples"] = min(
+                self.chatbot_config["max_context_examples"] - 1, len(self.chat_history)
+            )
             prompt = self.get_current_prompt(query)
-            
             curr_size = self.co.tokenize(prompt).length
 
             # Change status and set a output message
             response["status"] = "Warning"
-            response["output_message"] = f"The parameter max_context_examples was reduced from {original_max_context_examples} to {self.chatbot_config['max_context_examples']} so that the total amount of tokens does not exceed 2048."
+            response["output_message"] = (
+                "The parameter max_context_lines was reduced"
+                f"from {original_max_context_examples} to"
+                f"{self.chatbot_config['max_context_lines']}"
+                f"so that the total amount of tokens does not exceed {MAX_PROMPT_SIZE}."
+            )
 
-        # If even reducing the max_context_examples to 1, the number of tokens of the prompt is bigger then max
-        # an error message should appear and the input ignored
+        # If even reducing the max_context_examples to 1, the number of tokens of the
+        # prompt is bigger then max an error message should appear and the input ignored
         if curr_size > self.max_prompt_size:
             response["status"] = "Error"
             self.chatbot_config["max_context_examples"] = original_max_context_examples
-            response["output_message"] = f"The total number of tokens (prompt and prediction) cannot exceed 2048. Try using a shorter start prompt, sending smaller text messages in the chat, or setting a smaller value for the parameter max_tokens. More details: \n - Start Prompt: {self.start_prompt_size} tokens \n - Messages sent in chat: {original_size - self.start_prompt_size} tokens \n - Parameter max_tokens: {self.client_config['max_tokens']} tokens"
+            response["output_message"] = (
+                "The total number of tokens (prompt and prediction) cannot exceed"
+                f"{MAX_PROMPT_SIZE}.Try using a shorter start prompt, sending "
+                "smaller text messages in the chat, or setting a smaller value "
+                "for the parameter max_tokens. More details: \n"
+                f" - Start Prompt: {self.start_prompt_size} tokens \n"
+                f" - Messages sent in chat: {original_size - self.start_prompt_size} "
+                f" tokens \n - Parameter max_tokens: {self.client_config['max_tokens']}"
+                "tokens"
+            )
 
-        return response, prompt             
+        return response, prompt
 
     def reply(self, query: str) -> Dict:
         """Replies to a query given a chat history.
@@ -174,9 +196,9 @@ class PromptChatbot(Chatbot):
             query (str): A query passed to the prompt chatbot.
 
         Returns:
-            Dict: Response containing the status, the reply generated by .generate 
+            Dict: Response containing the status, the reply generated by .generate
             and output message if the status is not success
-        """    
+        """
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
         # and from the current query
@@ -185,13 +207,15 @@ class PromptChatbot(Chatbot):
         # from the chat history with a maximum of max_context_examples,
         # and from the current query
         current_prompt = self.get_current_prompt(query)
-        final_response,current_prompt = self.check_and_adjust_prompt_size(current_prompt, query)
-        
+        final_response, current_prompt = self.check_and_adjust_prompt_size(
+            current_prompt, query
+        )
+
         if final_response["status"] == "Error":
             return final_response
 
         # Make a call to Cohere's co.generate API
-        
+
         generated_object = self.co.generate(
             model=self.client_config["model"],
             prompt=current_prompt,
@@ -208,7 +232,7 @@ class PromptChatbot(Chatbot):
         response = response.lstrip()
 
         final_response["data"] = response
-        
+
         # We need to remember the current response in the chat history for future
         # responses.
         self.chat_history.append(self.prompt.create_example(query, response))
@@ -217,34 +241,34 @@ class PromptChatbot(Chatbot):
         return final_response
 
     def get_current_prompt(self, query) -> str:
-            """Stitches the prompt with a trailing window of the chat.
-            Args:
-                query (str): The current user query.
-            Returns:
-                str: The current prompt given a query.
-            """
-            # get base prompt
-            base_prompt = self.prompt.to_string() + "\n"
+        """Stitches the prompt with a trailing window of the chat.
+        Args:
+            query (str): The current user query.
+        Returns:
+            str: The current prompt given a query.
+        """
+        # get base prompt
+        base_prompt = self.prompt.to_string() + "\n"
 
-            # get context prompt
-            context_prompt_lines = []
-            trimmed_chat_history = (
-                self.chat_history[-self.chatbot_config["max_context_examples"] :]
-                if self.chatbot_config["max_context_examples"] > 0
-                else []
-            )
-            # TODO when prompt is updated, the history is mutated
-            # as it is recreated using the new prompt. A possible fix is to save the old
-            # prompt in history and use it when recreating.
-            for turn in trimmed_chat_history:
-                context_prompt_lines.append(self.prompt.create_example_string(**turn))
-            context_prompt = "".join(context_prompt_lines)
+        # get context prompt
+        context_prompt_lines = []
+        trimmed_chat_history = (
+            self.chat_history[-self.chatbot_config["max_context_examples"] :]
+            if self.chatbot_config["max_context_examples"] > 0
+            else []
+        )
+        # TODO when prompt is updated, the history is mutated
+        # as it is recreated using the new prompt. A possible fix is to save the old
+        # prompt in history and use it when recreating.
+        for turn in trimmed_chat_history:
+            context_prompt_lines.append(self.prompt.create_example_string(**turn))
+        context_prompt = "".join(context_prompt_lines)
 
-            # get query prompt
-            query_prompt = self.prompt.create_example_string(query)
+        # get query prompt
+        query_prompt = self.prompt.create_example_string(query)
 
-            current_prompt = base_prompt + context_prompt + query_prompt
-            return current_prompt.strip()
+        current_prompt = base_prompt + context_prompt + query_prompt
+        return current_prompt.strip()
 
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
         """Configures chatbot options.
@@ -305,7 +329,7 @@ class PromptChatbot(Chatbot):
             persona_dir (str): Path to where pre-defined personas are.
         """
         # Load the persona from a local directory
-        persona_path = os.path.join(persona_dir, persona_name, f"config.json")
+        persona_path = os.path.join(persona_dir, persona_name, "config.json")
         if os.path.isfile(persona_path):
             logging.info(f"loading persona from {persona_path}")
         else:
@@ -328,7 +352,8 @@ class PromptChatbot(Chatbot):
         """Serializes this instance into a Python dictionary.
 
         Returns:
-            Dict[str, Any]: Dictionary of attributes that defines this instance of a PromptChatbot.
+            Dict[str, Any]: Dictionary of attributes that defines this
+            instance of a PromptChatbot.
         """
         return {
             "co": self.co,
@@ -344,8 +369,8 @@ class PromptChatbot(Chatbot):
         }
 
     def check_prompt_size(self) -> None:
-        
-        self.start_prompt_size = len(self.co.tokenize(self.get_current_prompt([])))
+
+        self.start_prompt_size = self.co.tokenize(self.get_current_prompt([])).length
         if self.start_prompt_size > self.max_prompt_size:
             raise ValueError(
                 "The prompt given to PromptChatbot has too many tokens. The total "
@@ -355,7 +380,6 @@ class PromptChatbot(Chatbot):
                 "examples."
             )
 
-
     @staticmethod
     def _validate_persona_dict(persona: Dict[str, Any], persona_path: str) -> None:
         """Validates formatting of a persona defined as a dictionary.
@@ -364,11 +388,14 @@ class PromptChatbot(Chatbot):
             persona (Dict[str, Any]): A dictionary containing the persona.
             persona_path: The path from which the persona was loaded.
         """
-        
+
         # Checks if the parameter does not exceed MAX_PROMPT_SIZE
-        if persona['client_config']['max_tokens'] >= MAX_PROMPT_SIZE:
-            raise ValueError("The parameter max_tokens cannot exceed 2048. Try using a smaller value.")
-        
+        if persona["client_config"]["max_tokens"] >= MAX_PROMPT_SIZE:
+            raise ValueError(
+                "The parameter max_tokens cannot exceed 2048."
+                " Try using a smaller value."
+            )
+
         try:
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
@@ -385,5 +412,3 @@ class PromptChatbot(Chatbot):
                 f"Failed to validate persona in given dictionary \
                     (persona from {persona_path}): {e}"
             )
-
-    
