@@ -1,7 +1,9 @@
 [tool.poetry]
 name = "conversant"
-version = "0.1.0"
+version = "0.1.1"
+repository = "https://github.com/cohere-ai/sandbox-conversant-lib"
 description = "Conversational AI tooling"
+readme = 'README.md'
 authors = ["Cohere ConvAI <convai@cohere.com>"]
 
 [tool.poetry.dependencies]
