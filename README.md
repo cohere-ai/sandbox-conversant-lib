@@ -27,17 +27,19 @@
 # Conversant
 [![test](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/cohere-ai/sandbox-conversant-lib/actions/workflows/run_tests.yaml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Build conversational AI on top of [Cohere](https://cohere.ai/)'s [LLMs](https://docs.cohere.ai/generate-reference/)
-- 🗣 Use large language models quickly
+Build conversational AI on top of [Cohere](https://cohere.ai/)'s [large language models](https://docs.cohere.ai/generate-reference/)
+- 🗣 Use large language models quickly with Cohere's [API](https://docs.cohere.ai/api-reference/)
 - 😃 Customizable personas
-- 💁 Dialogue context
-- 🪨 Responses grounded in your provided facts (soon!)
+- 💁 Takes care of dialogue context for you
+- 🪨 Grounded in your provided facts (soon!)
 - 🐍 Install `conversant` with pip
 
 `conversant` is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with users with a variety of different chatbot personas. `conversant` aims
 to be modular, flexible and extensible so you can create any kind of chatbots you want!
 
-Read the [launch blog post]() and [threads]().
+We provide several custom personas for you, including 🧑‍💼 a client support agent, ⌚️ a watch sales agent, 🧑‍🏫 a math teacher, and 🧙 a fantasy wizard. Create your own persona with just a description and some example conversations!
+
+Read more about `conversant` on our [launch blog post]() and [threads](), and how it is part of the [Cohere Sandbox]().
 
 Try `conversant` on our Streamlit app [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/). 🎉
 
@@ -75,7 +77,7 @@ Want to see it in action first? You can use `conversant` on a Streamlit demo wit
 
 After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
 
-The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
+Conversant is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with end users with a variety of different bot personalities. The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
 
 Dialogue agents have the potential to transform how humans engage with computers, including faster responses to support queries and free-form interactions with fictional characters, along with many other possibilities. The fastest way to see what `conversant` can do for you is to start talking to a chatbot!
 Cohere uses Streamlit to create its demo applications. If you’re new to Streamlit, you can install it [here](https://docs.streamlit.io/library/get-started/installation) and read more about running Streamlit commands [here](https://docs.streamlit.io/library/get-started/main-concepts). -->
