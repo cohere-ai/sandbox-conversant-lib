@@ -19,7 +19,7 @@ def new_interaction() -> Interaction:
     """Instantiates a fixture for a new ChatPrompt example.
 
     Returns:
-        Dict[str, str]: New ChatPrompt interaction fixture.
+        Interaction: New ChatPrompt interaction fixture.
     """
     return {"user": "Nice to meet you!", "bot": "You too!"}
 
@@ -111,7 +111,7 @@ def test_chat_prompt_create_interaction_string(
 
     Args:
         mock_chat_prompt (ChatPrompt): A ChatPrompt fixture.
-        new_interaction (Dict[ str, str]): A new ChatPrompt interaction fixture.
+        new_interaction (Interaction): A new ChatPrompt interaction fixture.
     """
     expected = (
         f"{mock_chat_prompt.headers['user']}: {new_interaction['user']}\n"
