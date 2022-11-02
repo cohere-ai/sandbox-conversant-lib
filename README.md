@@ -168,6 +168,8 @@ Each user message and chatbot response is appended to a chat history so that fut
 
 In the future, we plan to add functionality for a chatbot be factually grounded using text that is retrieved from a local document cache.
 
+For more information, refer to [this section in `CONTRIBUTORS.md`](CONTRIBUTORS.md#conversant-schematic).
+
 ## Documentation
 Full documentation can be found [here](https://cohere-ai.github.io/sandbox-conversant-lib/).
 
