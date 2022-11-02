@@ -52,31 +52,14 @@ Try `conversant` on our Streamlit app [here](https://cohere-ai-sandbox-conversan
 4. [Maintainers](#maintainers)
 5. [License](#license)
 
-The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
-
-Dialogue agents have the potential to transform how humans engage with computers, including faster responses to support queries and free-form interactions with fictional characters, along with many other possibilities. The fastest way to see what `conversant` can do for you is to start talking to a chatbot!
-
-
-
 ## Installation and Usage
-
-Try `conversant` on a Streamlit demo without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
-
-When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
-
-<center>
-<img src="static/fortune-teller-setup.png" alt="Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas." width="700">
-</center>
-
-After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
-
-<center>
-<img src="static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." width="700">
-</center>
-
 ### Installation
+<<<<<<< HEAD
 `conversant` is tested on Python 3.8+ and Cohere 2.8.0+.
 
+=======
+`conversant` is available on PyPI, and is tested on Python 3.8+ and Cohere 2.4.2+.
+>>>>>>> 5d66853 (improve image display)
 ```
 pip install conversant
 ```
@@ -84,6 +67,26 @@ pip install conversant
 We recommend installing `conversant` in a virtual environment. 
 
 ### Running a Streamlit Demo
+
+
+Try `conversant` on a Streamlit demo without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
+
+When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
+
+<p float="none">
+  <img src="static/fortune-teller-setup.png" alt="Screenshot showing the description of the Fortune Teller persona, as well as a disclaimer about the demo nature of these personas." height="500"/>
+  <img src="static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." height="500"/>
+</p>
+
+
+
+After you've selected a persona, the bot will send a greeting. With each response from the user, the chat progresses.
+
+
+
+The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
+
+Dialogue agents have the potential to transform how humans engage with computers, including faster responses to support queries and free-form interactions with fictional characters, along with many other possibilities. The fastest way to see what `conversant` can do for you is to start talking to a chatbot!
 Cohere uses Streamlit to create its demo applications. If you’re new to Streamlit, you can install it [here](https://docs.streamlit.io/library/get-started/installation) and read more about running Streamlit commands [here](https://docs.streamlit.io/library/get-started/main-concepts).
 
 If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
