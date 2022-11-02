@@ -51,13 +51,13 @@
 
 
 ## Conversant
-Conversant is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with end users with a variety of different bot personalities. The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
+`conversant` is a work-in-progress framework for building customizable dialogue agents (aka chatbots) that can answer questions and converse with end users with a variety of different bot personalities. The repository contains a few example personas, such as a sales agent :woman_office_worker:, a math teacher :teacher:, and a fantasy wizard :mage_woman:, but it is designed to be extensible, such that adding additional personas requires little more than a description and a few example interactions. These dialogue agents are based on the [Cohere API](https://docs.cohere.ai/), which provides large language models that are ready-to-use and accessible for machine learning engineers, data scientists, and software developers alike.
 
 Dialogue agents have the potential to transform how humans engage with computers, including faster responses to support queries and free-form interactions with fictional characters, along with many other possibilities. The fastest way to see what `conversant` can do for you is to start talking to a chatbot!
 
 ## Getting Started
 
-Try `conversant` without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
+Try `conversant` on a Streamlit demo without installing anything [here!](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/) :tada:
 
 When you launch the app, you'll be able to select a persona from a drop down menu. In this example, we'll be using the Fortune Teller persona.
 
