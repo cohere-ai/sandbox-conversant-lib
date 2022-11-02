@@ -30,7 +30,7 @@ class Chatbot(ABC):
         # List[Interaction]. Each dict object represents a
         # conversation turn and has two keys: "speaker_name" and
         # "utterance".
-        self.chat_history: List[Dict[str, str]] = []
+        self.chat_history: List[Interaction] = []
 
     @abstractmethod
     def reply(self, query: str) -> Interaction:
