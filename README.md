@@ -108,7 +108,7 @@ The config file should contain the following:
    - `headers`: A name for the `bot` and the `user`.
    - `examples`: A few conversation examples (few-shot), or empty (zero-shot).
 
-`conversant` will take care of the rest! As an example, check out [`fortune-teller/config.jso`n](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
+`conversant` will take care of the rest! As an example, check out [`fortune-teller/config.json`](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
 
 ### Editing a Persona on the Demo
 You can also edit a persona on the Streamlit app!
