@@ -1,6 +1,6 @@
 {
     "chatbot_config": {
-        "max_context_lines": 20,
+        "max_context_examples": 20,
         "avatar": ":weight_lifter:"
     },
     "client_config": {
