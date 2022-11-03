@@ -80,14 +80,14 @@ class PromptChatbot(Chatbot):
         self.configure_chatbot(chatbot_config)
         self.configure_client(client_config)
         self.chat_history = []
-        self.chat_history_sizes = []
+        self.prompt_size_history = []
         self.prompt_history = [self.prompt.to_string()]
 
         # For the generation models, the maximum token length is 2048
         # (prompt and generation). So the prompt sent to .generate should be
-        # MAX_PROMPT_SIZE minus max tokens generated
-        self.max_prompt_size = MAX_PROMPT_SIZE - self.client_config["max_tokens"]
-        self.check_prompt_size()
+        # MAX_GENERATE_TOKENS minus max tokens generated
+        self.max_prompt_size = MAX_GENERATE_TOKENS - self.client_config["max_tokens"]
+        self._check_prompt_size()
 
     def __repr__(self) -> Dict[str, Any]:
         return json.dumps(self.to_dict(), indent=4, default=str)
@@ -124,13 +124,17 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def _update_max_context_examples(self, prompt_size: int) -> int:
+    def _update_max_context_examples(
+        self, prompt_size: int, max_context_examples: int
+    ) -> int:
         """Adjust max_context_examples until a possible prompt size.
 
         if this is not possible, send an error message.
 
         Args:
-            prompt_size (str): Number of tokens of the prompt
+            prompt_size (int): Number of tokens of the prompt
+            max_context_examples (int): The length of the chat history for
+            the chatbot to use in reply.
 
         Returns:
            int: updated max_context_examples
@@ -138,20 +142,15 @@ class PromptChatbot(Chatbot):
 
         # Store original values
         original_size = prompt_size
-        original_max_context_examples = self.chatbot_config["max_context_examples"]
+        original_max_context_examples = max_context_examples
 
         # Reduce max_context_examples until the number of token of the prompt
         # is less than maximum or reaches 1
-        start_point = max(
-            (len(self.chat_history) - self.chatbot_config["max_context_examples"]), 0
-        )
-        end_point = min(
-            self.chatbot_config["max_context_examples"] + start_point,
-            len(self.chat_history),
-        )
+        start_point = max((len(self.chat_history) - max_context_examples), 0)
+        end_point = min(max_context_examples + start_point, len(self.chat_history))
 
         for i in range(start_point, end_point):
-            prompt_size = prompt_size - self.chat_history_sizes[i]
+            prompt_size = prompt_size - self.prompt_size_history[i]
             if prompt_size <= self.max_prompt_size:
                 max_context_examples = end_point - 1 - i
 
@@ -159,14 +158,14 @@ class PromptChatbot(Chatbot):
                     "The parameter max_context_examples was reduced "
                     f"from {original_max_context_examples} to "
                     f"{max_context_examples} so that "
-                    f"the total amount of tokens does not exceed {MAX_PROMPT_SIZE}."
+                    f"the total amount of tokens does not exceed {MAX_GENERATE_TOKENS}."
                 )
 
                 return max_context_examples
 
         raise ValueError(
             "The total number of tokens (prompt and prediction) cannot exceed "
-            f"{MAX_PROMPT_SIZE}. Try using a shorter start prompt, sending "
+            f"{MAX_GENERATE_TOKENS}. Try using a shorter start prompt, sending "
             "smaller text messages in the chat, or setting a smaller value "
             "for the parameter max_tokens. More details: \n"
             f" - Start Prompt: {self.start_prompt_size} tokens \n"
@@ -198,11 +197,13 @@ class PromptChatbot(Chatbot):
         if current_prompt_size > self.max_prompt_size:
             self.chatbot_config[
                 "max_context_examples"
-            ] = self.update_max_context_examples(current_prompt_size)
+            ] = self._update_max_context_examples(
+                current_prompt_size, self.chatbot_config["max_context_examples"]
+            )
+
             current_prompt = self.get_current_prompt(query)
 
         # Make a call to Cohere's co.generate API
-
         generated_object = self.co.generate(
             model=self.client_config["model"],
             prompt=current_prompt,
@@ -221,7 +222,7 @@ class PromptChatbot(Chatbot):
         # We need to remember the current response in the chat history for future
         # responses.
         self.chat_history.append(self.prompt.create_example(query, response))
-        self.chat_history_sizes.append(
+        self.prompt_size_history.append(
             self.co.tokenize(self.prompt.create_example_string(query, response)).length
         )
         self.prompt_history.append(current_prompt)
@@ -362,11 +363,9 @@ class PromptChatbot(Chatbot):
         self.start_prompt_size = self.co.tokenize(self.get_current_prompt([])).length
         if self.start_prompt_size > self.max_prompt_size:
             raise ValueError(
-                f"The prompt given to PromptChatbot has too many tokens ({self.start_prompt_size} tokens). The total "
-                "number of tokens "
-                f"({self.start_prompt_size + self.client_config['max_tokens']}) cannot "
-                f"exceed {MAX_PROMPT_SIZE}. Try using a shorter preamble or less "
-                "examples."
+                "The prompt given to PromptChatbot has too many tokens "
+                f"({self.start_prompt_size} tokens). The total cannot exceed "
+                f"{MAX_GENERATE_TOKENS}. Try using a shorter preamble or less examples."
             )
 
     @staticmethod
@@ -378,10 +377,10 @@ class PromptChatbot(Chatbot):
             persona_path: The path from which the persona was loaded.
         """
 
-        # Checks if the parameter does not exceed MAX_PROMPT_SIZE
-        if persona["client_config"]["max_tokens"] >= MAX_PROMPT_SIZE:
+        # Checks if the parameter does not exceed MAX_GENERATE_TOKENS
+        if persona["client_config"]["max_tokens"] >= MAX_GENERATE_TOKENS:
             raise ValueError(
-                f"The parameter max_tokens cannot exceed {MAX_PROMPT_SIZE}."
+                f"The parameter max_tokens cannot exceed {MAX_GENERATE_TOKENS}."
                 " Try using a smaller value."
             )
         try:
