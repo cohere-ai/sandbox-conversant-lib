@@ -124,7 +124,7 @@ class PromptChatbot(Chatbot):
         """
         return self.prompt_history[-1]
 
-    def update_max_context_examples(self, prompt_size: int) -> int:
+    def _update_max_context_examples(self, prompt_size: int) -> int:
         """Adjust max_context_examples until a possible prompt size.
 
         if this is not possible, send an error message.
