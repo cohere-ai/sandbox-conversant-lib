@@ -81,7 +81,7 @@ Want to see it in action first? You can use `conversant` on a [Streamlit](https:
 Cohere uses Streamlit to create its demo applications. If you’re new to Streamlit, you can install it [here](https://docs.streamlit.io/library/get-started/installation) and read more about running Streamlit commands [here](https://docs.streamlit.io/library/get-started/main-concepts).
 
 If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
-You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai). 
+You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai/welcome/register?utm_source=github&utm_medium=content&utm_campaign=sandbox&utm_content=conversant). 
 Add the key to `.streamlit/secrets.toml`:
 ```
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
