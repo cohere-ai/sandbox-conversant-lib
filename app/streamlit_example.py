@@ -13,7 +13,7 @@ import sys
 
 import cohere
 
-# import emoji
+import emoji
 import streamlit as st
 
 from app import ui, utils
@@ -35,8 +35,8 @@ def get_reply() -> None:
 def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
     if st.session_state.persona.startswith("from launch_demo") and len(sys.argv) > 1:
-        st.session_state.bot = demo_utils.decode_object(
-            sys.argv[1]
+        st.session_state.bot = demo_utils.decode_chatbot(
+            sys.argv[1], client=cohere.Client(st.secrets.COHERE_API_KEY)
         )  # Launched via demo_utils.launch_streamlit() utility function
     elif st.session_state.persona == "":
         st.session_state.bot = None
@@ -44,7 +44,8 @@ def initialize_chatbot() -> None:
         st.session_state.bot = utils.ParrotChatbot()
     else:
         st.session_state.bot = PromptChatbot.from_persona(
-            st.session_state.persona, client=cohere.Client(st.secrets.COHERE_API_KEY)
+            emoji.replace_emoji(st.session_state.persona, "").strip(),
+            client=cohere.Client(st.secrets.COHERE_API_KEY),
         )
     st.session_state.output_message = None
     if "bot" in st.session_state and st.session_state.bot:
@@ -113,8 +114,10 @@ if __name__ == "__main__":
 
         # The PromptChatbot passed in should be a base64 encoding of a pickled
         # PromptChatbot object.
-        bot = demo_utils.decode_object(sys.argv[1])
-        if bot.__class__ != PromptChatbot:
+        bot = demo_utils.decode_chatbot(
+            sys.argv[1], cohere.Client(st.secrets.COHERE_API_KEY)
+        )
+        if not isinstance(bot, PromptChatbot):
             raise TypeError("base64 string passed in is not of class PromptChatbot")
         else:
             st.session_state.bot = bot
@@ -166,6 +169,14 @@ if __name__ == "__main__":
 
     # Check if bot has been initialized in the Streamlit session.
     if "bot" in st.session_state and st.session_state.bot:
+
+        # Initialize the bot avatar
+        bot_avatar_string = st.session_state.bot.chatbot_config["avatar"]
+        st.session_state.bot_avatar = (
+            utils.get_twemoji_url_from_shortcode(bot_avatar_string)
+            if emoji.is_emoji(emoji.emojize(bot_avatar_string, language="alias"))
+            else bot_avatar_string
+        )
 
         # Editor view for the prompt
         if st.session_state.edit_prompt:
