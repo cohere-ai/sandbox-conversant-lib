@@ -87,6 +87,11 @@ Add the key to `.streamlit/secrets.toml`:
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
+Alternatively, set the key as an environment variable.
+```
+export COHERE_API_KEY = "YOUR_API_KEY_HERE"
+```
+
  Start the Streamlit app from `conversant/demo/streamlit_example.py`:
 ```
 streamlit run conversant/demo/streamlit_example.py
