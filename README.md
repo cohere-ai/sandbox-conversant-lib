@@ -41,7 +41,7 @@ to be modular, flexible and extensible so you can create any kind of chatbots yo
 
 We provide several custom personas for you, including 🧑‍💼 a client support agent, ⌚️ a watch sales agent, 🧑‍🏫 a math teacher, and 🧙 a fantasy wizard. Create your own persona with just a description and some example conversations!
 
-<!-- Read more about `conversant` on our [launch blog post]() and [threads](), and how it is part of the [Cohere Sandbox](). -->
+Read more about how `conversant` is part of the Cohere Sandbox on our [launch blog post](https://txt.cohere.ai/introducing-sandbox-coheres-experimental-open-source-initiative/).
 
 Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
 
@@ -159,11 +159,11 @@ print(shakespeare_bot.reply("Hello!"))
 >>> "Greeteth, and welcome. I am Shakespeare, the great poet, dramatist, and playwright."
 ```
 
-From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected.
+<!-- From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected.
 ```python
 from conversant.utils import demo_utils
 demo_utils.launch_streamlit(shakespeare_bot)
-```
+``` -->
 ## How Conversant Works
 `conversant` uses prompt completion to define a chatbot persona with a description and a few examples. The prompt is sent as input to Cohere's [`co.generate()`](https://docs.cohere.ai/generate-reference/) endpoint for an autoregressive language model to generate text in a few-shot manner from the examples and the current dialogue context. 
 
