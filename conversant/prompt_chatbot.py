@@ -357,7 +357,7 @@ class PromptChatbot(Chatbot):
             "latest_prompt": self.latest_prompt,
         }
 
-    def check_prompt_size(self) -> None:
+    def _check_prompt_size(self) -> None:
 
         self.start_prompt_size = self.co.tokenize(self.get_current_prompt([])).length
         if self.start_prompt_size > self.max_prompt_size:
