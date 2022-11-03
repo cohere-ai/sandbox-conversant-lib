@@ -21,7 +21,7 @@ from conversant.chatbot import Chatbot
 from conversant.prompts.prompt import Prompt
 from conversant.prompts.start_prompt import StartPrompt
 
-MAX_PROMPT_SIZE = 2048
+MAX_GENERATE_TOKENS = 2048
 PERSONA_MODEL_DIRECTORY = "conversant/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
