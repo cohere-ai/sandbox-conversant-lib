@@ -43,7 +43,7 @@ We provide several custom personas for you, including 🧑‍💼 a client suppo
 
 Read more about how `conversant` is part of the Cohere Sandbox on our [launch blog post](https://txt.cohere.ai/introducing-sandbox-coheres-experimental-open-source-initiative/).
 
-Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
+Try `conversant` on our Streamlit demo [here](https://conversant.streamlit.app/)! 🎉
 
 ## Table of Contents
 1. [Installation and Usage](#installation-and-usage)
@@ -69,7 +69,7 @@ pip install conversant
 ```
 ### Streamlit Demo
 
-Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
+Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://conversant.streamlit.app/)! 🎉
 
 <p float="none">
   <img src="static/fortune-teller-setup.png" alt="Screenshot showing the available personas on the Streamlit demo, with the Fortune Teller persona selected by default.." height="550"/>
@@ -87,9 +87,14 @@ Add the key to `.streamlit/secrets.toml`:
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
- Start the Streamlit app from `app/streamlit_example.py`:
+Alternatively, set the key as an environment variable.
 ```
-streamlit run app/streamlit_example.py
+export COHERE_API_KEY = "YOUR_API_KEY_HERE"
+```
+
+ Start the Streamlit app from `conversant/demo/streamlit_example.py`:
+```
+streamlit run conversant/demo/streamlit_example.py
 ```
 
 ### Creating a Custom Persona
@@ -159,7 +164,7 @@ print(shakespeare_bot.reply("Hello!"))
 >>> "Greeteth, and welcome. I am Shakespeare, the great poet, dramatist, and playwright."
 ```
 
-<!-- From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected.
+<!-- From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected. For this to work, `COHERE_API_KEY` needs to be set as an environment variable.
 ```python
 from conversant.utils import demo_utils
 demo_utils.launch_streamlit(shakespeare_bot)

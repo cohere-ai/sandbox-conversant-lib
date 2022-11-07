@@ -7,6 +7,7 @@
 # level of this repository.
 
 import codecs
+import os
 import pickle
 import sys
 from typing import Type
@@ -14,6 +15,7 @@ from typing import Type
 import cohere
 from streamlit.web import cli as stcli
 
+import conversant
 from conversant.chatbot import Chatbot
 
 
@@ -48,11 +50,12 @@ def launch_streamlit(chatbot: Type[Chatbot]) -> None:
     """Launches a demo of a chatbot using Streamlit.
 
     The bot will be a persona available for chatting using the interface
-    defined in app/streamlit_example.py.
+    defined in conversant/demo/streamlit_example.py.
 
     Args:
         bot (Type[Chatbot]): a chatbot of class inherited from Chatbot
     """
-    sys.argv = "streamlit run app/streamlit_example.py --".split(" ")
+    path = os.path.dirname(conversant.__file__)
+    sys.argv = f"streamlit run {path}/demo/streamlit_example.py --".split(" ")
     sys.argv.append(encode_chatbot(chatbot))
     sys.exit(stcli.main())
