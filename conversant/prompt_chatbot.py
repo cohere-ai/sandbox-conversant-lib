@@ -308,11 +308,17 @@ class PromptChatbot(Chatbot):
                 f"{type(client_config)}"
             )
 
-        # Checks if the parameter does not exceed MAX_GENERATE_TOKENS
+        # Checks if the parameter is equals or bigger than MAX_GENERATE_TOKENS
         if self.client_config["max_tokens"] >= MAX_GENERATE_TOKENS:
             raise ValueError(
-                f"The parameter max_tokens cannot exceed {MAX_GENERATE_TOKENS}."
-                " Try using a smaller value."
+                f"The parameter max_tokens needs to be smaller than"
+                f"{MAX_GENERATE_TOKENS}. Try using a smaller value."
+            )
+        elif self.client_config["max_tokens"] > (MAX_GENERATE_TOKENS * 0.75):
+            warnings.warn(
+                "The parameter max_tokens has a value "
+                f"({self.client_config['max_tokens']}) close to the total allowed"
+                f" for prompt and prediction - {MAX_GENERATE_TOKENS} tokens"
             )
 
     @classmethod
@@ -377,6 +383,12 @@ class PromptChatbot(Chatbot):
                 "The prompt given to PromptChatbot has too many tokens "
                 f"({self.start_prompt_size} tokens). The total cannot exceed "
                 f"{MAX_GENERATE_TOKENS}. Try using a shorter preamble or less examples."
+            )
+        elif self.start_prompt_size > (0.75 * self.max_prompt_size):
+            warnings.warn(
+                "The prompt given to PromptChatbot has "
+                f"{self.start_prompt_size} tokens. Value close to the total allowed"
+                f" for prompt and prediction - {MAX_GENERATE_TOKENS} tokens"
             )
 
     @staticmethod
