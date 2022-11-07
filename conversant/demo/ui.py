@@ -13,7 +13,7 @@ import streamlit as st
 from streamlit_ace import st_ace
 from streamlit_talk import message as st_message
 
-from app import utils
+from conversant.demo import utils
 
 
 def draw_chat_history() -> None:

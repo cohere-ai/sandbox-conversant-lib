@@ -87,9 +87,14 @@ Add the key to `.streamlit/secrets.toml`:
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
- Start the Streamlit app from `app/streamlit_example.py`:
+Alternatively, set the key as an environment variable.
 ```
-streamlit run app/streamlit_example.py
+export COHERE_API_KEY = "YOUR_API_KEY_HERE"
+```
+
+ Start the Streamlit app from `conversant/demo/streamlit_example.py`:
+```
+streamlit run conversant/demo/streamlit_example.py
 ```
 
 ### Creating a Custom Persona
@@ -159,7 +164,7 @@ print(shakespeare_bot.reply("Hello!"))
 >>> "Greeteth, and welcome. I am Shakespeare, the great poet, dramatist, and playwright."
 ```
 
-<!-- From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected.
+<!-- From here, it's also possible to talk to your chatbot using the [Streamlit](https://docs.streamlit.io/) app! This will launch the demo with your chatbot persona pre-selected. For this to work, `COHERE_API_KEY` needs to be set as an environment variable.
 ```python
 from conversant.utils import demo_utils
 demo_utils.launch_streamlit(shakespeare_bot)

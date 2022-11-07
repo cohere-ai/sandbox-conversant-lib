@@ -9,13 +9,14 @@
 
 import ast
 import copy
+import os
 import sys
 
 import cohere
 import emoji
 import streamlit as st
 
-from app import ui, utils
+from conversant.demo import ui, utils
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
@@ -32,7 +33,7 @@ def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
     if st.session_state.persona.startswith("from launch_demo") and len(sys.argv) > 1:
         st.session_state.bot = demo_utils.decode_chatbot(
-            sys.argv[1], client=cohere.Client(st.secrets.COHERE_API_KEY)
+            sys.argv[1], client=cohere.Client(os.environ.get("COHERE_API_KEY"))
         )  # Launched via demo_utils.launch_streamlit() utility function
     elif st.session_state.persona == "":
         st.session_state.bot = None
@@ -41,7 +42,7 @@ def initialize_chatbot() -> None:
     else:
         st.session_state.bot = PromptChatbot.from_persona(
             emoji.replace_emoji(st.session_state.persona, "").strip(),
-            client=cohere.Client(st.secrets.COHERE_API_KEY),
+            client=cohere.Client(os.environ.get("COHERE_API_KEY")),
         )
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
@@ -89,7 +90,7 @@ if __name__ == "__main__":
     # define styling in a custom CSS file and inject it into the Streamlit DOM.
     # This is brittle and dependent on the DOM structure. Any changes to the layout
     # will break the styling defined in this file.
-    with open("app/styles.css") as f:
+    with open(f"{os.path.dirname(__file__)}/styles.css") as f:
         utils.style_using_css(f.read())
 
     # We use the :bust_in_silhouette: emoji as a neutral user avatar.
@@ -101,6 +102,13 @@ if __name__ == "__main__":
     # config.json file.
     st.session_state.persona_options = utils.get_persona_options()
 
+    # Check if COHERE_API_KEY is not set from secrets.toml or os.environ
+    if "COHERE_API_KEY" not in os.environ:
+        raise KeyError(
+            "COHERE_API_KEY not found in st.secrets or os.environ. Please set it in "
+            ".streamlit/secrets.toml or as an environment variable."
+        )
+
     # A chatbot can be passed in as a base64 encoding of a pickled PromptChatbot object.
     # This is only used when calling the launch_demo() method of a PromptChatbot object.
     # The chatbot is then injected into the list of available personas in this streamlit
@@ -110,7 +118,7 @@ if __name__ == "__main__":
         # The PromptChatbot passed in should be a base64 encoding of a pickled
         # PromptChatbot object.
         bot = demo_utils.decode_chatbot(
-            sys.argv[1], cohere.Client(st.secrets.COHERE_API_KEY)
+            sys.argv[1], cohere.Client(os.environ.get("COHERE_API_KEY"))
         )
         if not isinstance(bot, PromptChatbot):
             raise TypeError("base64 string passed in is not of class PromptChatbot")
