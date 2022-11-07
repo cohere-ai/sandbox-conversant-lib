@@ -15,7 +15,6 @@ import sys
 import cohere
 import emoji
 import streamlit as st
-
 from conversant.demo import ui, utils
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
