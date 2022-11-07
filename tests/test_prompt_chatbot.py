@@ -150,3 +150,53 @@ def test_missing_persona_fails(mock_co: object) -> None:
     """
     with pytest.raises(FileNotFoundError):
         _ = PromptChatbot.from_persona("invalid_persona", mock_co)
+
+
+def test_update_max_context_fails(
+    mock_prompt_chatbot: PromptChatbot, mock_co: object
+) -> None:
+    """Tests failure on updating max_context_examples
+
+    prompt_size with more than 2048 tokens, even changing max_context_size
+
+    Args:
+        mock_prompt_chatbot (PromptChatbot): Bot test fixture
+        mock_co (object): mock Cohere client.
+
+    """
+    with pytest.raises(ValueError):
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query=f"{'a'*2048}")
+        max_context_examples = 10
+        prompt_size = len(mock_co.tokenize(current_prompt))
+        mock_prompt_chatbot._update_max_context_examples(
+            prompt_size, max_context_examples
+        )
+
+
+def test_update_max_context_warn(
+    mock_prompt_chatbot: PromptChatbot, mock_co: object
+) -> None:
+    """Tests function update_max_context_examples with warnings
+
+    prompt_size with more than 2048 tokens, but if change the max_context_examples
+    the size reduces and gets smaller than 2048
+
+    Args:
+        mock_prompt_chatbot (PromptChatbot): Bot test fixture
+        mock_co (object): mock Cohere client.
+
+    """
+    with pytest.warns(UserWarning):
+        chat_history = [{"user": f"{'a '*90}", "bot": f"{'b '*90}"} for _ in range(12)]
+        mock_prompt_chatbot.chat_history = chat_history
+        mock_prompt_chatbot.prompt_size_history = [383 for _ in range(5)]
+
+        max_context_examples = 10
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query=f"{'q '* 200}")
+        prompt_size = len(mock_co.tokenize(current_prompt))
+        updated_max_context_examples = mock_prompt_chatbot._update_max_context_examples(
+            prompt_size, max_context_examples
+        )
+
+        expected = max_context_examples - 1
+        assert updated_max_context_examples == expected

@@ -145,26 +145,23 @@ class PromptChatbot(Chatbot):
 
         # Store original values
         original_size = prompt_size
-        original_max_context_examples = max_context_examples
+        # If the size of chat_history is smaller than max_context_examples
+        # the value of the variable is already updated with the size value
+        trimmed_max_examples = min(len(self.chat_history), max_context_examples)
 
         # Reduce max_context_examples until the number of token of the prompt
         # is less than maximum or reaches 1
-        start_point = max((len(self.chat_history) - max_context_examples), 0)
-        end_point = min(max_context_examples + start_point, len(self.chat_history))
-
-        for i in range(start_point, end_point):
-            prompt_size = prompt_size - self.prompt_size_history[i]
+        for size in self.prompt_size_history[-max_context_examples:]:
+            prompt_size -= size
+            trimmed_max_examples -= 1
             if prompt_size <= self.max_prompt_size:
-                max_context_examples = end_point - 1 - i
-
                 warnings.warn(
                     "The parameter max_context_examples was reduced "
-                    f"from {original_max_context_examples} to "
-                    f"{max_context_examples} so that "
+                    f"from {max_context_examples} to "
+                    f"{trimmed_max_examples} so that "
                     f"the total amount of tokens does not exceed {MAX_GENERATE_TOKENS}."
                 )
-
-                return max_context_examples
+                return trimmed_max_examples
 
         raise ValueError(
             "The total number of tokens (prompt and prediction) cannot exceed "
@@ -311,6 +308,13 @@ class PromptChatbot(Chatbot):
                 f"{type(client_config)}"
             )
 
+        # Checks if the parameter does not exceed MAX_GENERATE_TOKENS
+        if self.client_config["max_tokens"] >= MAX_GENERATE_TOKENS:
+            raise ValueError(
+                f"The parameter max_tokens cannot exceed {MAX_GENERATE_TOKENS}."
+                " Try using a smaller value."
+            )
+
     @classmethod
     def from_persona(
         cls,
@@ -367,7 +371,7 @@ class PromptChatbot(Chatbot):
 
     def _check_prompt_size(self) -> None:
 
-        self.start_prompt_size = self.co.tokenize(self.get_current_prompt([])).length
+        self.start_prompt_size = self.co.tokenize(self.get_current_prompt(None)).length
         if self.start_prompt_size > self.max_prompt_size:
             raise ValueError(
                 "The prompt given to PromptChatbot has too many tokens "
@@ -383,13 +387,6 @@ class PromptChatbot(Chatbot):
             persona (Dict[str, Any]): A dictionary containing the persona.
             persona_path: The path from which the persona was loaded.
         """
-
-        # Checks if the parameter does not exceed MAX_GENERATE_TOKENS
-        if persona["client_config"]["max_tokens"] >= MAX_GENERATE_TOKENS:
-            raise ValueError(
-                f"The parameter max_tokens cannot exceed {MAX_GENERATE_TOKENS}."
-                " Try using a smaller value."
-            )
         try:
             jsonschema.validate(instance=persona, schema=PERSONA_JSON_SCHEMA)
         except jsonschema.exceptions.ValidationError as e:
