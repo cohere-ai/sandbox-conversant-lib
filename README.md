@@ -69,7 +69,7 @@ pip install conversant
 ```
 ### Streamlit Demo
 
-Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://conversant.streamlitapp.com/)! 🎉
+Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://conversant.streamlit.app/)! 🎉
 
 <p float="none">
   <img src="static/fortune-teller-setup.png" alt="Screenshot showing the available personas on the Streamlit demo, with the Fortune Teller persona selected by default.." height="550"/>
