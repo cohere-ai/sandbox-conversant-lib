@@ -8,8 +8,8 @@
 
 import json
 import logging
-
 import warnings
+
 import os
 from typing import Any, Dict
 
@@ -185,7 +185,6 @@ class PromptChatbot(Chatbot):
         Returns:
             Interaction: Dictionary of query and generated LLM response
         """
-
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
         # and from the current query
@@ -261,7 +260,6 @@ class PromptChatbot(Chatbot):
         query_prompt = self.prompt.create_interaction_string(query)
 
         current_prompt = base_prompt + context_prompt + query_prompt
-
         return current_prompt.strip()
 
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
@@ -308,7 +306,7 @@ class PromptChatbot(Chatbot):
                 f"{type(client_config)}"
             )
 
-        # Checks if the parameter is equals or bigger than MAX_GENERATE_TOKENS
+        # Checks if the parameter is equal or bigger than MAX_GENERATE_TOKENS
         if self.client_config["max_tokens"] >= MAX_GENERATE_TOKENS:
             raise ValueError(
                 f"The parameter max_tokens needs to be smaller than"

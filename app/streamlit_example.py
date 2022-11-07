@@ -12,7 +12,6 @@ import copy
 import sys
 
 import cohere
-
 import emoji
 import streamlit as st
 
@@ -25,9 +24,7 @@ USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 def get_reply() -> None:
     """Replies query from the message input, and resets the message input"""
-
     _ = st.session_state.bot.reply(query=st.session_state.message_input)
-
     # Reset user input
     st.session_state.message_input = ""
 
@@ -47,7 +44,6 @@ def initialize_chatbot() -> None:
             emoji.replace_emoji(st.session_state.persona, "").strip(),
             client=cohere.Client(st.secrets.COHERE_API_KEY),
         )
-    st.session_state.output_message = None
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
     # Reset the edit_promp_json session state so we don't remain on the JSON editor when
@@ -261,7 +257,6 @@ if __name__ == "__main__":
 
             # Draw chat history.
             with chat_history_placeholder.container():
-                # Check status of the reply and show an output message
                 ui.draw_chat_history()
 
             # Draw the message input field and a disclaimer.
