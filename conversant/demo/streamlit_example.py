@@ -130,20 +130,22 @@ if __name__ == "__main__":
     # Adding a header to direct users to sign up for Cohere, explore the playground,
     # and check out our git repo.
     st.header("🎭 Conversational personas using Cohere")
-    st.markdown(
+    with st.expander("About", expanded=True):
+        st.markdown(
+            """
+        This demo app is using 
+        [conversant](https://github.com/cohere-ai/sandbox-conversant-lib), an 
+        open-source framework for building chatbots on top of Cohere’s large 
+        language models. 
+
+        Cohere provides access to advanced Large Language Models and NLP tools through 
+        one easy-to-use API. 
+        [Get started for free!](https://dashboard.cohere.ai/welcome/register)
+
+        After creating an account, you can experiment with models in our 
+        [Playground](https://os.cohere.ai/playground/). No ML experience needed!
         """
-    This demo app is using 
-    [conversant](https://github.com/cohere-ai/sandbox-conversant-lib), an open-source 
-    framework for building chatbots on top of Cohere’s large language models. 
-
-    Cohere provides access to advanced Large Language Models and NLP tools through one 
-    easy-to-use API. 
-    [Get started for free!](https://dashboard.cohere.ai/welcome/register)
-
-    After creating an account, you can experiment with models in our 
-    [Playground](https://os.cohere.ai/playground/). No ML experience needed!
-    """
-    )
+        )
 
     # Page control flow logic is determined from the sidebar.
     with st.sidebar:
