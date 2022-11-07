@@ -43,7 +43,7 @@ We provide several custom personas for you, including 🧑‍💼 a client suppo
 
 Read more about how `conversant` is part of the Cohere Sandbox on our [launch blog post](https://txt.cohere.ai/introducing-sandbox-coheres-experimental-open-source-initiative/).
 
-Try `conversant` on our Streamlit demo [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
+Try `conversant` on our Streamlit demo [here](https://conversant.streamlit.app/)! 🎉
 
 ## Table of Contents
 1. [Installation and Usage](#installation-and-usage)
@@ -69,7 +69,7 @@ pip install conversant
 ```
 ### Streamlit Demo
 
-Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://cohere-ai-sandbox-conversant-lib-appstreamlit-example-hgyk4x.streamlitapp.com/)! 🎉
+Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://conversant.streamlit.app/)! 🎉
 
 <p float="none">
   <img src="static/fortune-teller-setup.png" alt="Screenshot showing the available personas on the Streamlit demo, with the Fortune Teller persona selected by default.." height="550"/>
