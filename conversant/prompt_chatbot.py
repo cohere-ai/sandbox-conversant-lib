@@ -143,7 +143,6 @@ class PromptChatbot(Chatbot):
         Returns:
            int: updated max_context_examples
         """
-
         # Store original values
         original_size = prompt_size
         # If the size of chat_history is smaller than max_context_examples
@@ -157,9 +156,9 @@ class PromptChatbot(Chatbot):
             trimmed_max_examples -= 1
             if prompt_size <= self.max_prompt_size:
                 warnings.warn(
-                    "The parameter max_context_examples was reduced "
-                    f"from {max_context_examples} to "
-                    f"{trimmed_max_examples} so that "
+                    "The parameter max_context_examples was reduced for this turn, "
+                    f"from the desired config {max_context_examples} to "
+                    f"{trimmed_max_examples}, so that "
                     f"the total amount of tokens does not exceed {MAX_GENERATE_TOKENS}."
                 )
                 return trimmed_max_examples
@@ -194,13 +193,10 @@ class PromptChatbot(Chatbot):
         current_prompt_size = self.co.tokenize(current_prompt).length
 
         if current_prompt_size > self.max_prompt_size:
-            self.chatbot_config[
-                "max_context_examples"
-            ] = self._update_max_context_examples(
+            max_context_examples = self._update_max_context_examples(
                 current_prompt_size, self.chatbot_config["max_context_examples"]
             )
-
-            current_prompt = self.get_current_prompt(query)
+            current_prompt = self.get_current_prompt(query, max_context_examples)
 
         # Make a call to Cohere's co.generate API
         generated_object = self.co.generate(
@@ -232,7 +228,7 @@ class PromptChatbot(Chatbot):
 
         return response
 
-    def get_current_prompt(self, query) -> str:
+    def get_current_prompt(self, query: str, max_context_examples: int = None) -> str:
         """Stitches the prompt with a trailing window of the chat.
         Args:
             query (str): The current user query.
@@ -240,14 +236,17 @@ class PromptChatbot(Chatbot):
         Returns:
             str: The current prompt given a query.
         """
+        if max_context_examples is None:
+            max_context_examples = self.chatbot_config["max_context_examples"]
+
         # get base prompt
         base_prompt = self.prompt.to_string() + "\n"
 
         # get context prompt
         context_prompt_lines = []
         trimmed_chat_history = (
-            self.chat_history[-self.chatbot_config["max_context_examples"] :]
-            if self.chatbot_config["max_context_examples"] > 0
+            self.chat_history[-max_context_examples:]
+            if max_context_examples > 0
             else []
         )
         # TODO when prompt is updated, the history is mutated
