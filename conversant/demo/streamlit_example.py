@@ -31,7 +31,7 @@ def get_reply() -> None:
 
 def initialize_chatbot() -> None:
     """Initializes the chatbot from a selected persona and saves the session state."""
-    if st.session_state.persona.startswith("from launch_demo") and len(sys.argv) > 1:
+    if st.session_state.persona.startswith("(launched)") and len(sys.argv) > 1:
         st.session_state.bot = demo_utils.decode_chatbot(
             sys.argv[1], client=cohere.Client(os.environ.get("COHERE_API_KEY"))
         )  # Launched via demo_utils.launch_streamlit() utility function
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         else:
             st.session_state.bot = bot
             st.session_state.persona_options.insert(
-                0, f"from launch_demo: {st.session_state.bot.persona_name}"
+                0, f"(launched) {st.session_state.bot.persona_name}"
             )
 
     # Adding a header to direct users to sign up for Cohere, explore the playground,
