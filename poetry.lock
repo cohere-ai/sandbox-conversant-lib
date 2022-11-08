@@ -411,8 +411,8 @@ python-versions = ">=3.8"
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
     {version = ">=1.20.3", markers = "python_version < \"3.10\""},
+    {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
 ]
 python-dateutil = ">=2.8.1"
 pytz = ">=2020.1"
@@ -933,7 +933,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a2729d42252a5a40fff5e4916b795dd8fc0d40872d9a5c9f7f05abe114ad8bea"
+content-hash = "312995634ab8991faa9caf321185d3a5b77acb8a868490e756ccaf5f9330d740"
 
 [metadata.files]
 altair = [
