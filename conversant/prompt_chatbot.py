@@ -232,6 +232,8 @@ class PromptChatbot(Chatbot):
         """Stitches the prompt with a trailing window of the chat.
         Args:
             query (str): The current user query.
+            max_context_examples (int): The length of the chat history for
+            the chatbot to use in reply.
 
         Returns:
             str: The current prompt given a query.
