@@ -1,10 +1,15 @@
 /* Style the overall app container */
 div.css-18e3th9.egzxvld2 {
     padding: 1rem 1rem 1rem;
+    display: flex;
+    overflow: visible;
+}
+.css-ocqkz7 {
+    flex-grow: 0;
 }
 
 /* Style chat_history_placeholder so overflow messages are scrollable */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
     display: flex;
     flex-direction: column-reverse;
     overflow-x: hidden;
@@ -13,12 +18,12 @@ div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(4
 }
 
 /* Style prompt_json_view_placeholder header so it is aligned. */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) p {
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(1) p {
     margin-left: 8px;
 }
 
 /* Style prompt_json_view_placeholder so overflow is scrollable */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) {
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) {
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: 955px;
@@ -27,7 +32,7 @@ div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5
 }
 
 /* Style prompt_string_placeholder so overflow is scrollable */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(5) > div:nth-child(2) .stCodeBlock {
+div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(2) .stCodeBlock {
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: 955px;
