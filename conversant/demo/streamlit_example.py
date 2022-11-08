@@ -15,6 +15,7 @@ import sys
 import cohere
 import emoji
 import streamlit as st
+
 from conversant.demo import ui, utils
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
@@ -129,8 +130,8 @@ if __name__ == "__main__":
 
     # Adding a header to direct users to sign up for Cohere, explore the playground,
     # and check out our git repo.
-    st.header("🎭 Conversational Personas using Cohere")
-    with st.expander("About", expanded=True):
+    st.header("🎭 Conversational personas using Cohere")
+    with st.expander("About", expanded="bot" not in st.session_state):
         st.markdown(
             """
         This demo app is using 
@@ -244,17 +245,6 @@ if __name__ == "__main__":
                 with prompt_string_placeholder.container():
                     ui.draw_prompt_view(json=False)
 
-            # When in editor view, elements should anchored from the top.
-            utils.style_using_css(
-                """
-                div.css-18e3th9.egzxvld2 {
-                    display: flex;
-                    align-items: flex-start;
-                    overflow: visible;
-                }
-            """
-            )
-
         # Chat view with the persona
         else:
 
@@ -298,11 +288,8 @@ if __name__ == "__main__":
             # When in chat view, anchor elements from the bottom so that
             # the message input field is at the bottom (more natural).
             utils.style_using_css(
-                """
-                div.css-18e3th9.egzxvld2 {
-                    display: flex;
-                    align-items: flex-end;
-                    overflow: visible;
+                """div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(6) { /* # noqa */
+                    margin-top: auto;
                 }
             """
             )
