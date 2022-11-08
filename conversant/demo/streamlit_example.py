@@ -135,17 +135,16 @@ if __name__ == "__main__":
         st.markdown(
             """
         This demo app is using 
-        [conversant](https://github.com/cohere-ai/sandbox-conversant-lib), an 
+        [**conversant**](https://github.com/cohere-ai/sandbox-conversant-lib), an 
         open-source framework for building chatbots on top of Cohere’s large 
         language models. 
 
         Cohere provides access to advanced Large Language Models and NLP tools through 
         one easy-to-use API. 
-        [Get started for free!](https://dashboard.cohere.ai/welcome/register)
-
-        After creating an account, you can experiment with models in our 
-        [Playground](https://os.cohere.ai/playground/). No ML experience needed!
         """
+            "[**Get started for free!**]"
+            "(https://dashboard.cohere.ai/welcome/register?utm_source=cohere-owned&utm_"
+            "medium=content&utm_campaign=sandbox&utm_term=streamlit&utm_content=conversant)"
         )
 
     # Page control flow logic is determined from the sidebar.
