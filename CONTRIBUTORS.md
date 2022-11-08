@@ -49,7 +49,7 @@ conda activate conversant
 
 Install `poetry`:
 ```
-pip install poetry==1.3.2
+pip install poetry==1.2.2
 ```
 
 Set `poetry` to use the Python installed in the `conversant` environment:
