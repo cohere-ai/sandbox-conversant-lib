@@ -128,6 +128,25 @@ if __name__ == "__main__":
                 0, f"(launched) {st.session_state.bot.persona_name}"
             )
 
+    # Adding a header to direct users to sign up for Cohere, explore the playground,
+    # and check out our git repo.
+    st.header("🎭 Conversational Personas using Cohere")
+    with st.expander("About", expanded="bot" not in st.session_state):
+        st.markdown(
+            """
+        This demo app is using 
+        [**conversant**](https://github.com/cohere-ai/sandbox-conversant-lib), an 
+        open-source framework for building chatbots on top of Cohere’s large 
+        language models. 
+
+        Cohere provides access to advanced Large Language Models and NLP tools through 
+        one easy-to-use API. 
+        """
+            "[**Get started for free!**]"
+            "(https://dashboard.cohere.ai/welcome/register?utm_source=cohere-owned&utm_"
+            "medium=content&utm_campaign=sandbox&utm_term=streamlit&utm_content=conversant)"
+        )
+
     # Page control flow logic is determined from the sidebar.
     with st.sidebar:
         st.selectbox(
@@ -225,17 +244,6 @@ if __name__ == "__main__":
                 with prompt_string_placeholder.container():
                     ui.draw_prompt_view(json=False)
 
-            # When in editor view, elements should anchored from the top.
-            utils.style_using_css(
-                """
-                div.css-18e3th9.egzxvld2 {
-                    display: flex;
-                    align-items: flex-start;
-                    overflow: visible;
-                }
-            """
-            )
-
         # Chat view with the persona
         else:
 
@@ -279,11 +287,8 @@ if __name__ == "__main__":
             # When in chat view, anchor elements from the bottom so that
             # the message input field is at the bottom (more natural).
             utils.style_using_css(
-                """
-                div.css-18e3th9.egzxvld2 {
-                    display: flex;
-                    align-items: flex-end;
-                    overflow: visible;
+                """div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(6) { /* # noqa */
+                    margin-top: auto;
                 }
             """
             )
