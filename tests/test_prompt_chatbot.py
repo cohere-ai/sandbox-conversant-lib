@@ -192,7 +192,7 @@ def test_update_max_context_warn(
         mock_prompt_chatbot.prompt_size_history = [383 for _ in range(5)]
 
         max_context_examples = 10
-        current_prompt = mock_prompt_chatbot.get_current_prompt(query=f"{'q '* 200}")
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query="q " * 200)
         prompt_size = len(mock_co.tokenize(current_prompt))
         updated_max_context_examples = mock_prompt_chatbot._update_max_context_examples(
             prompt_size, max_context_examples
