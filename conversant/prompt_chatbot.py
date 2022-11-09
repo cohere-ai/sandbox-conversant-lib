@@ -380,7 +380,7 @@ class PromptChatbot(Chatbot):
 
     def _check_prompt_size(self) -> None:
 
-        self.start_prompt_size = self.co.tokenize(self.get_current_prompt(None)).length
+        self.start_prompt_size = self.co.tokenize(self.prompt.to_string()).length
         if self.start_prompt_size > self.max_prompt_size:
             raise ValueError(
                 f"The prompt given to PromptChatbot has {self.start_prompt_size}"
