@@ -40,10 +40,10 @@ class MockCo:
         return Embeddings(embeddings=[[1.0, 1.0]])
 
     def tokenize(*args, **kwargs) -> Tokens:
-        tokens = [x for x in range(len(args[1].split()))]
-        tokens_strings = args[1].split()
+        token_strings = args[1].split()
+        tokens = [x for x in range(len(token_strings))]
 
-        return Tokens(tokens, tokens_strings)
+        return Tokens(tokens, token_strings)
 
 
 @pytest.fixture
