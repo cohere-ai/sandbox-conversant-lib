@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     # Adding a header to direct users to sign up for Cohere, explore the playground,
     # and check out our git repo.
-    st.header("🎭 Conversational personas using Cohere")
+    st.header("🎭 Conversational Personas using Cohere")
     with st.expander("About", expanded="bot" not in st.session_state):
         st.markdown(
             """
