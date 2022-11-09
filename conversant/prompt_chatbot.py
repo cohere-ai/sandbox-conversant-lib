@@ -149,19 +149,22 @@ class PromptChatbot(Chatbot):
         # the value of the variable is already updated with the size value
         trimmed_max_examples = min(len(self.chat_history), max_context_examples)
 
-        # Reduce max_context_examples until the number of token of the prompt
-        # is less than maximum or reaches 1
-        for size in self.prompt_size_history[-max_context_examples:]:
-            prompt_size -= size
-            trimmed_max_examples -= 1
-            if prompt_size <= self.max_prompt_size:
-                warnings.warn(
-                    "The parameter max_context_examples was reduced for this turn, "
-                    f"from the desired config {max_context_examples} to "
-                    f"{trimmed_max_examples}, so that "
-                    f"the total amount of tokens does not exceed {MAX_GENERATE_TOKENS}."
-                )
-                return trimmed_max_examples
+        # Check if the max_context_examples is bigger than 0 so it can be reduced
+        if max_context_examples > 0:
+            # Reduce max_context_examples until the number of token of the prompt
+            # is less than maximum or reaches 1
+            for size in self.prompt_size_history[-max_context_examples:]:
+                prompt_size -= size
+                trimmed_max_examples -= 1
+                if prompt_size <= self.max_prompt_size:
+                    warnings.warn(
+                        "The parameter max_context_examples was reduced for this turn, "
+                        f"from the desired config {max_context_examples} to "
+                        f"{trimmed_max_examples}, so that "
+                        "the total amount of tokens does not"
+                        f" exceed {MAX_GENERATE_TOKENS}."
+                    )
+                    return trimmed_max_examples
 
         raise ValueError(
             "The total number of tokens (prompt and prediction) cannot exceed "

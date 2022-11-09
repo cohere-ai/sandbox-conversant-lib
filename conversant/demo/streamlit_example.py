@@ -26,7 +26,6 @@ USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 def get_reply() -> None:
     """Replies query from the message input, and resets the message input"""
     _ = st.session_state.bot.reply(query=st.session_state.message_input)
-    # Reset user input
     st.session_state.message_input = ""
 
 
