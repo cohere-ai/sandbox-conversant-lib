@@ -165,7 +165,7 @@ def test_update_max_context_fails(
 
     """
     with pytest.raises(ValueError):
-        current_prompt = mock_prompt_chatbot.get_current_prompt(query=f"{'a'*2048}")
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query="a" *2048)
         max_context_examples = 10
         prompt_size = len(mock_co.tokenize(current_prompt))
         mock_prompt_chatbot._update_max_context_examples(
