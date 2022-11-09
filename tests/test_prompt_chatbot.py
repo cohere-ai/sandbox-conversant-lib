@@ -187,7 +187,7 @@ def test_update_max_context_warn(
 
     """
     with pytest.warns(UserWarning):
-        chat_history = [{"user": f"{'a '*90}", "bot": f"{'b '*90}"} for _ in range(12)]
+        chat_history = [{"user": "a " * 90, "bot": "b " * 90} for _ in range(12)]
         mock_prompt_chatbot.chat_history = chat_history
         mock_prompt_chatbot.prompt_size_history = [383 for _ in range(5)]
 
