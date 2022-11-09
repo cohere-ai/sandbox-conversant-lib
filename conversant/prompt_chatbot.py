@@ -170,11 +170,11 @@ class PromptChatbot(Chatbot):
             "The total number of tokens (prompt and prediction) cannot exceed "
             f"{MAX_GENERATE_TOKENS}. Try using a shorter start prompt, sending "
             "smaller text messages in the chat, or setting a smaller value "
-            "for the parameter max_tokens. More details: \n"
-            f" - Start Prompt: {self.start_prompt_size} tokens \n"
+            "for the parameter max_tokens. More details:\n"
+            f" - Start Prompt: {self.start_prompt_size} tokens\n"
             f" - Messages sent in chat: {original_size - self.start_prompt_size} "
-            f" tokens \n - Parameter max_tokens: {self.client_config['max_tokens']}"
-            " tokens"
+            f"tokens\n - Parameter max_tokens: {self.client_config['max_tokens']} "
+            "tokens"
         )
 
     def reply(self, query: str) -> Interaction:
