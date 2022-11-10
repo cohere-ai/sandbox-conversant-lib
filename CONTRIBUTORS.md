@@ -22,7 +22,16 @@ a Cohere repository.
 - Set up a new `git branch` for any additional work and make a PR back to `main`. :)
 - Tests should be added using `pytest` alongside feature development. PRs require good test coverage before they are approved.
 - Aim to include a single change in each commit. Commit messages should be descriptive and start with action verbs.
-- Try to keep PRs as small as possible, ideally with one feature per PR. This makes PRs easier to review and faster to merge. 
+- Try to keep PRs as small as possible, ideally with one feature per PR. This makes PRs easier to review and faster to merge.
+- PR titles should follow the convention described [here](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716) - i.e.:
+  ```
+  feat: add hat wobble
+  ^--^  ^------------^
+  |     |
+  |     +-> Summary in present tense.
+  |
+  +-------> Type: chore, docs, feat, fix, refactor, style, or test.
+  ```
 - Use the `typing` module to define typing signatures for all functions you define.
 - Write Google-style docstrings for all functions created, explaining its description, the arguments, and return value.
 - Use expressive and descriptive variable and function names.
