@@ -157,7 +157,7 @@ def test_update_max_context_fails(
 ) -> None:
     """Tests failure on updating max_context_examples
 
-    prompt_size with more than 2048 tokens, even changing max_context_size
+    when prompt_size has more than 2048 tokens, even changing max_context_size
 
     Args:
         mock_prompt_chatbot (PromptChatbot): Bot test fixture
@@ -165,8 +165,18 @@ def test_update_max_context_fails(
 
     """
     with pytest.raises(ValueError):
-        current_prompt = mock_prompt_chatbot.get_current_prompt(query="a" *2048)
+
+        chat_history = [{"user": "a " * 100, "bot": "b " * 100} for _ in range(5)]
+        mock_prompt_chatbot.chat_history = chat_history
+        mock_prompt_chatbot.prompt_size_history = [
+            mock_co.tokenize(
+                mock_prompt_chatbot.prompt.create_interaction_string(interaction)
+            ).length
+            for interaction in chat_history
+        ]
+
         max_context_examples = 10
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query="a " * 2048)
         prompt_size = mock_co.tokenize(current_prompt).length
         mock_prompt_chatbot._update_max_context_examples(
             prompt_size, max_context_examples
