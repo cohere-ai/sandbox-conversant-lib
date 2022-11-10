@@ -80,6 +80,53 @@ Documents can be built using `pdoc` as follows:
 pdoc conversant -o docs/ --docformat google
 ```
 
+## Configuring VSCode for `conversant`
+To avoid `pre-commit` hooks formatting files only right before a commit, we recommend that you set up your IDE to run these code quality checks on every filesave. 
+
+1. `autoflake`, `isort`, `black` and `ruff` should already be installed in your poetry environment as part of dev dependencies.
+
+2. Install the [emeraldwalk.runonsave](https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave) VSCode extension.
+
+3. Edit workspace settings by opening the command palette (`cmd+shift+p`) and going to "Preferences: Open Workspace Settings (JSON)". Set `settings.json` to have these preferences:
+```JSON
+    "editor.formatOnSave": false,
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": ".py$",
+                "cmd": "autoflake --in-place --recursive --ignore-init-module-imports ${file}"
+            },
+            {
+                "match": ".py$",
+                "cmd": "isort --line-width 88 --force-grid-wrap 0 --use-parentheses --multi-line 0 --float-to-top ${file}"
+            },
+            {
+                "match": ".py$",
+                "cmd": "black ${file}"
+            },
+            {
+                "match": ".py$",
+                "cmd": "ruff ${file}"
+            },
+        ]
+    },
+    "editor.rulers": [
+        88
+    ],
+```
+
+It is also useful to have `pytest` run directly from VSCode, so you can run a selection of tests directly from the IDE.
+1. Edit workspace settings by opening the command palette (`cmd+shift+p`) and going to "Preferences: Open Workspace Settings (JSON)". Set `settings.json` to have these preferences:
+```JSON
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+```
+
+2. Open the Test Explorer View by opening the command palette (`cmd+shift+p`) and going to "Testing: Focus on Test Explorer View".
+
 ## `conversant` schematic
 
 ### Key components
