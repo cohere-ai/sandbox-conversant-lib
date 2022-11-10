@@ -86,6 +86,7 @@ class PromptChatbot(Chatbot):
         self.chat_history = []
         self.prompt_size_history = []
         self.prompt_history = [self.prompt.to_string()]
+        self.curr_max_context_examples = self.chatbot_config["max_context_examples"]
 
         # For the generation models, the maximum token length is 2048
         # (prompt and generation). So the prompt sent to .generate should be
@@ -157,13 +158,22 @@ class PromptChatbot(Chatbot):
                 prompt_size -= size
                 trimmed_max_examples -= 1
                 if prompt_size <= self.max_prompt_size:
-                    warnings.warn(
-                        "The parameter max_context_examples was reduced for this turn, "
-                        f"from the desired config {max_context_examples} to "
-                        f"{trimmed_max_examples}, so that "
-                        "the total amount of tokens does not"
-                        f" exceed {MAX_GENERATE_TOKENS}."
-                    )
+                    if self.curr_max_context_examples == trimmed_max_examples:
+                        warnings.warn(
+                            "The parameter max_context_examples continues "
+                            f"{self.curr_max_context_examples}"
+                            ", so that the total amount of tokens does not"
+                            f" exceed {MAX_GENERATE_TOKENS}."
+                        )
+                    else:
+                        warnings.warn(
+                            "The parameter max_context_examples was changed for"
+                            f" this turn, from {self.curr_max_context_examples} to "
+                            f"{trimmed_max_examples}, so that "
+                            "the total amount of tokens does not"
+                            f" exceed {MAX_GENERATE_TOKENS}."
+                        )
+                    self.curr_max_context_examples = trimmed_max_examples
                     return trimmed_max_examples
 
         raise ValueError(
@@ -200,6 +210,16 @@ class PromptChatbot(Chatbot):
                 current_prompt_size, self.chatbot_config["max_context_examples"]
             )
             current_prompt = self.get_current_prompt(query, max_context_examples)
+
+        elif (
+            self.curr_max_context_examples
+            != self.chatbot_config["max_context_examples"]
+        ):
+            warnings.warn(
+                "The max_context_examples value returned"
+                f" to {self.chatbot_config['max_context_examples']} - "
+                f"value set in the original config"
+            )
 
         # Make a call to Cohere's co.generate API
         generated_object = self.co.generate(
