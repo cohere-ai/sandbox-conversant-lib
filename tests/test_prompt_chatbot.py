@@ -77,10 +77,7 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
 @pytest.mark.parametrize(
     "max_context_examples, history_length",
     list(
-        filter(
-            lambda items: items[0] <= items[1],
-            itertools.product(list(range(0, 20, 4)), list(range(0, 50, 10))),
-        )
+        itertools.product(list(range(0, 20, 4)), list(range(0, 50, 10))),
     ),
 )
 def test_prompt_chatbot_get_current_prompt(
@@ -98,7 +95,7 @@ def test_prompt_chatbot_get_current_prompt(
     """
     chat_history = [
         {"user": f"Hello! {i}", "bot": f"Hello back! {i}"}
-        for i in range(history_length + 1)
+        for i in range(1, history_length + 1)
     ]
     mock_prompt_chatbot.chat_history = chat_history
     mock_prompt_chatbot.configure_chatbot(
@@ -129,8 +126,10 @@ def test_prompt_chatbot_get_current_prompt(
                     f"{mock_prompt_chatbot.prompt.headers['user']}: Hello! {i}\n"
                     f"{mock_prompt_chatbot.prompt.headers['bot']}: Hello back! {i}\n"
                 )
-                for i in range(
-                    history_length - max_context_examples + 1, history_length + 1
+                for i in (
+                    list(range(1, history_length + 1))[-max_context_examples:]
+                    if max_context_examples > 0
+                    else []
                 )
             ]
         )
