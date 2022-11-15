@@ -3,7 +3,7 @@
 ## 0.1.2 (2022-11-14)
 
 ### Added
-- Added Streamlit demo app to to `conversant`
+- Added Streamlit demo app to `conversant`
 
 ### Changed
 - Updated README content
