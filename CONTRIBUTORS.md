@@ -22,7 +22,23 @@ a Cohere repository.
 - Set up a new `git branch` for any additional work and make a PR back to `main`. :)
 - Tests should be added using `pytest` alongside feature development. PRs require good test coverage before they are approved.
 - Aim to include a single change in each commit. Commit messages should be descriptive and start with action verbs.
-- Try to keep PRs as small as possible, ideally with one feature per PR. This makes PRs easier to review and faster to merge. 
+- Try to keep PRs as small as possible, ideally with one feature per PR. This makes PRs easier to review and faster to merge.
+- PR titles should follow the convention referenced from [here](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f42ae84c716). While the link describes this convention in terms of semantic commit messages, we advocate for semantic PR titles. This serves as a forcing function to keep PRs as small as possible, aligned to one of these following semantics:
+  ```
+  feat: add hat wobble
+  ^--^  ^------------^
+  |     |
+  |     +-> Summary in present tense.
+  |
+  +-------> Type: chore, docs, feat, fix, refactor, style, or test.
+  ```
+  - feat: new feature for the user, not a new feature for build script
+  - fix: bug fix for the user, not a fix to a build script
+  - docs: changes to the documentation
+  - style: formatting, missing semi colons, etc; no production code change
+  - refactor: refactoring production code, eg. renaming a variable
+  - test: adding missing tests, refactoring tests; no production code change
+  - chore: updating grunt tasks etc; no production code change
 - Use the `typing` module to define typing signatures for all functions you define.
 - Write Google-style docstrings for all functions created, explaining its description, the arguments, and return value.
 - Use expressive and descriptive variable and function names.
@@ -49,7 +65,7 @@ conda activate conversant
 
 Install `poetry`:
 ```
-pip install poetry==1.3.2
+pip install poetry==1.2.2
 ```
 
 Set `poetry` to use the Python installed in the `conversant` environment:
@@ -79,6 +95,53 @@ Documents can be built using `pdoc` as follows:
 ```
 pdoc conversant -o docs/ --docformat google
 ```
+
+## Configuring VSCode for `conversant`
+To avoid `pre-commit` hooks formatting files only right before a commit, we recommend that you set up your IDE to run these code quality checks on every filesave. 
+
+1. `autoflake`, `isort`, `black` and `ruff` should already be installed in your poetry environment as part of dev dependencies.
+
+2. Install the [emeraldwalk.runonsave](https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave) VSCode extension.
+
+3. Edit workspace settings by opening the command palette (`cmd+shift+p`) and going to "Preferences: Open Workspace Settings (JSON)". Set `settings.json` to have these preferences:
+```JSON
+    "editor.formatOnSave": false,
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": ".py$",
+                "cmd": "autoflake --in-place --recursive --ignore-init-module-imports ${file}"
+            },
+            {
+                "match": ".py$",
+                "cmd": "isort --line-width 88 --force-grid-wrap 0 --use-parentheses --multi-line 0 --float-to-top ${file}"
+            },
+            {
+                "match": ".py$",
+                "cmd": "black ${file}"
+            },
+            {
+                "match": ".py$",
+                "cmd": "ruff ${file}"
+            },
+        ]
+    },
+    "editor.rulers": [
+        88
+    ],
+```
+
+It is also useful to have `pytest` run directly from VSCode, so you can run a selection of tests directly from the IDE.
+1. Edit workspace settings by opening the command palette (`cmd+shift+p`) and going to "Preferences: Open Workspace Settings (JSON)". Set `settings.json` to have these preferences:
+```JSON
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+```
+
+2. Open the Test Explorer View by opening the command palette (`cmd+shift+p`) and going to "Testing: Focus on Test Explorer View".
 
 ## `conversant` schematic
 

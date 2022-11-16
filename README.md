@@ -72,8 +72,8 @@ pip install conversant
 Want to see it in action first? You can use `conversant` on a [Streamlit](https://docs.streamlit.io/) app without installing anything [here](https://conversant.streamlit.app/)! 🎉
 
 <p float="none">
-  <img src="static/fortune-teller-setup.png" alt="Screenshot showing the available personas on the Streamlit demo, with the Fortune Teller persona selected by default.." height="550"/>
-  <img src="static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." height="550"/>
+  <img src="https://github.com/cohere-ai/sandbox-conversant-lib/raw/main/static/fortune-teller-setup.png" alt="Screenshot showing the available personas on the Streamlit demo, with the Fortune Teller persona selected by default.." height="550"/>
+  <img src="https://github.com/cohere-ai/sandbox-conversant-lib/raw/main/static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." height="550"/>
 </p>
 
 ### Running Your Own Demo Locally
@@ -123,7 +123,7 @@ The config file should contain the following:
 
 ### Editing a Persona on the Demo
 You can also edit a persona on the Streamlit app!
-<img src="static/fortune-teller-edit.png" alt="Screenshot showing the interface for editing a persona on the Streamlit app."/>
+<img src="https://github.com/cohere-ai/sandbox-conversant-lib/raw/main/static/fortune-teller-edit.png" alt="Screenshot showing the interface for editing a persona on the Streamlit app."/>
 
 ### Usage
 

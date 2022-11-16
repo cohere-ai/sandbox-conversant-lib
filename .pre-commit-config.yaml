@@ -5,6 +5,16 @@ repos:
     -   id: check-yaml
     -   id: check-toml
     -   id: check-json
+-   repo: https://github.com/PyCQA/autoflake
+    rev: v1.7.7
+    hooks:
+    -   id: autoflake
+        args: [--in-place, --recursive, --ignore-init-module-imports]
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.10.1
+    hooks:
+    -   id: isort
+        args: [--line-width=88, --force-grid-wrap=0, --use-parentheses, --multi-line=0, --float-to-top]
 -   repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:
