@@ -405,14 +405,14 @@ class PromptChatbot(Chatbot):
                 f"The prompt given to PromptChatbot has {self.start_prompt_size}"
                 " tokens. And the value of the parameter max_tokens is"
                 f" {self.client_config['max_tokens']}. Adding the two values "
-                "the total cannot exceed {MAX_GENERATE_TOKENS}. "
-                f"Try using a shorter preamble or less examples."
+                f"the total cannot exceed {MAX_GENERATE_TOKENS}. "
+                "Try using a shorter preamble or less examples."
             )
         elif self.start_prompt_size > (0.75 * self.max_prompt_size):
             warnings.warn(
                 "The prompt given to PromptChatbot has "
                 f"{self.start_prompt_size} tokens. And the value of the parameter"
-                f"  max_tokens is {self.client_config['max_tokens']}"
+                f" max_tokens is {self.client_config['max_tokens']}. "
                 "Adding the two together gives a value close to the total allowed"
                 f" for prompt and prediction - {MAX_GENERATE_TOKENS} tokens"
             )
