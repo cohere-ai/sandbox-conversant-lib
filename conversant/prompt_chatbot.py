@@ -333,7 +333,7 @@ class PromptChatbot(Chatbot):
         # Checks if the parameter is equal or bigger than MAX_GENERATE_TOKENS
         if self.client_config["max_tokens"] >= MAX_GENERATE_TOKENS:
             raise ValueError(
-                f"The parameter max_tokens needs to be smaller than"
+                f"The parameter max_tokens needs to be smaller than "
                 f"{MAX_GENERATE_TOKENS}. Try using a smaller value."
             )
         elif self.client_config["max_tokens"] > (MAX_GENERATE_TOKENS * 0.75):
