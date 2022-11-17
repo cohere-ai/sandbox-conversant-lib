@@ -14,6 +14,7 @@ import cohere
 import pytest
 from cohere.embeddings import Embeddings
 from cohere.generation import Generations
+from cohere.tokenize import Tokens
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
 from conversant.prompts.chat_prompt import ChatPrompt
@@ -37,6 +38,12 @@ class MockCo:
             return Embeddings(embeddings=embeddings)
 
         return Embeddings(embeddings=[[1.0, 1.0]])
+
+    def tokenize(*args, **kwargs) -> Tokens:
+        token_strings = args[1].split()
+        tokens = [x for x in range(len(token_strings))]
+
+        return Tokens(tokens, token_strings)
 
 
 @pytest.fixture

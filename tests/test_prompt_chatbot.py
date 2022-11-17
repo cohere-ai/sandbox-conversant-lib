@@ -149,3 +149,68 @@ def test_missing_persona_fails(mock_co: object) -> None:
     """
     with pytest.raises(FileNotFoundError):
         _ = PromptChatbot.from_persona("invalid_persona", mock_co)
+
+
+def test_update_max_context_fails(
+    mock_prompt_chatbot: PromptChatbot, mock_co: object
+) -> None:
+    """Tests failure on updating max_context_examples
+
+    when prompt_size has more than 2048 tokens, even changing max_context_size
+
+    Args:
+        mock_prompt_chatbot (PromptChatbot): Bot test fixture
+        mock_co (object): mock Cohere client.
+
+    """
+    with pytest.raises(ValueError):
+
+        chat_history = [{"user": "a " * 100, "bot": "b " * 100} for _ in range(5)]
+        mock_prompt_chatbot.chat_history = chat_history
+        mock_prompt_chatbot.prompt_size_history = [
+            mock_co.tokenize(
+                mock_prompt_chatbot.prompt.create_interaction_string(interaction)
+            ).length
+            for interaction in chat_history
+        ]
+
+        max_context_examples = 10
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query="a " * 2048)
+        prompt_size = mock_co.tokenize(current_prompt).length
+        mock_prompt_chatbot._update_max_context_examples(
+            prompt_size, max_context_examples
+        )
+
+
+def test_update_max_context_warn(
+    mock_prompt_chatbot: PromptChatbot, mock_co: object
+) -> None:
+    """Tests function update_max_context_examples with warnings
+
+    prompt_size with more than 2048 tokens, but if change the max_context_examples
+    the size reduces and gets smaller than 2048
+
+    Args:
+        mock_prompt_chatbot (PromptChatbot): Bot test fixture
+        mock_co (object): mock Cohere client.
+
+    """
+    with pytest.warns(UserWarning):
+        chat_history = [{"user": "a " * 90, "bot": "b " * 90} for _ in range(12)]
+        mock_prompt_chatbot.chat_history = chat_history
+        mock_prompt_chatbot.prompt_size_history = [
+            mock_co.tokenize(
+                mock_prompt_chatbot.prompt.create_interaction_string(interaction)
+            ).length
+            for interaction in chat_history
+        ]
+
+        max_context_examples = 10
+        current_prompt = mock_prompt_chatbot.get_current_prompt(query="q " * 200)
+        prompt_size = mock_co.tokenize(current_prompt).length
+        updated_max_context_examples = mock_prompt_chatbot._update_max_context_examples(
+            prompt_size, max_context_examples
+        )
+
+        expected = max_context_examples - 1
+        assert updated_max_context_examples == expected
