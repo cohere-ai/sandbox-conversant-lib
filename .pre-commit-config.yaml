@@ -14,7 +14,7 @@ repos:
     rev: 5.10.1
     hooks:
     -   id: isort
-        args: [--line-width=88, --force-grid-wrap=0, --use-parentheses, --multi-line=0, --float-to-top]
+        args: [--profile=black, --line-width=88, --force-grid-wrap=0, --use-parentheses, --float-to-top]
 -   repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:
