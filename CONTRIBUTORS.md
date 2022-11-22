@@ -114,7 +114,7 @@ To avoid `pre-commit` hooks formatting files only right before a commit, we reco
             },
             {
                 "match": ".py$",
-                "cmd": "isort --line-width 88 --force-grid-wrap 0 --use-parentheses --multi-line 0 --float-to-top ${file}"
+                "cmd": "isort --profile black --line-width 88 --force-grid-wrap 0 --use-parentheses --float-to-top ${file}"
             },
             {
                 "match": ".py$",
