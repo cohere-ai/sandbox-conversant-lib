@@ -81,23 +81,25 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
 
 
 @st.cache(allow_output_mutation=True)
-def get_persona_options() -> List[str]:
+def get_persona_options(persona_directory: str = PERSONA_MODEL_DIRECTORY) -> List[str]:
     """Initializes a list of personas.
 
-    Each persona is a directory in PERSONA_MODEL_DIRECTORY, each with its
+    Each persona is a directory in persona_directory, each with its
     config.json file. The mock parrot persona is also included for testing
     purposes.
+
+    Args:
+        persona_directory (str): Directory where persona folders containing config
+        files are stored. Defaults to PERSONA_MODEL_DIRECTORY.
 
     Returns:
         List[str]: A list of persona names.
     """
     # Initialize the list of personas for Streamlit
-    persona_names = os.listdir(PERSONA_MODEL_DIRECTORY)
+    persona_names = os.listdir(persona_directory)
     persona_names_maybe_with_emojis = []
     for persona_name in persona_names:
-        persona_path = os.path.join(
-            PERSONA_MODEL_DIRECTORY, persona_name, "config.json"
-        )
+        persona_path = os.path.join(persona_directory, persona_name, "config.json")
         with open(persona_path) as f:
             persona = json.load(f)
             avatar = (
