@@ -121,6 +121,16 @@ The config file should contain the following:
 
 `conversant` will take care of the rest! As an example, check out [`fortune-teller/config.json`](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
 
+#### Troubleshooting missing personas
+
+If you do not see the new persona in the drop down menu, you may need to specify a 
+custom persona directory. In the demo Streamlit app (`streamlit_example.py`), one of the 
+first lines reads `CUSTOM_PERSONA_DIRECTORY = None`. Change this to specify the desired 
+persona directory, e.g. `CUSTOM_PERSONA_DIRECTORY = "/Users/yourname/custom-personas"`.
+
+If this is unchanged, the app will default to using the directory that contains the 
+`conversant` demo personas.
+
 ### Editing a Persona on the Demo
 You can also edit a persona on the Streamlit app!
 <img src="https://github.com/cohere-ai/sandbox-conversant-lib/raw/main/static/fortune-teller-edit.png" alt="Screenshot showing the interface for editing a persona on the Streamlit app."/>
