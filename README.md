@@ -80,6 +80,8 @@ Want to see it in action first? You can use `conversant` on a [Streamlit](https:
 
 Cohere uses Streamlit to create its demo applications. If you’re new to Streamlit, you can install it [here](https://docs.streamlit.io/library/get-started/installation) and read more about running Streamlit commands [here](https://docs.streamlit.io/library/get-started/main-concepts).
 
+If you would like to modify this Streamlit demo locally, we strongly recommend forking this repository rather than installing it as a library from PyPI.
+
 If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
 You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai/welcome/register?utm_source=github&utm_medium=content&utm_campaign=sandbox&utm_content=conversant). 
 Add the key to `.streamlit/secrets.toml`:
@@ -98,7 +100,9 @@ streamlit run conversant/demo/streamlit_example.py
 ```
 
 ### Creating a Custom Persona
-Once you have your own instance of the Streamlit app, you can begin experimenting with creating custom personas! Check out the `config.json` for each persona in [`conversant/personas`](/conversant/personas/) directory. You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file. The directory structure should look like this:
+Once you have your own instance of the Streamlit app, you can begin experimenting with creating custom personas! Check out the `config.json` for each persona in [`conversant/personas`](/conversant/personas/) directory. You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file. 
+
+As a note, we strongly recommend forking the `sandbox-conversant-lib` repository rather than installing it as a library from PyPI. When you create a new persona, use the `personas` directory in the cloned repository. The directory structure should look like this:
 
 ```
 conversant/personas
@@ -121,15 +125,28 @@ The config file should contain the following:
 
 `conversant` will take care of the rest! As an example, check out [`fortune-teller/config.json`](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
 
-#### Troubleshooting missing personas
+#### Running the app with a subset of custom personas
 
-If you do not see the new persona in the drop down menu, you may need to specify a 
-custom persona directory. In the demo Streamlit app (`streamlit_example.py`), one of the 
+If you would like to run the app with a subset of custom personas, it's possible to create a new directory that contains only the desired ones. This is analogous to the `conversant/personas` directory, and needs to have the same structure:
+```
+custom-personas
+├── your-first-persona
+│   └── config.json
+└── your-second-persona
+    └── config.json
+```  
+
+After creating this directory, you'll need to tell the app where to look for it. In the demo Streamlit app (`streamlit_example.py`), one of the 
 first lines reads `CUSTOM_PERSONA_DIRECTORY = None`. Change this to specify the desired 
 persona directory, e.g. `CUSTOM_PERSONA_DIRECTORY = "/Users/yourname/custom-personas"`.
 
 If this is unchanged, the app will default to using the directory that contains the 
 `conversant` demo personas.
+
+#### Troubleshooting missing personas
+
+If you do not see the new persona in the drop down menu, you may need to specify a 
+custom persona directory. Follow [the instructions above](#running-the-app-with-a-subset-of-custom-personas) to tell the app where to look for the personas.
 
 ### Editing a Persona on the Demo
 You can also edit a persona on the Streamlit app!
