@@ -20,6 +20,11 @@ from conversant.demo import ui, utils
 from conversant.prompt_chatbot import PromptChatbot
 from conversant.utils import demo_utils
 
+# Set a custom persona directory by changing the following line
+# e.g. "/Users/yourname/custom-personas"
+# If the line is left as `CUSTOM_PERSONA_DIRECTORY = None`
+# the Streamlit app will use the demo presets
+CUSTOM_PERSONA_DIRECTORY = None
 USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
@@ -100,7 +105,12 @@ if __name__ == "__main__":
 
     # Each persona is a directory in PERSONA_MODEL_DIRECTORY, each with its
     # config.json file.
-    st.session_state.persona_options = utils.get_persona_options()
+    if CUSTOM_PERSONA_DIRECTORY:
+        st.session_state.persona_options = utils.get_persona_options(
+            CUSTOM_PERSONA_DIRECTORY
+        )
+    else:
+        st.session_state.persona_options = utils.get_persona_options()
 
     # Check if COHERE_API_KEY is not set from secrets.toml or os.environ
     if "COHERE_API_KEY" not in os.environ:
