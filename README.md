@@ -89,7 +89,7 @@ If you plan to run the Streamlit app locally, you can add the key to `.streamlit
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
-Alternatively, set the key as an environment variable by running the following command from the command line.
+When running locally, Streamlit will read the `secrets.toml` file and silently inject these values into the environment variables. Alternatively, you may directly set the API key as an environment variable by running the following command from the command line:
 ```
 export COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
