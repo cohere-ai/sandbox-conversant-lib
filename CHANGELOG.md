@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.3 (2022-12-02)
+
+### Added
+- N/A
+
+### Changed
+- Updated README content to clarify secrets management
+- Streamline custom persona injection in streamlit
+
+### Removed
+- N/A
+
 ## 0.1.2 (2022-11-14)
 
 ### Added

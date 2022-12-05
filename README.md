@@ -76,7 +76,7 @@ Want to see it in action first? You can use `conversant` on a [Streamlit](https:
   <img src="https://github.com/cohere-ai/sandbox-conversant-lib/raw/main/static/fortune-teller-chat.png" alt="Screenshot showing an exchange between a Fortune Teller chatbot and a user." height="550"/>
 </p>
 
-### Running Your Own Demo Locally
+### Running Your Own Streamlit Demo
 
 Cohere uses Streamlit to create its demo applications. If you’re new to Streamlit, you can install it [here](https://docs.streamlit.io/library/get-started/installation) and read more about running Streamlit commands [here](https://docs.streamlit.io/library/get-started/main-concepts).
 
@@ -84,19 +84,27 @@ If you would like to modify this Streamlit demo locally, we strongly recommend f
 
 If you'd like to spin up your own instance of the Streamlit demo, you will first need a `COHERE_API_KEY`. 
 You can generate one by visiting [dashboard.cohere.ai](https://dashboard.cohere.ai/welcome/register?utm_source=github&utm_medium=content&utm_campaign=sandbox&utm_content=conversant). 
-Add the key to `.streamlit/secrets.toml`:
+
+#### Local Streamlit apps
+If you plan to run the Streamlit app locally, you can add the key to `.streamlit/secrets.toml`:
 ```
 COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
-Alternatively, set the key as an environment variable.
+When running locally, Streamlit will read the `secrets.toml` file and silently inject these values into the environment variables. Alternatively, you may directly set the API key as an environment variable by running the following command from the command line:
 ```
 export COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
- Start the Streamlit app from `conversant/demo/streamlit_example.py`:
+Start the Streamlit app from the command line with the following command:
 ```
 streamlit run conversant/demo/streamlit_example.py
+```
+
+#### Hosted Streamlit apps
+If instead you would like to create a hosted Streamlit app, add your Cohere API key to Streamlit via [Secrets Management](https://docs.streamlit.io/streamlit-cloud/get-started/deploy-an-app/connect-to-data-sources/secrets-management). Add the following line as a Secret:
+```
+COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
 ### Creating a Custom Persona
