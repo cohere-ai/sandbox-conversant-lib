@@ -348,23 +348,32 @@ class PromptChatbot(Chatbot):
         cls,
         persona_name: str,
         client: cohere.Client,
-        persona_dir: str = PERSONA_MODEL_DIRECTORY,
+        custom_persona_dir: str = "",
     ):
         """Initializes a PromptChatbot using a persona.
 
         Args:
             persona (str): Name of persona, corresponding to a .json file.
             client (cohere.Client): Cohere client for API
-            persona_dir (str): Path to where pre-defined personas are.
+            custom_persona_dir (str): Path to where custom pre-defined personas are. The
+                function will look for the persona first in PERSONA_MODEL_DIRECTORY and
+                then in custom_persona_dir, loading the first persona that it finds that
+                matches persona_name.
         """
-        # Load the persona from a local directory
-        persona_path = os.path.join(persona_dir, persona_name, "config.json")
-        if os.path.isfile(persona_path):
-            logging.info(f"loading persona from {persona_path}")
-        else:
-            raise FileNotFoundError(f"{persona_path} cannot be found.")
-        with open(persona_path) as f:
-            persona = json.load(f)
+        # Find the persona in PERSONA_MODEL_DIRECTORY and custom_persona_dir
+        persona_dirs = [PERSONA_MODEL_DIRECTORY]
+        persona = {}
+        if custom_persona_dir:
+            persona_dirs.append(custom_persona_dir)
+        for persona_dir in persona_dirs:
+            persona_path = os.path.join(persona_dir, persona_name, "config.json")
+            if os.path.isfile(persona_path):
+                logging.info(f"loading persona from {persona_path}")
+                with open(persona_path) as f:
+                    persona = json.load(f)
+                break
+        if not persona:
+            raise FileNotFoundError(f"Unable to find {persona_name} in {persona_dirs}")
 
         # Validate that the persona follows our predefined schema
         cls._validate_persona_dict(persona, persona_path)
