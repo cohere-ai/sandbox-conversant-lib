@@ -218,7 +218,7 @@ Full documentation can be found [here](https://cohere-ai.github.io/sandbox-conve
 
 ## Get Support
 
-If you have any questions or comments, please file an issue or reach out to us on [Discord](discord.gg/co-mmunity).
+If you have any questions or comments, please file an issue or reach out to us on [Discord](https://discord.gg/co-mmunity).
 
 ## Contributing Guidelines
 If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](https://github.com/cohere-ai/sandbox-conversant-lib/blob/main/CONTRIBUTORS.md)
