@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.4 (2022-12-16)
+
+### Added
+- N/A
+
+### Changed
+- Converted relative links in README to absolute links for PyPI compatibility
+- Bug fix related to custom persona injection in streamlit
+
+### Removed
+- N/A
+
 ## 0.1.3 (2022-12-02)
 
 ### Added
