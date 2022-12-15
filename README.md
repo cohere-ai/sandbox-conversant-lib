@@ -46,18 +46,18 @@ Read more about how `conversant` is part of the Cohere Sandbox on our [launch bl
 Try `conversant` on our Streamlit demo [here](https://conversant.streamlit.app/)! 🎉
 
 ## Table of Contents
-1. [Installation and Usage](https://github.com/cohere-ai/sandbox-conversant-lib#installation-and-usage)
-   1. [Installation](https://github.com/cohere-ai/sandbox-conversant-lib#installation)
-   2. [Streamlit Demo](https://github.com/cohere-ai/sandbox-conversant-lib#streamlit-demo)
-   3. [Running Your Own Demo Locally](https://github.com/cohere-ai/sandbox-conversant-lib#running-your-own-demo-locally)
-   4. [Creating a Custom Persona](https://github.com/cohere-ai/sandbox-conversant-lib#creating-a-custom-persona)
-   5. [Editing a Persona on the Demo](https://github.com/cohere-ai/sandbox-conversant-lib#editing-a-persona-on-the-demo)
-   6. [Usage](https://github.com/cohere-ai/sandbox-conversant-lib#usage)
-2. [How Conversant Works](https://github.com/cohere-ai/sandbox-conversant-lib#how-conversant-works)
-3. [Documentation](https://github.com/cohere-ai/sandbox-conversant-lib#documentation)
-4. [Get Support](https://github.com/cohere-ai/sandbox-conversant-lib#get-support)
-5. [Contributing Guidelines](https://github.com/cohere-ai/sandbox-conversant-lib#contributing-guidelines)
-6. [License](https://github.com/cohere-ai/sandbox-conversant-lib#license)
+1. [Installation and Usage](#installation-and-usage)
+   1. [Installation](#installation)
+   2. [Streamlit Demo](#streamlit-demo)
+   3. [Running Your Own Demo Locally](#running-your-own-demo-locally)
+   4. [Creating a Custom Persona](#creating-a-custom-persona)
+   5. [Editing a Persona on the Demo](#editing-a-persona-on-the-demo)
+   6. [Usage](#usage)
+2. [How Conversant Works](#how-conversant-works)
+3. [Documentation](#documentation)
+4. [Get Support](#get-support)
+5. [Contributing Guidelines](#contributing-guidelines)
+6. [License](#license)
 
 ## Installation and Usage
 
@@ -154,7 +154,7 @@ If this is unchanged, the app will default to using the directory that contains 
 #### Troubleshooting missing personas
 
 If you do not see the new persona in the drop down menu, you may need to specify a 
-custom persona directory. Follow [the instructions above](https://github.com/cohere-ai/sandbox-conversant-lib#running-the-app-with-a-subset-of-custom-personas) to tell the app where to look for the personas.
+custom persona directory. Follow [the instructions above](#running-the-app-with-a-subset-of-custom-personas) to tell the app where to look for the personas.
 
 ### Editing a Persona on the Demo
 You can also edit a persona on the Streamlit app!
