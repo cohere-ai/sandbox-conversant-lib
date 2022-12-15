@@ -48,6 +48,7 @@ def initialize_chatbot() -> None:
         st.session_state.bot = PromptChatbot.from_persona(
             emoji.replace_emoji(st.session_state.persona, "").strip(),
             client=cohere.Client(os.environ.get("COHERE_API_KEY")),
+            custom_persona_dir=CUSTOM_PERSONA_DIRECTORY,
         )
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
