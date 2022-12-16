@@ -68,6 +68,11 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
 
+    with pytest.raises(FileNotFoundError):
+        _ = PromptChatbot.from_persona(
+            "watch-sales-agent", client=mock_co, persona_dir=""
+        )
+
 
 @pytest.mark.parametrize(
     "max_context_examples, history_length",
