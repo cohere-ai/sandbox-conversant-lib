@@ -49,7 +49,7 @@ Try `conversant` on our Streamlit demo [here](https://conversant.streamlit.app/)
 1. [Installation and Usage](#installation-and-usage)
    1. [Installation](#installation)
    2. [Streamlit Demo](#streamlit-demo)
-   3. [Running Your Own Demo Locally](#running-your-own-demo-locally)
+   3. [Running Your Own Streamlit Demo](#running-your-own-streamlit-demo)
    4. [Creating a Custom Persona](#creating-a-custom-persona)
    5. [Editing a Persona on the Demo](#editing-a-persona-on-the-demo)
    6. [Usage](#usage)
@@ -108,7 +108,7 @@ COHERE_API_KEY = "YOUR_API_KEY_HERE"
 ```
 
 ### Creating a Custom Persona
-Once you have your own instance of the Streamlit app, you can begin experimenting with creating custom personas! Check out the `config.json` for each persona in [`conversant/personas`](/conversant/personas/) directory. You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file. 
+Once you have your own instance of the Streamlit app, you can begin experimenting with creating custom personas! Check out the `config.json` for each persona in [`conversant/personas`](https://github.com/cohere-ai/sandbox-conversant-lib/tree/main/conversant/personas) directory. You'll need to create a subfolder within this directory that corresponds to your new persona and add a `config.json` file. 
 
 As a note, we strongly recommend forking the `sandbox-conversant-lib` repository rather than installing it as a library from PyPI. When you create a new persona, use the `personas` directory in the cloned repository. The directory structure should look like this:
 
@@ -131,7 +131,7 @@ The config file should contain the following:
    - `headers`: A name for the `bot` and the `user`.
    - `examples`: A few conversation examples (few-shot), or empty (zero-shot).
 
-`conversant` will take care of the rest! As an example, check out [`fortune-teller/config.json`](/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
+`conversant` will take care of the rest! As an example, check out [`fortune-teller/config.json`](https://github.com/cohere-ai/sandbox-conversant-lib/blob/main/conversant/personas/fortune-teller/config.json). When you launch the Streamlit app, the new persona will appear in the drop down menu.
 
 #### Running the app with a subset of custom personas
 
@@ -211,22 +211,22 @@ Each user message and chatbot response is appended to a chat history so that fut
 
 In the future, we plan to add functionality for a chatbot to be factually grounded using text that is retrieved from a local document cache.
 
-For more information, refer to [this section in `CONTRIBUTORS.md`](CONTRIBUTORS.md#conversant-schematic).
+For more information, refer to [this section in `CONTRIBUTORS.md`](https://github.com/cohere-ai/sandbox-conversant-lib/blob/main/CONTRIBUTORS.md#conversant-schematic).
 
 ## Documentation
 Full documentation can be found [here](https://cohere-ai.github.io/sandbox-conversant-lib/).
 
 ## Get Support
 
-If you have any questions or comments, please file an issue or reach out to us on [Discord](discord.gg/co-mmunity).
+If you have any questions or comments, please file an issue or reach out to us on [Discord](https://discord.gg/co-mmunity).
 
 ## Contributing Guidelines
-If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
+If you would like to contribute to this project, please read [`CONTRIBUTORS.md`](https://github.com/cohere-ai/sandbox-conversant-lib/blob/main/CONTRIBUTORS.md)
 in this repository, and sign the Contributor License Agreement before submitting
 any pull requests. A link to sign the Cohere CLA will be generated the first time 
 you make a pull request to a Cohere repository.
 
-In addition to guidelines around submitting code to this repository, [`CONTRIBUTORS.md`](CONTRIBUTORS.md) contains a walkthrough to help developers get started, as well as schematics that explain how `conversant` works under the hood. :wrench:
+In addition to guidelines around submitting code to this repository, [`CONTRIBUTORS.md`](https://github.com/cohere-ai/sandbox-conversant-lib/blob/main/CONTRIBUTORS.md) contains a walkthrough to help developers get started, as well as schematics that explain how `conversant` works under the hood. :wrench:
 
 ## License
-`conversant` has an [MIT License](LICENSE).
+`conversant` has an [MIT License](https://github.com/cohere-ai/sandbox-conversant-lib/blob/main/LICENSE).
