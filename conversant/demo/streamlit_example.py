@@ -17,7 +17,7 @@ import emoji
 import streamlit as st
 
 from conversant.demo import ui, utils
-from conversant.prompt_chatbot import PromptChatbot
+from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
 from conversant.utils import demo_utils
 
 # Set a custom persona directory by changing the following line
@@ -45,17 +45,13 @@ def initialize_chatbot() -> None:
     elif st.session_state.persona == "parrot":
         st.session_state.bot = utils.ParrotChatbot()
     else:
-        if CUSTOM_PERSONA_DIRECTORY:
-            st.session_state.bot = PromptChatbot.from_persona(
-                emoji.replace_emoji(st.session_state.persona, "").strip(),
-                client=cohere.Client(os.environ.get("COHERE_API_KEY")),
-                persona_dir=CUSTOM_PERSONA_DIRECTORY,
-            )
-        else:
-            st.session_state.bot = PromptChatbot.from_persona(
-                emoji.replace_emoji(st.session_state.persona, "").strip(),
-                client=cohere.Client(os.environ.get("COHERE_API_KEY")),
-            )
+        st.session_state.bot = PromptChatbot.from_persona(
+            emoji.replace_emoji(st.session_state.persona, "").strip(),
+            client=cohere.Client(os.environ.get("COHERE_API_KEY")),
+            persona_dir=CUSTOM_PERSONA_DIRECTORY
+            if CUSTOM_PERSONA_DIRECTORY
+            else PERSONA_MODEL_DIRECTORY,
+        )
     if "bot" in st.session_state and st.session_state.bot:
         update_session_with_prompt()
     # Reset the edit_promp_json session state so we don't remain on the JSON editor when
