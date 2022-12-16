@@ -7,10 +7,6 @@
 # level of this repository.
 
 import itertools
-import json
-import os
-import tempfile
-from typing import Any, Dict
 
 import pytest
 
@@ -59,7 +55,7 @@ def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
 
 
 def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
-    """Tests end to end that a PromtpChatbot is initalized correctly from persona.
+    """Tests end to end that a prompt_chatbot is initalized correctly from persona.
 
     Args:
         mock_co (object): mock Cohere client.
@@ -71,38 +67,6 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     assert prompt_chatbot.latest_prompt == prompt_chatbot.prompt.to_string()
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
-
-
-def test_prompt_chatbot_init_from_custom_dir(
-    mock_co: object, mock_chat_prompt_config: Dict[str, Any]
-) -> None:
-    """Tests end ot end that a PromptChatbot is initialized from a custom dir correctly.
-
-    Args:
-        mock_co (object): mock Cohere client.
-        mock_chat_prompt_config (Dict[str, Any]): A mock chat prompt config.
-    """
-    with tempfile.TemporaryDirectory() as temp_dir:
-        persona_config = {
-            "chatbot_config": {},
-            "client_config": {},
-            "chat_prompt_config": mock_chat_prompt_config,
-        }
-        temp_persona = "temp"
-        os.mkdir(f"{temp_dir}/{temp_persona}")
-        with open(f"{temp_dir}/{temp_persona}/config.json", "w+") as temp_file:
-            json.dump(persona_config, temp_file)
-
-        for persona in [temp_persona, "watch-sales-agent"]:
-            prompt_chatbot = PromptChatbot.from_persona(
-                persona, client=mock_co, custom_persona_dir=temp_dir
-            )
-            assert isinstance(prompt_chatbot, PromptChatbot)
-            assert prompt_chatbot.user_name == prompt_chatbot.prompt.user_name
-            assert prompt_chatbot.bot_name == prompt_chatbot.prompt.bot_name
-            assert prompt_chatbot.latest_prompt == prompt_chatbot.prompt.to_string()
-            check_prompt_chatbot_config(prompt_chatbot)
-            prompt_chatbot.reply(query="What's up?")
 
 
 @pytest.mark.parametrize(
