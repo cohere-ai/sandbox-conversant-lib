@@ -6,6 +6,7 @@
 # You may obtain a copy of the License in the LICENSE file at the top
 # level of this repository.
 
+import copy
 import json
 import logging
 import os
@@ -384,18 +385,9 @@ class PromptChatbot(Chatbot):
             Dict[str, Any]: Dictionary of attributes that defines this instance of a
                 PromptChatbot.
         """
-        return {
-            "co": self.co,
-            "prompt": self.prompt.to_dict(),
-            "persona_name": self.persona_name,
-            "chatbot_config": self.chatbot_config,
-            "client_config": self.client_config,
-            "chat_history": self.chat_history,
-            "prompt_history": self.prompt_history,
-            "user_name": self.user_name,
-            "bot_name": self.bot_name,
-            "latest_prompt": self.latest_prompt,
-        }
+        serialized = copy.deepcopy(vars(self))
+        serialized["prompt"] = serialized["prompt"].to_dict()
+        return serialized
 
     def _check_prompt_size(self) -> None:
 
