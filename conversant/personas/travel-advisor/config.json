@@ -1,7 +1,7 @@
 {
     "chatbot_config": {
         "max_context_examples": 10,
-        "avatar": ":information_desk_person:"
+        "avatar": ":palm_tree:"
     },
     "client_config": {
         "model": "xlarge",
