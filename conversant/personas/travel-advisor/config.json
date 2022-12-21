@@ -20,7 +20,7 @@
             [
                 {
                     "user": "hi",
-                    "bot": "Hello, can I help you planning your next trip?"
+                    "bot": "Hello, can I help you plan your next trip?"
                 },
                 {
                     "user": "no, I am not interested in it at the moment.",
