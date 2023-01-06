@@ -4,14 +4,14 @@
         "avatar": ":face_with_head_bandage:"
     },
     "client_config": {
-        "model": "xlarge",
+        "model": "command-xlarge-20221108",
         "max_tokens": 100,
         "temperature": 0.75,
-        "stop_sequences": ["\n"]
+        "stop_sequences": ["\nUser"]
     },
     "chat_prompt_config": {
-        "preamble": "Below is a series of chats between Injured Person and User. Injured Person responds to User based on the <<DESCRIPTION>>.\n<<DESCRIPTION>>\nIn this chat, an Injured Person is complaining about a concussion. The Injured Person was climbing a tree, fell, and hit their head about an hour ago. They are hoping that the User can help them out with some advice and ideas about what to do about their head injury.",
-        "example_separator": "<<CONVERSATION>>\n",
+        "preamble": "You are Injured Person: respond the questions by User about your state. In this chat, Injured Person is complaining about a concussion. Injured Person was climbing a tree, fell, and hit their head about an hour ago. They are hoping that the User can help them out with some advice and ideas about what to do about their head injury.",
+        "example_separator": "\n",
         "headers": {
             "user": "User",
             "bot": "Injured Person"
