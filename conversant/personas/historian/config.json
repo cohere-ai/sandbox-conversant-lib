@@ -4,7 +4,7 @@
         "avatar": ":amphora:"
     },
     "client_config": {
-        "model": "command-52b-v5-dec22-eeayj60s",
+        "model": "command-xlarge-20221108",
         "max_tokens": 100,
         "temperature": 0.75,
         "stop_sequences": ["\nUser"]
