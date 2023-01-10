@@ -12,7 +12,7 @@ cohere = "^2.8.0"
 toml = "^0.10.2"
 pydantic = "^1.10.2"
 emoji = "^2.1.0"
-emojificate = "^0.6.0"
+emojificate = {git = "https://github.com/mahtoid/emojificate.git"}
 streamlit-ace = "^0.1.1"
 streamlit-talk = "^0.0.3"
 
