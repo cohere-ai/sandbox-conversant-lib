@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.5 (2023-01-10)
+
+### Added
+- N/A
+
+### Changed
+- Bug fix of twemoji MaxCDN outage by updating emojificate dependency to a fork with new CDN
+
+### Removed
+- N/A
+
 ## 0.1.4 (2022-12-16)
 
 ### Added
