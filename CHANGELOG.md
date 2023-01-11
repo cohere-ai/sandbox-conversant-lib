@@ -6,7 +6,7 @@
 - N/A
 
 ### Changed
-- Bug fix of twemoji MaxCDN outage by updating emojificate dependency to a fork with new CDN
+- Bug fix of twemoji MaxCDN outage
 
 ### Removed
 - N/A
