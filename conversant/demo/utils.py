@@ -13,11 +13,14 @@ import re
 from typing import List
 
 import emoji
+import emojificate
 import streamlit as st
-from emojificate.filter import emojificate
+from emojificate.filter import emojificate as emojificate_fn
 
 from conversant.prompt_chatbot import PERSONA_MODEL_DIRECTORY, PromptChatbot
 from conversant.prompts.chat_prompt import ChatPrompt
+
+emojificate.filter.TWITTER_CDN = "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2"
 
 
 class ParrotChatbot(PromptChatbot):
@@ -74,7 +77,7 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
     # Emojize returns the unicode representation of that emoji from its shortcode.
     unicode = emoji.emojize(shortcode, language="alias")
     # Emojificate returns html <img /> tag.
-    img_html_tag = emojificate(unicode)
+    img_html_tag = emojificate_fn(unicode)
     # Find the URL from the html tag.
     url = re.findall('src="(.*?)"', img_html_tag, re.DOTALL)[0]
     return url
