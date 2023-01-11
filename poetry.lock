@@ -201,24 +201,17 @@ dev = ["coverage", "coveralls", "pytest"]
 
 [[package]]
 name = "emojificate"
-version = "0.post0.dev74"
+version = "0.6.0"
 description = "Convert emoji in HTML to fallback images, alt text, title text, and aria labels."
 category = "main"
 optional = false
 python-versions = "*"
-develop = false
 
 [package.dependencies]
 click = "*"
 emoji = "*"
 grapheme = "*"
 requests = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/mahtoid/emojificate.git"
-reference = "HEAD"
-resolved_reference = "6b6fccb45b4450823d1862d2866ca93237fba861"
 
 [[package]]
 name = "entrypoints"
@@ -974,7 +967,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "77b777f8aa944b0389b7d742c4b23131dfd9112794b2d7a1afa934bde3423aa3"
+content-hash = "205d42dec2e04a920c8527e0c72ee7cf14c31e1bd293395f68b7ba2269d936f0"
 
 [metadata.files]
 altair = [
@@ -1080,7 +1073,9 @@ distlib = [
 emoji = [
     {file = "emoji-2.2.0.tar.gz", hash = "sha256:a2986c21e4aba6b9870df40ef487a17be863cb7778dcf1c01e25917b7cd210bb"},
 ]
-emojificate = []
+emojificate = [
+    {file = "emojificate-0.6.0-py2.py3-none-any.whl", hash = "sha256:eca9fdd0678596717e661ff195b04f26b4c96ffb53b4bb076e4c802680212e93"},
+]
 entrypoints = [
     {file = "entrypoints-0.4-py3-none-any.whl", hash = "sha256:f174b5ff827504fd3cd97cc3f8649f3693f51538c7e4bdf3ef002c8429d42f9f"},
     {file = "entrypoints-0.4.tar.gz", hash = "sha256:b706eddaa9218a19ebcd67b56818f05bb27589b1ca9e8d797b74affad4ccacd4"},
