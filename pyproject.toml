@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "conversant"
-version = "0.1.5"
+version = "0.1.6"
 repository = "https://github.com/cohere-ai/sandbox-conversant-lib"
 description = "Conversational AI tooling"
 readme = "README.md"
@@ -14,7 +14,7 @@ pydantic = "^1.10.2"
 emoji = "^2.1.0"
 emojificate = "^0.6.0"
 streamlit-ace = "^0.1.1"
-streamlit-talk = "^0.0.3"
+streamlit-talk = "^0.0.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
