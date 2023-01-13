@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.6 (2023-01-13)
+
+### Added
+- N/A
+
+### Changed
+- Fixed `PromptChatbot.to_dict()`. Previously, this threw an error as the Cohere client cannot be pickled.
+- Fixed Streamlit demo to save stop sequences correctly when swapping personas.
+
+### Removed
+- N/A
+
 ## 0.1.5 (2023-01-10)
 
 ### Added
