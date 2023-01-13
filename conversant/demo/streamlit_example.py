@@ -72,6 +72,10 @@ def update_session_with_prompt() -> None:
         st.session_state.snapshot_client_config = copy.deepcopy(
             st.session_state.bot.client_config
         )
+        st.session_state.current_stop_sequences = [
+            utils.escape_string(stop_seq)
+            for stop_seq in st.session_state.bot.client_config["stop_sequences"]
+        ]
 
 
 def update_prompt_from_json() -> None:
