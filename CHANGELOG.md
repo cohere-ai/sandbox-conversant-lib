@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.7 (2023-01-16)
+
+### Added
+- N/A
+
+### Changed
+- Changed `client_config` form in Streamlit demo to allow any number of `max_tokens`
+
+### Removed
+- N/A
+
 ## 0.1.6 (2023-01-13)
 
 ### Added
