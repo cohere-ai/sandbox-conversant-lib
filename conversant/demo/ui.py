@@ -113,10 +113,8 @@ def draw_client_config_form() -> None:
             "WARNING: This demo does not validate that the model ID used for override "
             "is valid.",
         )
-    max_tokens = st.slider(
+    max_tokens = st.number_input(
         label="max_tokens",
-        min_value=50,
-        max_value=250,
         value=config["max_tokens"],
         help="The number of tokens to predict per response.",
     )
