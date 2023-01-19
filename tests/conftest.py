@@ -26,9 +26,10 @@ from conversant.search.searcher import Searcher
 
 
 class MockCo:
+
     def generate(*args, **kwargs) -> Generations:
         return Generations(
-            response={"generations": [dict(text="Hello!", likelihood=1.0)]},
+            response={"generations": [dict(text="Hello!", likelihood=1.0, id=123)]},
             return_likelihoods="NONE",
         )
 
@@ -111,12 +112,20 @@ def mock_chat_prompt_config() -> Dict[str, Any]:
             ChatPrompt.
     """
     return {
-        "preamble": "This is a chat prompt.",
-        "example_separator": "\n",
-        "headers": {"user": "User", "bot": "Mock Chatbot"},
+        "preamble":
+            "This is a chat prompt.",
+        "example_separator":
+            "\n",
+        "headers": {
+            "user": "User",
+            "bot": "Mock Chatbot"
+        },
         "examples": [
             [
-                {"user": "This is a user utterance", "bot": "This is a bot utterance"},
+                {
+                    "user": "This is a user utterance",
+                    "bot": "This is a bot utterance"
+                },
                 {
                     "user": "This is second user utterance",
                     "bot": "This is second bot utterance",
@@ -159,8 +168,10 @@ def mock_rewrite_prompt_config() -> Dict[str, Any]:
             RewritePrompt.
     """
     return {
-        "preamble": "This is a rewrite prompt.",
-        "example_separator": "\n",
+        "preamble":
+            "This is a rewrite prompt.",
+        "example_separator":
+            "\n",
         "headers": {
             "conversation": "<<CONVERSATION>>",
             "fact": "<<FACTUAL_PARAGRAPH>>",
@@ -238,18 +249,17 @@ def mock_searcher(mock_co: cohere.Client) -> Searcher:
     """
 
     class MockSearcher(Searcher):
+
         def search(self, query: str) -> Optional[Document]:
             return super().search(query)
 
     return MockSearcher(
         client=mock_co,
-        documents=[
-            Document(
-                source_link="http://url",
-                doc_id="123",
-                content="test content",
-            )
-        ],
+        documents=[Document(
+            source_link="http://url",
+            doc_id="123",
+            content="test content",
+        )],
     )
 
 
