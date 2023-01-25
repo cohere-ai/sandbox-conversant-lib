@@ -179,7 +179,7 @@ def draw_client_config_form() -> None:
     st.session_state.bot.configure_client(
         {
             "model": model_id_override,
-            "max_tokens": max_tokens,
+            "max_tokens": int(max_tokens),
             "temperature": temperature,
             "frequency_penalty": frequency_penalty,
             "presence_penalty": presence_penalty,

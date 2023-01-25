@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1 (2023-01-20)
+
+### Added
+- N/A
+
+### Changed
+- Fixed a bug in Streamlit demo by casting `max_tokens` to `int`
+
+### Removed
+- N/A
+
 ## 0.2.0 (2023-01-20)
 
 ### Added
