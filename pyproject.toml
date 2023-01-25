@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "conversant"
-version = "0.1.7"
+version = "0.2.1"
 repository = "https://github.com/cohere-ai/sandbox-conversant-lib"
 description = "Conversational AI tooling"
 readme = "README.md"
