@@ -11,6 +11,17 @@
 ### Removed
 - N/A
 
+## 0.2.0 (2023-01-20)
+
+### Added
+- N/A
+
+### Changed
+- Update dependency on `cohere` to `^3.0`
+
+### Removed
+- N/A
+
 ## 0.1.7 (2023-01-16)
 
 ### Added
