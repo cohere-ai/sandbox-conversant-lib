@@ -29,12 +29,12 @@ USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
 def get_reply() -> None:
-    """Replies query from the message input, increases the rerun_count, 
-    and resets the message input"""
+    """Replies query from the message input and initialzies the rerun_count."""
     st.session_state["rerun_count"] = 1
     st.session_state.text_input_disabled = True
     _, is_final_chunk = st.session_state.bot.partial_reply(
-        query=st.session_state.message_input, is_from_scratch=True)
+        query=st.session_state.message_input, is_from_scratch=True
+    )
     st.session_state.is_final_chunk = is_final_chunk
     st.session_state.message_input = ""
 
@@ -278,7 +278,7 @@ if __name__ == "__main__":
                     query="Hello",
                 )
                 update_session_with_prompt()
-                
+
             # Draw UI elements for the sidebar
             with settings_placeholder.container():
 
@@ -295,8 +295,8 @@ if __name__ == "__main__":
 
             # Draw chat history.
             with chat_history_placeholder.container():
-                ui.draw_chat_history()   
-            
+                ui.draw_chat_history()
+
             # Draw the message input field and a disclaimer.
             with message_input_placeholder.container():
                 st.text_input(
@@ -304,7 +304,7 @@ if __name__ == "__main__":
                     placeholder="Type a message",
                     key="message_input",
                     on_change=get_reply,
-                    disabled=st.session_state.text_input_disabled
+                    disabled=st.session_state.text_input_disabled,
                 )
                 ui.draw_disclaimer()
 
@@ -317,13 +317,19 @@ if __name__ == "__main__":
             """
             )
 
-            # Invokes partial reply until the final uterrance chunk is 
-            # reached and redraws the corresponding text box each time 
+            # Invokes partial reply until the final uterrance chunk is
+            # reached and redraws the corresponding text box each time
             # a response is returned.
             if "is_final_chunk" in st.session_state:
-                if not st.session_state.is_final_chunk and st.session_state.rerun_count<st.session_state.bot.get_max_reruns():
-                    st.session_state.rerun_count+=1 
-                    response, is_final_chunk = st.session_state.bot.partial_reply(query="", is_from_scratch=False)
+                if (
+                    not st.session_state.is_final_chunk
+                    and st.session_state.rerun_count
+                    < st.session_state.bot.get_max_reruns()
+                ):
+                    st.session_state.rerun_count += 1
+                    response, is_final_chunk = st.session_state.bot.partial_reply(
+                        query="", is_from_scratch=False
+                    )
                     st.session_state.is_final_chunk = is_final_chunk
                     if is_final_chunk:
                         st.session_state.text_input_disabled = False
