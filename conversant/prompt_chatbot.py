@@ -212,7 +212,7 @@ class PromptChatbot(Chatbot):
         """Generate prompt from query and update max context examples if necessary
 
         Args:
-        query (str): A query passed to the prompt chatbot.
+            query (str): A query passed to the prompt chatbot.
 
         Returns:
         current_prompt (str): Returns the current prompt using
