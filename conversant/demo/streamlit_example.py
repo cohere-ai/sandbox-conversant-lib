@@ -29,7 +29,7 @@ USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
 def get_reply() -> None:
-    """Replies query from the message input and initialzies the rerun_count."""
+    """Replies query from the message input and initializes the rerun_count."""
     st.session_state["rerun_count"] = 1
     st.session_state.text_input_disabled = True
     _, is_final_chunk = st.session_state.bot.partial_reply(
