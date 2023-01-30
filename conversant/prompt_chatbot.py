@@ -191,10 +191,10 @@ class PromptChatbot(Chatbot):
         """Given a response, returns the stop sequence it ends with if any.
 
         Args:
-        response (str): Response coming from prompt chatbot.
+            response (str): Response coming from prompt chatbot.
 
         Returns:
-        stop_seq (str): The stop sequence at the end of response.
+            stop_seq (str): The stop sequence at the end of response.
 
         """
         for stop_seq in self.client_config["stop_sequences"]:
