@@ -215,8 +215,8 @@ class PromptChatbot(Chatbot):
             query (str): A query passed to the prompt chatbot.
 
         Returns:
-        current_prompt (str): Returns the current prompt using
-        query and chat history
+            current_prompt (str): Returns the current prompt using
+            query and chat history
 
         """
         # The current prompt is assembled from the initial prompt,
