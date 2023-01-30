@@ -10,7 +10,7 @@ import json
 import logging
 import os
 import warnings
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 import cohere
 import jsonschema
@@ -202,9 +202,9 @@ class PromptChatbot(Chatbot):
                 return stop_seq
 
         # If there is not a stop sequence at the end
-        return None
+        return ""
 
-    def get_max_reruns(self) -> int:
+    def partial_reply_max_reruns(self) -> int:
         """Returns the max number of times partial_reply should be invoked."""
         return int(self.client_config["max_tokens"] / TOKENS_PER_REQUEST)
 
@@ -273,9 +273,9 @@ class PromptChatbot(Chatbot):
         is_final_chunk = False
 
         stop_seq = self.should_stop(response)
-        if stop_seq != None or response == "":
+        if stop_seq != "" or response == "":
             is_final_chunk = True
-            if stop_seq != None:
+            if stop_seq != "":
                 response = response[: -len(stop_seq)]
 
         if is_from_scratch:

@@ -324,7 +324,7 @@ if __name__ == "__main__":
                 if (
                     not st.session_state.is_final_chunk
                     and st.session_state.rerun_count
-                    < st.session_state.bot.get_max_reruns()
+                    < st.session_state.bot.partial_reply_max_reruns()
                 ):
                     st.session_state.rerun_count += 1
                     response, is_final_chunk = st.session_state.bot.partial_reply(
