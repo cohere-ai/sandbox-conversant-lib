@@ -244,7 +244,7 @@ class PromptChatbot(Chatbot):
             )
         return current_prompt
 
-    def partial_reply(self, query: str, is_from_scratch: bool):
+    def partial_reply(self, query: str, is_from_scratch: bool) -> Tuple[str, bool]:
         """Generates (partial) reply to a query given a chat history.
 
         Args:
