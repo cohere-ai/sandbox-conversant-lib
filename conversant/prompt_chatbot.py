@@ -244,7 +244,32 @@ class PromptChatbot(Chatbot):
             )
         return current_prompt
 
-    def partial_reply(self, query: str, is_from_scratch: bool) -> Tuple[str, bool]:
+    def append_to_chat_history(
+        self, query: str, response: str, current_prompt: str, add_new_elem: bool
+    ) -> None:
+        """Appends the (partial) reply to chat history.
+
+        Args:
+            query (str):  A query passed to the prompt chatbot.
+            response (str): Response of the chatbot to query
+            current_prompt (str): Current prompt to save to prompt history
+            add_new_elem (bool): Indicates if a new element should be added to
+            chat history or if the last element should be modified only
+        """
+        if add_new_elem:
+            self.chat_history.append(self.prompt.create_interaction(query, response))
+            self.prompt_size_history.append(
+                self.co.tokenize(
+                    self.prompt.create_interaction_string(query, response)
+                ).length
+            )
+            self.prompt_history.append(current_prompt)
+        elif response != "":
+            self.chat_history[-1]["bot"] += response
+            self.prompt_history[-1] += response
+            self.prompt_size_history[-1] += self.co.tokenize(response).length
+
+    def partial_reply(self, query: str) -> str:
         """Generates (partial) reply to a query given a chat history.
 
         Args:
@@ -254,46 +279,43 @@ class PromptChatbot(Chatbot):
             of the previous chunk
 
         Returns:
-            Interaction: Dictionary of query and generated LLM response
-            bool: Indicates if the generation should be stopped
+            str: Dictionary of query and generated LLM response
         """
         current_prompt = self.generate_prompt_update_examples(query)
-
-        generated_object = self.co.generate(
-            model=self.client_config["model"],
-            prompt=current_prompt,
-            max_tokens=TOKENS_PER_REQUEST,
-            temperature=self.client_config["temperature"],
-            frequency_penalty=self.client_config["frequency_penalty"],
-            presence_penalty=self.client_config["presence_penalty"],
-            stop_sequences=self.client_config["stop_sequences"],
-        )
-
-        response = generated_object.generations[0].text
-        is_final_chunk = False
-
-        stop_seq = self.should_stop(response)
-        if stop_seq != "" or response == "":
-            is_final_chunk = True
-            if stop_seq != "":
-                response = response[: -len(stop_seq)]
-
-        if is_from_scratch:
-            response = response.lstrip()
-            self.chat_history.append(self.prompt.create_interaction(query, response))
-            self.prompt_size_history.append(
-                self.co.tokenize(
-                    self.prompt.create_interaction_string(query, response)
-                ).length
+        response_so_far = ""
+        for i in range(self.partial_reply_max_reruns()):
+            generated_object = self.co.generate(
+                model=self.client_config["model"],
+                prompt=current_prompt,
+                max_tokens=TOKENS_PER_REQUEST,
+                temperature=self.client_config["temperature"],
+                frequency_penalty=self.client_config["frequency_penalty"],
+                presence_penalty=self.client_config["presence_penalty"],
+                stop_sequences=self.client_config["stop_sequences"],
             )
-            self.prompt_history.append(current_prompt)
+            response = generated_object.generations[0].text
+            yield response
+            # If first chunk, remove leading whitespace
+            if i == 0:
+                response = response.lstrip()
+                self.append_to_chat_history(query, response, current_prompt, True)
 
-        elif response != "":
-            self.chat_history[-1]["bot"] += response
-            self.prompt_history[-1] += response
-            self.prompt_size_history[-1] += self.co.tokenize(response).length
+            stop_seq = self.should_stop(response)
+            if stop_seq != "" or response == "":
+                print("Let's strip this response ", response)
+                if stop_seq != "":
+                    response = response[: -len(stop_seq)]
+                    self.append_to_chat_history(query, response, current_prompt, False)
+                    response_so_far += response
+                    print("to ", response)
+                break
+            current_prompt += response
+            response_so_far += response
+            if i != 0:
+                self.append_to_chat_history(query, response, current_prompt, False)
+            yield response_so_far
 
-        return self.chat_history[-1]["bot"], is_final_chunk
+        yield response_so_far
 
     def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.
@@ -406,7 +428,7 @@ class PromptChatbot(Chatbot):
         if not hasattr(self, "client_config"):
             self.client_config = {
                 "model": "xlarge",
-                "max_tokens": 100,
+                "max_tokens": 200,
                 "temperature": 0.75,
                 "frequency_penalty": 0.0,
                 "presence_penalty": 0.0,

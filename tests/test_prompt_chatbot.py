@@ -52,10 +52,8 @@ def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
     assert mock_prompt_chatbot.user_name == mock_prompt_chatbot.prompt.user_name
     assert mock_prompt_chatbot.bot_name == mock_prompt_chatbot.prompt.bot_name
     mock_prompt_chatbot.reply(query="What's up?")
-    mock_prompt_chatbot.partial_reply(
-        query="What are you doing? How", is_from_scratch=True
-    )
-    mock_prompt_chatbot.partial_reply(query="is the weather?", is_from_scratch=False)
+    reply_generator = mock_prompt_chatbot.partial_reply(query="What are you doing?")
+    next(reply_generator)
 
 
 def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
@@ -71,8 +69,8 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     assert prompt_chatbot.latest_prompt == prompt_chatbot.prompt.to_string()
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
-    prompt_chatbot.partial_reply(query="What are you doing? How", is_from_scratch=True)
-    prompt_chatbot.partial_reply(query="is the weather?", is_from_scratch=False)
+    reply_generator = prompt_chatbot.partial_reply(query="What are you doing?")
+    next(reply_generator)
 
     with pytest.raises(FileNotFoundError):
         _ = PromptChatbot.from_persona(
