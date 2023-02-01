@@ -300,12 +300,10 @@ class PromptChatbot(Chatbot):
                     # If there is a stop sequence at the end of response
                     # remove it and set should_break flag to True
                     if stop_seq != "":
-                        print("Stop sequence is ", stop_seq)
                         response = response[: -len(stop_seq)]
                         should_break = True
                     # If response is empty, break immediately
                     else:
-                        print("was empty")
                         break
                 current_prompt += response
                 response_so_far += response
@@ -431,14 +429,15 @@ class PromptChatbot(Chatbot):
         if not hasattr(self, "client_config"):
             self.client_config = {
                 "model": "xlarge",
-                "max_tokens": 100,
+                "max_tokens": 200,
                 "temperature": 0.75,
                 "frequency_penalty": 0.0,
                 "presence_penalty": 0.0,
-                "stop_sequences": ["\n"],
+                "stop_sequences": ["\nUser:", self.bot_name],
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
+            client_config["stop_sequences"] = ["\nUser:", "\n{}".format(self.bot_name)]
             self.client_config.update(client_config)
         else:
             raise TypeError(
@@ -484,7 +483,6 @@ class PromptChatbot(Chatbot):
 
         # Validate that the persona follows our predefined schema
         cls._validate_persona_dict(persona, persona_path)
-
         return cls(
             client=client,
             prompt=ChatPrompt.from_dict(persona["chat_prompt_config"]),

@@ -9,10 +9,8 @@
 
 import ast
 import copy
-import itertools
 import os
 import sys
-from typing import Tuple
 
 import cohere
 import emoji
@@ -34,10 +32,10 @@ def peek(iterable) -> str:
     """Retrieves the next item from a generator object if it exists.
 
     Args:
-        iterable (generator): A partial_reply generator
+        iterable (generator): A partial reply generator
 
     Returns:
-        str: Returns the partial_reply and
+        str: Returns the next partial reply
     """
     try:
         first = next(iterable)

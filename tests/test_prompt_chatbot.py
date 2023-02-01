@@ -215,6 +215,8 @@ def test_update_max_context_warn(
         updated_max_context_examples = mock_prompt_chatbot._update_max_context_examples(
             prompt_size, max_context_examples
         )
-
-        expected = max_context_examples - 1
+        # If max_tokens are changed and this test fails, make sure to update -n
+        # to what it actually supposed to be
+        # TODO: Change the test so it automatically does this
+        expected = max_context_examples - 2
         assert updated_max_context_examples == expected
