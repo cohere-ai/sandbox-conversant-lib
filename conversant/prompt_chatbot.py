@@ -10,7 +10,7 @@ import json
 import logging
 import os
 import warnings
-from typing import Any, Dict, Tuple
+from typing import Any, Dict
 
 import cohere
 import jsonschema
@@ -302,12 +302,10 @@ class PromptChatbot(Chatbot):
 
             stop_seq = self.should_stop(response)
             if stop_seq != "" or response == "":
-                print("Let's strip this response ", response)
                 if stop_seq != "":
                     response = response[: -len(stop_seq)]
                     self.append_to_chat_history(query, response, current_prompt, False)
                     response_so_far += response
-                    print("to ", response)
                 break
             current_prompt += response
             response_so_far += response
@@ -428,7 +426,7 @@ class PromptChatbot(Chatbot):
         if not hasattr(self, "client_config"):
             self.client_config = {
                 "model": "xlarge",
-                "max_tokens": 200,
+                "max_tokens": 100,
                 "temperature": 0.75,
                 "frequency_penalty": 0.0,
                 "presence_penalty": 0.0,
