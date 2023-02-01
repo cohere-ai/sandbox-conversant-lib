@@ -12,6 +12,7 @@ import copy
 import itertools
 import os
 import sys
+from typing import Tuple
 
 import cohere
 import emoji
@@ -29,12 +30,20 @@ CUSTOM_PERSONA_DIRECTORY = None
 USER_AVATAR_SHORTCODE = ":bust_in_silhouette:"
 
 
-def peek(iterable):
+def peek(iterable) -> str:
+    """Retrieves the next item from a generator object if it exists.
+
+    Args:
+        iterable (generator): A partial_reply generator
+
+    Returns:
+        str: Returns the partial_reply and
+    """
     try:
         first = next(iterable)
     except StopIteration:
-        return None
-    return first, itertools.chain([first], iterable)
+        return ""
+    return first
 
 
 def get_reply() -> None:
@@ -46,7 +55,6 @@ def get_reply() -> None:
     )
     next(st.session_state.partial_reply_generator)
     st.session_state.message_input = ""
-    st.session_state.text_input_disabled = False
 
 
 def initialize_chatbot() -> None:
@@ -330,7 +338,7 @@ if __name__ == "__main__":
             if "partial_reply_generator" in st.session_state:
                 st.session_state.text_input_disabled = True
                 partial_chunk = peek(st.session_state.partial_reply_generator)
-                if partial_chunk is not None:
+                if partial_chunk != "":
                     st.experimental_rerun()
                 else:
                     del st.session_state.partial_reply_generator

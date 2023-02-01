@@ -274,46 +274,51 @@ class PromptChatbot(Chatbot):
 
         Args:
             query (str): A query passed to the prompt chatbot.
-            is_from_scratch (bool): Tells the chatbot if the reply
-            should be generated from scratch or it is the continuation
-            of the previous chunk
 
-        Returns:
+        Yields:
             str: Dictionary of query and generated LLM response
         """
         current_prompt = self.generate_prompt_update_examples(query)
         response_so_far = ""
+        should_break = False
         for i in range(self.partial_reply_max_reruns()):
-            generated_object = self.co.generate(
-                model=self.client_config["model"],
-                prompt=current_prompt,
-                max_tokens=TOKENS_PER_REQUEST,
-                temperature=self.client_config["temperature"],
-                frequency_penalty=self.client_config["frequency_penalty"],
-                presence_penalty=self.client_config["presence_penalty"],
-                stop_sequences=self.client_config["stop_sequences"],
-            )
-            response = generated_object.generations[0].text
-            yield response
-            # If first chunk, remove leading whitespace
-            if i == 0:
-                response = response.lstrip()
-                self.append_to_chat_history(query, response, current_prompt, True)
+            if not should_break:
+                generated_object = self.co.generate(
+                    model=self.client_config["model"],
+                    prompt=current_prompt,
+                    max_tokens=TOKENS_PER_REQUEST,
+                    temperature=self.client_config["temperature"],
+                    frequency_penalty=self.client_config["frequency_penalty"],
+                    presence_penalty=self.client_config["presence_penalty"],
+                    stop_sequences=self.client_config["stop_sequences"],
+                )
+                response = generated_object.generations[0].text
 
-            stop_seq = self.should_stop(response)
-            if stop_seq != "" or response == "":
-                if stop_seq != "":
-                    response = response[: -len(stop_seq)]
+                # Fetches the stop sequence at the end of response if it exists
+                stop_seq = self.get_stop_seq(response)
+                if stop_seq != "" or response == "":
+                    # If there is a stop sequence at the end of response
+                    # remove it and set should_break flag to True
+                    if stop_seq != "":
+                        print("Stop sequence is ", stop_seq)
+                        response = response[: -len(stop_seq)]
+                        should_break = True
+                    # If response is empty, break immediately
+                    else:
+                        print("was empty")
+                        break
+                current_prompt += response
+                response_so_far += response
+                # If this is the first partial_reply, append a new element to
+                # chat history after removing the leading whitespace
+                if i == 0:
+                    response = response.lstrip()
+                    self.append_to_chat_history(query, response, current_prompt, True)
+                # If this is not the first partial_reply, append it to the last element
+                # in chat history
+                else:
                     self.append_to_chat_history(query, response, current_prompt, False)
-                    response_so_far += response
-                break
-            current_prompt += response
-            response_so_far += response
-            if i != 0:
-                self.append_to_chat_history(query, response, current_prompt, False)
-            yield response_so_far
-
-        yield response_so_far
+                yield response_so_far
 
     def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.
