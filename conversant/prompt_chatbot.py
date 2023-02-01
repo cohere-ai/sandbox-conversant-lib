@@ -187,7 +187,7 @@ class PromptChatbot(Chatbot):
             "tokens"
         )
 
-    def should_stop(self, response: str) -> str:
+    def get_stop_seq(self, response: str) -> str:
         """Given a response, returns the stop sequence it ends with if any.
 
         Args:
