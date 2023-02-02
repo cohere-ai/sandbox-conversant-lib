@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.2 (2023-02-03)
+
+### Added
+- Added a typewriter effect to the latest model response
+
+### Changed
+- N/A
+
+### Removed
+- N/A
+
 ## 0.2.1 (2023-01-20)
 
 ### Added
