@@ -459,7 +459,6 @@ class PromptChatbot(Chatbot):
                 f"({self.client_config['max_tokens']}) close to the total allowed"
                 f" for prompt and prediction - {MAX_GENERATE_TOKENS} tokens"
             )
-        print(self.client_config["stop_sequences"])
 
     @classmethod
     def from_persona(
