@@ -437,9 +437,15 @@ class PromptChatbot(Chatbot):
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
-            if "command" in client_config["model"]:
-                if "\n{}".format(self.bot_name) not in client_config["stop_sequences"]:
-                    client_config["stop_sequences"].append("\n{}".format(self.bot_name))
+            if "model" in client_config:
+                if "command" in client_config["model"]:
+                    if (
+                        "\n{}".format(self.bot_name)
+                        not in client_config["stop_sequences"]
+                    ):
+                        client_config["stop_sequences"].append(
+                            "\n{}".format(self.bot_name)
+                        )
             self.client_config.update(client_config)
         else:
             raise TypeError(
