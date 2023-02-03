@@ -433,11 +433,13 @@ class PromptChatbot(Chatbot):
                 "temperature": 0.75,
                 "frequency_penalty": 0.0,
                 "presence_penalty": 0.0,
-                "stop_sequences": ["\nUser:", self.bot_name],
+                "stop_sequences": ["\\n", "\n"],
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
-            client_config["stop_sequences"] = ["\nUser:", "\n{}".format(self.bot_name)]
+            if "command" in client_config["model"]:
+                if "\n{}".format(self.bot_name) not in client_config["stop_sequences"]:
+                    client_config["stop_sequences"].append("\n{}".format(self.bot_name))
             self.client_config.update(client_config)
         else:
             raise TypeError(
@@ -457,6 +459,7 @@ class PromptChatbot(Chatbot):
                 f"({self.client_config['max_tokens']}) close to the total allowed"
                 f" for prompt and prediction - {MAX_GENERATE_TOKENS} tokens"
             )
+        print(self.client_config["stop_sequences"])
 
     @classmethod
     def from_persona(
