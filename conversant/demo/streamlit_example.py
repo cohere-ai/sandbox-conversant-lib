@@ -47,7 +47,6 @@ def peek(iterable) -> str:
 def get_reply() -> None:
     """Replies query from the message input and initializes the rerun_count."""
     st.session_state.text_input_disabled = True
-    st.session_state.finished_generation = False
     st.session_state.prev_partial_chunk = ""
     st.session_state.partial_reply_generator = st.session_state.bot.partial_reply(
         query=st.session_state.message_input
