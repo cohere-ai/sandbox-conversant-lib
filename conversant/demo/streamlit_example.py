@@ -342,8 +342,7 @@ if __name__ == "__main__":
                 if yielded_chunks:
                     previous_partial_chunk, partial_chunk = yielded_chunks
                     st.session_state.prev_partial_chunk = previous_partial_chunk
-                    if partial_chunk.strip() != previous_partial_chunk.strip():
-                        st.experimental_rerun()
+                    st.experimental_rerun()
                 else:
                     del st.session_state.partial_reply_generator
                     st.session_state.text_input_disabled = False
