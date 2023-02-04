@@ -30,9 +30,9 @@ class ParrotChatbot(PromptChatbot):
     This bot simply states the user's query.
     """
 
-    def __init__(self):
+    def __init__(self, client):
         super().__init__(
-            client=None,
+            client=client,
             prompt=ChatPrompt(
                 preamble=(
                     "The Parrot Bot repeats back whatever is said to it "

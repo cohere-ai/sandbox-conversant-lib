@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import warnings
+from concurrent.futures import Future, ThreadPoolExecutor
 from typing import Any, Dict
 
 import cohere
@@ -21,7 +22,7 @@ from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
 
 MAX_GENERATE_TOKENS = 2048
-TOKENS_PER_REQUEST = 5
+TOKENS_PER_REQUEST = 10
 PERSONA_MODEL_DIRECTORY = f"{os.path.dirname(conversant.__file__)}/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
@@ -187,6 +188,23 @@ class PromptChatbot(Chatbot):
             "tokens"
         )
 
+    def _dispatch_concurrent_generate_call(self, **kwargs) -> Future:
+        """Dispatches a concurrent call to co.generate.
+
+        This allows a network bound co.generate call to proceed while also
+        yielding the current response in a partial reply generator.
+
+        Args:
+            kwargs: Keyword arguments for the call to co.generate.
+
+        Returns:
+            Future: A future object that will be called to retrieve the result of
+                co.generate.
+        """
+        with ThreadPoolExecutor(max_workers=1) as exe:
+            future = exe.submit(self.co.generate, **kwargs)
+        return future
+
     def get_stop_seq(self, response: str) -> str:
         """Given a response, returns the stop sequence it ends with if any.
 
@@ -279,19 +297,21 @@ class PromptChatbot(Chatbot):
             str: Dictionary of query and generated LLM response
         """
         current_prompt = self.generate_prompt_update_examples(query)
+        response_before_current = ""
         response_so_far = ""
         should_break = False
-        for i in range(self.partial_reply_max_reruns()):
+        future = self._dispatch_concurrent_generate_call(
+            model=self.client_config["model"],
+            prompt=current_prompt,
+            max_tokens=TOKENS_PER_REQUEST,
+            temperature=self.client_config["temperature"],
+            frequency_penalty=self.client_config["frequency_penalty"],
+            presence_penalty=self.client_config["presence_penalty"],
+            stop_sequences=self.client_config["stop_sequences"],
+        )
+        for i in range(self.partial_reply_max_reruns() - 1):
             if not should_break:
-                generated_object = self.co.generate(
-                    model=self.client_config["model"],
-                    prompt=current_prompt,
-                    max_tokens=TOKENS_PER_REQUEST,
-                    temperature=self.client_config["temperature"],
-                    frequency_penalty=self.client_config["frequency_penalty"],
-                    presence_penalty=self.client_config["presence_penalty"],
-                    stop_sequences=self.client_config["stop_sequences"],
-                )
+                generated_object = future.result()
                 response = generated_object.generations[0].text
 
                 # Fetches the stop sequence at the end of response if it exists
@@ -306,6 +326,7 @@ class PromptChatbot(Chatbot):
                     else:
                         break
                 current_prompt += response
+                response_before_current = response_so_far
                 response_so_far += response
                 # If this is the first partial_reply, append a new element to
                 # chat history after removing the leading whitespace
@@ -316,7 +337,16 @@ class PromptChatbot(Chatbot):
                 # in chat history
                 else:
                     self.append_to_chat_history(query, response, current_prompt, False)
-                yield response_so_far
+                future = self._dispatch_concurrent_generate_call(
+                    model=self.client_config["model"],
+                    prompt=current_prompt,
+                    max_tokens=TOKENS_PER_REQUEST,
+                    temperature=self.client_config["temperature"],
+                    frequency_penalty=self.client_config["frequency_penalty"],
+                    presence_penalty=self.client_config["presence_penalty"],
+                    stop_sequences=self.client_config["stop_sequences"],
+                )
+                yield response_before_current, response_so_far
 
     def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.

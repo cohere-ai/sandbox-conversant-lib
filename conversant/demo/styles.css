@@ -8,13 +8,10 @@ div.css-18e3th9.egzxvld2 {
     flex-grow: 0;
 }
 
-/* Style chat_history_placeholder so overflow messages are scrollable */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(6) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
+/* Style the app so the scrollbar is anchored to the bottom */
+section.css-k1vhr4.egzxvld3 {
     display: flex;
     flex-direction: column-reverse;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    max-height: 65vh;
 }
 
 /* Style prompt_json_view_placeholder header so it is aligned. */

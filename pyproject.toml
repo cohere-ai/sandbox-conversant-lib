@@ -14,7 +14,7 @@ pydantic = "^1.10.2"
 emoji = "^2.1.0"
 emojificate = "^0.6.0"
 streamlit-ace = "^0.1.1"
-streamlit-talk = "^0.0.4"
+streamlit-talk = "0.1.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"

@@ -16,6 +16,25 @@ from streamlit_talk import message as st_message
 from conversant.demo import utils
 
 
+def render_bot_partial_reply(utterance, idx):
+    """Renders a partial reply message from the bot.
+
+    Args:
+        turn (str): The utterance to be rendered.
+        idx (int): The index of the turn.
+    """
+    st_message(
+        value=utterance.rstrip(),
+        animate_from=""
+        if "prev_partial_chunk" not in st.session_state
+        else st.session_state.prev_partial_chunk.lstrip(),
+        use_typewriter=True,
+        key=f"{idx}_bot",
+        avatar_style=st.session_state.bot_avatar,
+        generation_complete=(not st.session_state.text_input_disabled),
+    )
+
+
 def draw_chat_history() -> None:
     """Renders the chat history in Streamlit.
 
@@ -23,32 +42,44 @@ def draw_chat_history() -> None:
     for a chatbot UI.
     Reference: https://github.com/AI-Yash/st-chat
     """
-    # The chat history is iterated in reverse order to ensure that recent messages
-    # displayed are anchored at the bottom of the Streamlit demo.
-    for i, turn in enumerate(reversed(st.session_state.bot.chat_history)):
+    for i, turn in enumerate(st.session_state.bot.chat_history):
 
-        # If we are at the first conversation turn, we remove the
-        # injected user utterance of "Hello" from displaying.
-        if i == len(st.session_state.bot.chat_history) - 1:
+        # If there is only one turn, then we should only show the
+        # bot utterance (but using the typewriter and partial reply effect),
+        # skipping over the first injected user utterance.
+        if len(st.session_state.bot.chat_history) == 1:
             if "bot" in turn:
-                st_message(
-                    turn["bot"],
-                    key=f"{i}_bot",
-                    avatar_style=st.session_state.bot_avatar,
-                )
-        else:
-            if "bot" in turn:
-                st_message(
-                    turn["bot"],
-                    key=f"{i}_bot",
-                    avatar_style=st.session_state.bot_avatar,
-                )
+                render_bot_partial_reply(turn["bot"], i)
+
+        # If we are at the last conversation turn, the bot utterance
+        # will be rendered as a partial reply with the typewriter effect.
+        elif i == len(st.session_state.bot.chat_history) - 1:
             if "user" in turn:
                 st_message(
-                    turn["user"],
+                    value=turn["user"],
+                    animate_from="",
                     is_user=True,
                     key=f"{i}_user",
                     avatar_style=st.session_state.user_avatar,
+                )
+            if "bot" in turn:
+                render_bot_partial_reply(turn["bot"], i)
+
+        else:
+            # If there is more than one turn, the first turn should skip over
+            # the first injected user utterance.
+            if i != 0 and "user" in turn:
+                st_message(
+                    value=turn["user"],
+                    is_user=True,
+                    key=f"{i}_user",
+                    avatar_style=st.session_state.user_avatar,
+                )
+            if "bot" in turn:
+                st_message(
+                    value=turn["bot"].rstrip(),
+                    key=f"{i}_bot",
+                    avatar_style=st.session_state.bot_avatar,
                 )
 
 

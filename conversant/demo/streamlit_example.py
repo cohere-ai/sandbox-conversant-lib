@@ -48,6 +48,8 @@ def get_reply() -> None:
     """Replies query from the message input and initializes the rerun_count."""
     st.session_state.text_input_disabled = True
     st.session_state.finished_generation = False
+    st.session_state.prev_partial_chunk = ""
+    st.session_state.force_animation = True
     st.session_state.partial_reply_generator = st.session_state.bot.partial_reply(
         query=st.session_state.message_input
     )
@@ -64,7 +66,9 @@ def initialize_chatbot() -> None:
     elif st.session_state.persona == "":
         st.session_state.bot = None
     elif st.session_state.persona == "parrot":
-        st.session_state.bot = utils.ParrotChatbot()
+        st.session_state.bot = utils.ParrotChatbot(
+            client=cohere.Client(os.environ.get("COHERE_API_KEY"))
+        )
     else:
         st.session_state.bot = PromptChatbot.from_persona(
             emoji.replace_emoji(st.session_state.persona, "").strip(),
@@ -290,9 +294,8 @@ if __name__ == "__main__":
             # The session's state needs to be manually updated since we are not
             # refreshing the entire Streamlit app.
             if not st.session_state.bot.chat_history:
-                st.session_state.bot.reply(
-                    query="Hello",
-                )
+                st.session_state.message_input = "Hello"
+                get_reply()
                 update_session_with_prompt()
 
             # Draw UI elements for the sidebar
@@ -308,10 +311,6 @@ if __name__ == "__main__":
 
                 with st.expander("Prompt (string)", expanded=True):
                     ui.draw_prompt_view(json=False)
-
-            # Draw chat history.
-            with chat_history_placeholder.container():
-                ui.draw_chat_history()
 
             # Draw the message input field and a disclaimer.
             with message_input_placeholder.container():
@@ -333,11 +332,19 @@ if __name__ == "__main__":
             """
             )
 
+            # Draw chat history.
+            with chat_history_placeholder.container():
+                ui.draw_chat_history()
+
             if "partial_reply_generator" in st.session_state:
                 st.session_state.text_input_disabled = True
-                partial_chunk = peek(st.session_state.partial_reply_generator)
-                if partial_chunk != "":
-                    st.experimental_rerun()
+                yielded_chunks = peek(st.session_state.partial_reply_generator)
+                if yielded_chunks:
+                    previous_partial_chunk, partial_chunk = yielded_chunks
+                    st.session_state.prev_partial_chunk = previous_partial_chunk
+                    if partial_chunk.strip() != previous_partial_chunk.strip():
+                        st.session_state.force_animation = True
+                        st.experimental_rerun()
                 else:
                     del st.session_state.partial_reply_generator
                     st.session_state.text_input_disabled = False
