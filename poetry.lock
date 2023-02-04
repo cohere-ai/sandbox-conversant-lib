@@ -815,7 +815,7 @@ streamlit = ">=0.63"
 
 [[package]]
 name = "streamlit-talk"
-version = "0.1.8"
+version = "0.1.9"
 description = "A streamlit component, to make a UI for chat messages in Streamlit"
 category = "main"
 optional = false
@@ -970,7 +970,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "19a5376513b587cb2c8fefe4b37a12a077bad2aa49eb31b24f5fac0b0301e3df"
+content-hash = "b0d048b4c292096647d8c8608c9a13a2c91c86dcc6069423fe2d8932ef8e4b7d"
 
 [metadata.files]
 altair = [
@@ -1677,8 +1677,8 @@ streamlit-ace = [
     {file = "streamlit_ace-0.1.1.tar.gz", hash = "sha256:1852fa19707685fd4241be9256c1ab1a89da4a3b8c28ab286e3bff122d3a1686"},
 ]
 streamlit-talk = [
-    {file = "streamlit-talk-0.1.8.tar.gz", hash = "sha256:0207a3c81e50fe51e648d511823060e0bfb0924a5784fdcc1aa3b8cdc02b2fb2"},
-    {file = "streamlit_talk-0.1.8-py3-none-any.whl", hash = "sha256:27a64e9a297f45cc93c4ab878a65068603c292557bcf75e1b6d1fe474cb223a4"},
+    {file = "streamlit-talk-0.1.9.tar.gz", hash = "sha256:3c2a08fd3b7d2f72611365ed909cbd3783b8a2390cd37d698c90e0428825597a"},
+    {file = "streamlit_talk-0.1.9-py3-none-any.whl", hash = "sha256:c112c8a13c6b9f45452e332bf5fe5c7616595021fbfbaf0c21679bff3a2f0cb2"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
