@@ -335,6 +335,8 @@ if __name__ == "__main__":
             with chat_history_placeholder.container():
                 ui.draw_chat_history()
 
+            # Rerun the app if there are partial replies to add to the latest
+            # response.
             if "partial_reply_generator" in st.session_state:
                 st.session_state.text_input_disabled = True
                 yielded_chunks = peek(st.session_state.partial_reply_generator)

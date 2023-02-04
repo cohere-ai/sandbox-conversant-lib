@@ -11,7 +11,7 @@ import logging
 import os
 import warnings
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 import cohere
 import jsonschema
@@ -287,14 +287,15 @@ class PromptChatbot(Chatbot):
             self.prompt_history[-1] += response
             self.prompt_size_history[-1] += self.co.tokenize(response).length
 
-    def partial_reply(self, query: str) -> str:
+    def partial_reply(self, query: str) -> Tuple[str, str]:
         """Generates (partial) reply to a query given a chat history.
 
         Args:
             query (str): A query passed to the prompt chatbot.
 
         Yields:
-            str: Dictionary of query and generated LLM response
+            Tuple[str, str]: A tuple of the response before the co.generate call,
+                and the resposne after.
         """
         current_prompt = self.generate_prompt_update_examples(query)
         response_before_current = ""
@@ -337,6 +338,8 @@ class PromptChatbot(Chatbot):
                 # in chat history
                 else:
                     self.append_to_chat_history(query, response, current_prompt, False)
+                # This dispatches a concurrent call to co.generate, which can be
+                # later accessed on the next iteration of the generator.
                 future = self._dispatch_concurrent_generate_call(
                     model=self.client_config["model"],
                     prompt=current_prompt,
@@ -346,6 +349,7 @@ class PromptChatbot(Chatbot):
                     presence_penalty=self.client_config["presence_penalty"],
                     stop_sequences=self.client_config["stop_sequences"],
                 )
+                # Retur
                 yield response_before_current, response_so_far
 
     def reply(self, query: str) -> Interaction:
