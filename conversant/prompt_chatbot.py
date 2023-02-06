@@ -21,6 +21,7 @@ from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
 
 MAX_GENERATE_TOKENS = 2048
+TOKENS_PER_REQUEST = 5
 PERSONA_MODEL_DIRECTORY = f"{os.path.dirname(conversant.__file__)}/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
@@ -186,20 +187,42 @@ class PromptChatbot(Chatbot):
             "tokens"
         )
 
-    def reply(self, query: str) -> Interaction:
-        """Replies to a query given a chat history.
+    def get_stop_seq(self, response: str) -> str:
+        """Given a response, returns the stop sequence it ends with if any.
 
-        The reply is then generated directly from a call to a LLM.
+        Args:
+            response (str): Response coming from prompt chatbot.
+
+        Returns:
+            stop_seq (str): The stop sequence at the end of response.
+
+        """
+        for stop_seq in self.client_config["stop_sequences"]:
+            if response.endswith(stop_seq):
+                return stop_seq
+
+        # If there is not a stop sequence at the end
+        return ""
+
+    def partial_reply_max_reruns(self) -> int:
+        """Returns the max number of times partial_reply should be invoked."""
+        return int(self.client_config["max_tokens"] / TOKENS_PER_REQUEST)
+
+    def generate_prompt_update_examples(self, query: str) -> str:
+        """Generate prompt from query and update max context examples if necessary
 
         Args:
             query (str): A query passed to the prompt chatbot.
 
         Returns:
-            Interaction: Dictionary of query and generated LLM response
+            current_prompt (str): Returns the current prompt using
+            query and chat history
+
         """
         # The current prompt is assembled from the initial prompt,
         # from the chat history with a maximum of max_context_examples,
         # and from the current query
+
         current_prompt = self.get_current_prompt(query)
 
         current_prompt_size = self.co.tokenize(current_prompt).length
@@ -219,6 +242,95 @@ class PromptChatbot(Chatbot):
                 f" to {self.chatbot_config['max_context_examples']} - "
                 f"value set in the original config"
             )
+        return current_prompt
+
+    def append_to_chat_history(
+        self, query: str, response: str, current_prompt: str, add_new_elem: bool
+    ) -> None:
+        """Appends the (partial) reply to chat history.
+
+        Args:
+            query (str):  A query passed to the prompt chatbot.
+            response (str): Response of the chatbot to query
+            current_prompt (str): Current prompt to save to prompt history
+            add_new_elem (bool): Indicates if a new element should be added to
+            chat history or if the last element should be modified only
+        """
+        if add_new_elem:
+            self.chat_history.append(self.prompt.create_interaction(query, response))
+            self.prompt_size_history.append(
+                self.co.tokenize(
+                    self.prompt.create_interaction_string(query, response)
+                ).length
+            )
+            self.prompt_history.append(current_prompt)
+        elif response != "":
+            self.chat_history[-1]["bot"] += response
+            self.prompt_history[-1] += response
+            self.prompt_size_history[-1] += self.co.tokenize(response).length
+
+    def partial_reply(self, query: str) -> str:
+        """Generates (partial) reply to a query given a chat history.
+
+        Args:
+            query (str): A query passed to the prompt chatbot.
+
+        Yields:
+            str: Dictionary of query and generated LLM response
+        """
+        current_prompt = self.generate_prompt_update_examples(query)
+        response_so_far = ""
+        should_break = False
+        for i in range(self.partial_reply_max_reruns()):
+            if not should_break:
+                generated_object = self.co.generate(
+                    model=self.client_config["model"],
+                    prompt=current_prompt,
+                    max_tokens=TOKENS_PER_REQUEST,
+                    temperature=self.client_config["temperature"],
+                    frequency_penalty=self.client_config["frequency_penalty"],
+                    presence_penalty=self.client_config["presence_penalty"],
+                    stop_sequences=self.client_config["stop_sequences"],
+                )
+                response = generated_object.generations[0].text
+
+                # Fetches the stop sequence at the end of response if it exists
+                stop_seq = self.get_stop_seq(response)
+                if stop_seq != "" or response == "":
+                    # If there is a stop sequence at the end of response
+                    # remove it and set should_break flag to True
+                    if stop_seq != "":
+                        response = response[: -len(stop_seq)]
+                        should_break = True
+                    # If response is empty, break immediately
+                    else:
+                        break
+                current_prompt += response
+                response_so_far += response
+                # If this is the first partial_reply, append a new element to
+                # chat history after removing the leading whitespace
+                if i == 0:
+                    response = response.lstrip()
+                    self.append_to_chat_history(query, response, current_prompt, True)
+                # If this is not the first partial_reply, append it to the last element
+                # in chat history
+                else:
+                    self.append_to_chat_history(query, response, current_prompt, False)
+                yield response_so_far
+
+    def reply(self, query: str) -> Interaction:
+        """Replies to a query given a chat history.
+
+        The reply is then generated directly from a call to a LLM.
+
+        Args:
+            query (str): A query passed to the prompt chatbot.
+
+        Returns:
+            Interaction: Dictionary of query and generated LLM response
+        """
+
+        current_prompt = self.generate_prompt_update_examples(query)
 
         # Make a call to Cohere's co.generate API
         generated_object = self.co.generate(
@@ -280,10 +392,12 @@ class PromptChatbot(Chatbot):
             context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
         context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
 
-        # get query prompt
-        query_prompt = self.prompt.create_interaction_string(query)
+        current_prompt = base_prompt + context_prompt
 
-        current_prompt = base_prompt + context_prompt + query_prompt
+        # get query prompt
+        if query != "":
+            query_prompt = self.prompt.create_interaction_string(query)
+            current_prompt += query_prompt
         return current_prompt.strip()
 
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
@@ -315,14 +429,23 @@ class PromptChatbot(Chatbot):
         if not hasattr(self, "client_config"):
             self.client_config = {
                 "model": "xlarge",
-                "max_tokens": 100,
+                "max_tokens": 200,
                 "temperature": 0.75,
                 "frequency_penalty": 0.0,
                 "presence_penalty": 0.0,
-                "stop_sequences": ["\n"],
+                "stop_sequences": ["\\n", "\n"],
             }
         # Override default config values with the config passed in
         if isinstance(client_config, Dict):
+            if "model" in client_config:
+                if "command" in client_config["model"]:
+                    if (
+                        "\n{}:".format(self.bot_name)
+                        not in client_config["stop_sequences"]
+                    ):
+                        client_config["stop_sequences"].append(
+                            "\n{}:".format(self.bot_name)
+                        )
             self.client_config.update(client_config)
         else:
             raise TypeError(
@@ -368,7 +491,6 @@ class PromptChatbot(Chatbot):
 
         # Validate that the persona follows our predefined schema
         cls._validate_persona_dict(persona, persona_path)
-
         return cls(
             client=client,
             prompt=ChatPrompt.from_dict(persona["chat_prompt_config"]),
