@@ -206,14 +206,14 @@ class PromptChatbot(Chatbot):
         return future
 
     def get_stop_seq(self, response: str) -> str:
-        """Given a response, returns the stop sequence it ends with if any.
+        """Given a response, returns the stop sequence it has if any.
 
         Args:
             response (str): Response coming from prompt chatbot.
 
         Returns:
-            str: The stop sequence at the end of response. If no stop
-                sequence is found, then an empty string is returned.
+            str: The stop sequence in the response. If no stop sequence is found, then
+                an empty string is returned.
 
         """
         for stop_seq in self.client_config["stop_sequences"]:

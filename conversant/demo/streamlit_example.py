@@ -47,11 +47,11 @@ def peek(iterable) -> str:
 def get_reply() -> None:
     """Replies query from the message input and initializes the rerun_count."""
     st.session_state.partial_reply_in_progress = True
-    # This variable is used to indicate from where streamlit_talk should animate the
-    # typewriter effect from.
     st.session_state.partial_reply_generator = st.session_state.bot.partial_reply(
         query=st.session_state.message_input
     )
+    # This variable is used to indicate from where streamlit_talk should animate the
+    # typewriter effect from and to.
     st.session_state.prev_partial_chunk, st.session_state.curr_partial_chunk = next(
         st.session_state.partial_reply_generator
     )
@@ -350,6 +350,9 @@ if __name__ == "__main__":
                 else:
                     del st.session_state.partial_reply_generator
                     st.session_state.partial_reply_in_progress = False
+                    # At the end of the partial reply generation, we want the typewriter
+                    # animation to cease. To do this, make the prev and curr the same
+                    # so that nothing is animated.
                     st.session_state.prev_partial_chunk = (
                         st.session_state.curr_partial_chunk
                     )
