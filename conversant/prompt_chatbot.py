@@ -349,7 +349,7 @@ class PromptChatbot(Chatbot):
                     presence_penalty=self.client_config["presence_penalty"],
                     stop_sequences=self.client_config["stop_sequences"],
                 )
-                # Retur
+
                 yield response_before_current, response_so_far
 
     def reply(self, query: str) -> Interaction:
