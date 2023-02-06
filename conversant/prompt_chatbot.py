@@ -444,7 +444,7 @@ class PromptChatbot(Chatbot):
                         not in client_config["stop_sequences"]
                     ):
                         client_config["stop_sequences"].append(
-                            "\n{}".format(self.bot_name)
+                            "\n{}:".format(self.bot_name)
                         )
             self.client_config.update(client_config)
         else:
