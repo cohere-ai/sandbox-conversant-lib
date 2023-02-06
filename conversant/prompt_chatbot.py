@@ -440,7 +440,7 @@ class PromptChatbot(Chatbot):
             if "model" in client_config:
                 if "command" in client_config["model"]:
                     if (
-                        "\n{}".format(self.bot_name)
+                        "\n{}:".format(self.bot_name)
                         not in client_config["stop_sequences"]
                     ):
                         client_config["stop_sequences"].append(
