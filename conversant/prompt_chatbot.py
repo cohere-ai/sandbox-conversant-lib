@@ -21,6 +21,8 @@ from conversant.prompts.chat_prompt import ChatPrompt
 from conversant.prompts.prompt import Prompt
 
 MAX_GENERATE_TOKENS = 2048
+TOKENS_PER_REQUEST = 5
+
 PERSONA_MODEL_DIRECTORY = f"{os.path.dirname(conversant.__file__)}/personas"
 PERSONA_JSON_SCHEMA = {
     "type": "object",
@@ -186,10 +188,102 @@ class PromptChatbot(Chatbot):
             "tokens"
         )
 
+    def should_stop(self, response:str)-> bool:
+        """Given a response, decides if it ends with a stop sequence and should 
+        be terminated."""
+        for stop_seq in self.client_config["stop_sequences"]: #make into function
+            if response.endswith(stop_seq):
+                return True
+        return False
+    
+    def get_max_reruns(self):
+        """Returns the maximum number of times partial_reply should be invoked."""
+        return int(self.client_config["max_tokens"]/TOKENS_PER_REQUEST)
+    
+    def partial_reply(self, query: str, is_from_scratch: bool):
+        """Replies to a query given a chat history.
+
+        The reply is then generated directly from a call to a LLM.
+
+        Used for all responses besides the initial one. 
+
+        Args:
+            query (str): A query passed to the prompt chatbot.
+            
+            is_from_scratch (bool): Tells the chatbot if the reply
+            
+            should be generated from scratch or it is the continuation
+            
+            of the previous chunk
+            
+        Returns:
+            Interaction: Dictionary of query and generated LLM response
+            
+            bool: Indicates if the generation should be stopped
+        """
+        current_prompt = self.get_current_prompt(query)
+
+        current_prompt_size = self.co.tokenize(current_prompt).length
+
+        if current_prompt_size > self.max_prompt_size:
+            max_context_examples = self._update_max_context_examples(
+                current_prompt_size, self.chatbot_config["max_context_examples"]
+            )
+            current_prompt = self.get_current_prompt(query, max_context_examples)
+
+        elif (
+            self.curr_max_context_examples
+            != self.chatbot_config["max_context_examples"]
+        ):
+            warnings.warn(
+                "The max_context_examples value returned"
+                f" to {self.chatbot_config['max_context_examples']} - "
+                f"value set in the original config"
+            )
+      
+        generated_object = self.co.generate(
+            model=self.client_config["model"],
+            prompt=current_prompt,
+            max_tokens=TOKENS_PER_REQUEST,
+            temperature=self.client_config["temperature"],
+            frequency_penalty=self.client_config["frequency_penalty"],
+            presence_penalty=self.client_config["presence_penalty"],
+            stop_sequences=self.client_config["stop_sequences"],
+        )
+        # If response was cut off by .generate() finding a stop sequence,
+        # remove that sequence from the response.
+        response = generated_object.generations[0].text
+
+        is_final_chunk = False
+        if self.should_stop(response) or response=="":
+            is_final_chunk = True
+            for stop_seq in self.client_config["stop_sequences"]:
+                if response.endswith(stop_seq):
+                    response = response[: -len(stop_seq)]
+
+        if is_from_scratch:
+            response = response.lstrip()
+            self.chat_history.append(self.prompt.create_interaction(query, response))
+            self.prompt_size_history.append(
+                self.co.tokenize(
+                    self.prompt.create_interaction_string(query, response)
+                ).length
+            )
+            self.prompt_history.append(current_prompt)
+            
+        elif response != "": 
+            self.chat_history[-1]['bot'] += response
+            self.prompt_history[-1] += response 
+            self.prompt_size_history[-1] += self.co.tokenize(response).length
+          
+        return self.chat_history[-1]['bot'], is_final_chunk   
+
     def reply(self, query: str) -> Interaction:
         """Replies to a query given a chat history.
 
         The reply is then generated directly from a call to a LLM.
+
+        Used for getting the initial response from the bot.
 
         Args:
             query (str): A query passed to the prompt chatbot.
@@ -280,10 +374,12 @@ class PromptChatbot(Chatbot):
             context_prompt_lines.append(self.prompt.create_interaction_string(**turn))
         context_prompt = self.prompt.example_separator + "".join(context_prompt_lines)
 
-        # get query prompt
-        query_prompt = self.prompt.create_interaction_string(query)
+        current_prompt = base_prompt + context_prompt
 
-        current_prompt = base_prompt + context_prompt + query_prompt
+        # get query prompt
+        if query != "":
+            query_prompt = self.prompt.create_interaction_string(query)
+            current_prompt += query_prompt
         return current_prompt.strip()
 
     def configure_chatbot(self, chatbot_config: Dict = {}) -> None:
