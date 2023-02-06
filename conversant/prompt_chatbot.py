@@ -212,19 +212,14 @@ class PromptChatbot(Chatbot):
             response (str): Response coming from prompt chatbot.
 
         Returns:
-            stop_seq (str): The stop sequence at the end of response.
+            str: The stop sequence at the end of response. If no stop
+                sequence is found, then an empty string is returned.
 
         """
         for stop_seq in self.client_config["stop_sequences"]:
-            if response.endswith(stop_seq):
+            if stop_seq in response:
                 return stop_seq
-
-        # If there is not a stop sequence at the end
         return ""
-
-    def partial_reply_max_reruns(self) -> int:
-        """Returns the max number of times partial_reply should be invoked."""
-        return int(self.client_config["max_tokens"] / TOKENS_PER_REQUEST)
 
     def generate_prompt_update_examples(self, query: str) -> str:
         """Generate prompt from query and update max context examples if necessary
@@ -262,31 +257,6 @@ class PromptChatbot(Chatbot):
             )
         return current_prompt
 
-    def append_to_chat_history(
-        self, query: str, response: str, current_prompt: str, add_new_elem: bool
-    ) -> None:
-        """Appends the (partial) reply to chat history.
-
-        Args:
-            query (str):  A query passed to the prompt chatbot.
-            response (str): Response of the chatbot to query
-            current_prompt (str): Current prompt to save to prompt history
-            add_new_elem (bool): Indicates if a new element should be added to
-            chat history or if the last element should be modified only
-        """
-        if add_new_elem:
-            self.chat_history.append(self.prompt.create_interaction(query, response))
-            self.prompt_size_history.append(
-                self.co.tokenize(
-                    self.prompt.create_interaction_string(query, response)
-                ).length
-            )
-            self.prompt_history.append(current_prompt)
-        elif response != "":
-            self.chat_history[-1]["bot"] += response
-            self.prompt_history[-1] += response
-            self.prompt_size_history[-1] += self.co.tokenize(response).length
-
     def partial_reply(self, query: str) -> Tuple[str, str]:
         """Generates (partial) reply to a query given a chat history.
 
@@ -294,13 +264,21 @@ class PromptChatbot(Chatbot):
             query (str): A query passed to the prompt chatbot.
 
         Yields:
+
             Tuple[str, str]: A tuple of the response before the co.generate call,
-                and the resposne after.
+                and the response after.
         """
         current_prompt = self.generate_prompt_update_examples(query)
+        self.prompt_history.append(current_prompt)
+
         response_before_current = ""
         response_so_far = ""
-        should_break = False
+        num_requests_made = 0
+        max_requests = int(self.client_config["max_tokens"] / TOKENS_PER_REQUEST)
+        reply_complete = False
+
+        # As soon as the function is called (and the generator is created), dispatch
+        # a concurrent call to co.generate
         future = self._dispatch_concurrent_generate_call(
             model=self.client_config["model"],
             prompt=current_prompt,
@@ -310,45 +288,94 @@ class PromptChatbot(Chatbot):
             presence_penalty=self.client_config["presence_penalty"],
             stop_sequences=self.client_config["stop_sequences"],
         )
-        for i in range(self.partial_reply_max_reruns() - 1):
-            if not should_break:
-                generated_object = future.result()
-                response = generated_object.generations[0].text
 
-                # Fetches the stop sequence at the end of response if it exists
-                stop_seq = self.get_stop_seq(response)
-                if stop_seq != "" or response == "":
-                    # If there is a stop sequence at the end of response
-                    # remove it and set should_break flag to True
-                    if stop_seq != "":
-                        response = response[: -len(stop_seq)]
-                        should_break = True
-                    # If response is empty, break immediately
-                    else:
-                        break
-                current_prompt += response
+        while num_requests_made < max_requests and not reply_complete:
+            generated_object = future.result()
+            partial_response = generated_object.generations[0].text
+
+            # If the partial response is an empty string, then this iteration is a no-op
+            # (we indicate that the reply is completely generated).
+            if not partial_response:
+                reply_complete = True
+
+            else:
+
+                # Concatenate the candidate response, then fetches the stop sequence if
+                # it exists in the candidate response
+                candidate_response = response_so_far + partial_response
+                stop_seq = self.get_stop_seq(response_so_far + partial_response)
+
+                # Truncate the candidate response if a stop sequence was found
+                if stop_seq:
+                    candidate_response = candidate_response[
+                        : candidate_response.index(stop_seq)
+                    ]
+
+                    # If the stop sequence is found across two partial replies,
+                    # then the response_so_far has to be truncated. Example:
+                    #
+                    #   stop_seq: "\nUser"
+                    #   response_so_far: "Thank you!\n"
+                    #   partial_response: "User: You are welcome"
+                    #
+                    # Then the candidate response is:
+                    #
+                    #   candidate_response: "Thank you!"
+                    #
+                    # In this case, what is yielded at the end of the loop needs to be:
+                    #
+                    #   response_before_current: "Thank you!"
+                    #   response_so_far: "Thank you!"
+                    #
+                    # So we'll truncate the response_so_far to be candidate_response
+                    if len(candidate_response) < len(response_so_far):
+                        response_so_far = candidate_response
+
+                    reply_complete = True
+
+                # Save candidate response
+                current_prompt += partial_response
                 response_before_current = response_so_far
-                response_so_far += response
+                response_so_far = candidate_response
+
                 # If this is the first partial_reply, append a new element to
                 # chat history after removing the leading whitespace
-                if i == 0:
-                    response = response.lstrip()
-                    self.append_to_chat_history(query, response, current_prompt, True)
-                # If this is not the first partial_reply, append it to the last element
-                # in chat history
+                if num_requests_made == 0:
+                    response_so_far = response_so_far.lstrip()
+                    self.chat_history.append(
+                        self.prompt.create_interaction(query, response_so_far)
+                    )
+                    self.prompt_size_history.append(
+                        self.co.tokenize(
+                            self.prompt.create_interaction_string(
+                                query, response_so_far
+                            )
+                        ).length
+                    )
+                # Otherwise, overwrite the current chat history with the current
+                # response so far
                 else:
-                    self.append_to_chat_history(query, response, current_prompt, False)
+                    self.chat_history[-1] = self.prompt.create_interaction(
+                        query, response_so_far
+                    )
+                    self.prompt_size_history[-1] = self.co.tokenize(
+                        self.prompt.create_interaction_string(query, response_so_far)
+                    ).length
+
+                num_requests_made += 1
+
                 # This dispatches a concurrent call to co.generate, which can be
                 # later accessed on the next iteration of the generator.
-                future = self._dispatch_concurrent_generate_call(
-                    model=self.client_config["model"],
-                    prompt=current_prompt,
-                    max_tokens=TOKENS_PER_REQUEST,
-                    temperature=self.client_config["temperature"],
-                    frequency_penalty=self.client_config["frequency_penalty"],
-                    presence_penalty=self.client_config["presence_penalty"],
-                    stop_sequences=self.client_config["stop_sequences"],
-                )
+                if num_requests_made < max_requests and not reply_complete:
+                    future = self._dispatch_concurrent_generate_call(
+                        model=self.client_config["model"],
+                        prompt=current_prompt,
+                        max_tokens=TOKENS_PER_REQUEST,
+                        temperature=self.client_config["temperature"],
+                        frequency_penalty=self.client_config["frequency_penalty"],
+                        presence_penalty=self.client_config["presence_penalty"],
+                        stop_sequences=self.client_config["stop_sequences"],
+                    )
 
                 yield response_before_current, response_so_far
 
