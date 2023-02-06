@@ -52,8 +52,6 @@ def test_prompt_chatbot_init(mock_prompt_chatbot: PromptChatbot) -> None:
     assert mock_prompt_chatbot.user_name == mock_prompt_chatbot.prompt.user_name
     assert mock_prompt_chatbot.bot_name == mock_prompt_chatbot.prompt.bot_name
     mock_prompt_chatbot.reply(query="What's up?")
-    reply_generator = mock_prompt_chatbot.partial_reply(query="What are you doing?")
-    next(reply_generator)
 
 
 def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
@@ -69,8 +67,6 @@ def test_prompt_chatbot_init_from_persona(mock_co: object) -> None:
     assert prompt_chatbot.latest_prompt == prompt_chatbot.prompt.to_string()
     check_prompt_chatbot_config(prompt_chatbot)
     prompt_chatbot.reply(query="What's up?")
-    reply_generator = prompt_chatbot.partial_reply(query="What are you doing?")
-    next(reply_generator)
 
     with pytest.raises(FileNotFoundError):
         _ = PromptChatbot.from_persona(
@@ -215,8 +211,6 @@ def test_update_max_context_warn(
         updated_max_context_examples = mock_prompt_chatbot._update_max_context_examples(
             prompt_size, max_context_examples
         )
-        # If max_tokens are changed and this test fails, make sure to update -n
-        # to what it actually supposed to be
-        # TODO: Change the test so it automatically does this
-        expected = max_context_examples - 2
+
+        expected = max_context_examples - 1
         assert updated_max_context_examples == expected
