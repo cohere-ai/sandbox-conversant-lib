@@ -46,14 +46,15 @@ def peek(iterable) -> str:
 
 def get_reply() -> None:
     """Replies query from the message input and initializes the rerun_count."""
-    st.session_state.text_input_disabled = True
+    st.session_state.partial_reply_in_progress = True
     # This variable is used to indicate from where streamlit_talk should animate the
     # typewriter effect from.
-    st.session_state.prev_partial_chunk = ""
     st.session_state.partial_reply_generator = st.session_state.bot.partial_reply(
         query=st.session_state.message_input
     )
-    next(st.session_state.partial_reply_generator)
+    st.session_state.prev_partial_chunk, st.session_state.curr_partial_chunk = next(
+        st.session_state.partial_reply_generator
+    )
     st.session_state.message_input = ""
 
 
@@ -82,7 +83,7 @@ def initialize_chatbot() -> None:
     # Reset the edit_promp_json session state so we don't remain on the JSON editor when
     # changing to another bot. This is because st_ace is unable to write
     # new values from the current session state.
-    st.session_state.text_input_disabled = False
+    st.session_state.partial_reply_in_progress = False
     st.session_state.edit_prompt_json = False
 
 
@@ -319,7 +320,7 @@ if __name__ == "__main__":
                     placeholder="Type a message",
                     key="message_input",
                     on_change=get_reply,
-                    disabled=st.session_state.text_input_disabled,
+                    disabled=st.session_state.partial_reply_in_progress,
                 )
                 ui.draw_disclaimer()
 
@@ -339,13 +340,21 @@ if __name__ == "__main__":
             # Rerun the app if there are partial replies to add to the latest
             # response.
             if "partial_reply_generator" in st.session_state:
-                st.session_state.text_input_disabled = True
+                st.session_state.partial_reply_in_progress = True
                 yielded_chunks = peek(st.session_state.partial_reply_generator)
                 if yielded_chunks:
                     previous_partial_chunk, partial_chunk = yielded_chunks
                     st.session_state.prev_partial_chunk = previous_partial_chunk
+                    st.session_state.curr_partial_chunk = partial_chunk
                     st.experimental_rerun()
                 else:
                     del st.session_state.partial_reply_generator
-                    st.session_state.text_input_disabled = False
+                    st.session_state.partial_reply_in_progress = False
+                    st.session_state.prev_partial_chunk = (
+                        st.session_state.curr_partial_chunk
+                    )
+                    assert (
+                        st.session_state.bot.chat_history[-1]["bot"].strip()
+                        == st.session_state.curr_partial_chunk.strip()
+                    )
                     st.experimental_rerun()

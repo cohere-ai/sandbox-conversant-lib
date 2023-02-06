@@ -31,7 +31,7 @@ def render_bot_partial_reply(utterance, idx):
         use_typewriter=True,
         key=f"{idx}_bot",
         avatar_style=st.session_state.bot_avatar,
-        generation_complete=(not st.session_state.text_input_disabled),
+        generation_complete=(not st.session_state.partial_reply_in_progress),
     )
 
 
