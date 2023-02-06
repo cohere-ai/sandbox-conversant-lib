@@ -4,7 +4,7 @@
         "avatar": ":amphora:"
     },
     "client_config": {
-        "model": "command-xlarge-20221108",
+        "model": "command-xlarge-nightly",
         "max_tokens": 100,
         "temperature": 0.75,
         "stop_sequences": [
