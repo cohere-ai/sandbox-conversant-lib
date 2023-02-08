@@ -178,11 +178,11 @@ python-versions = "*"
 
 [[package]]
 name = "emoji"
-version = "2.2.0"
+version = "1.7.0"
 description = "Emoji for Python"
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+python-versions = "*"
 
 [package.extras]
 dev = ["coverage", "coveralls", "pytest"]
@@ -970,7 +970,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b0d048b4c292096647d8c8608c9a13a2c91c86dcc6069423fe2d8932ef8e4b7d"
+content-hash = "aa33f06aadef6b87330b57a7871ead7eb4d468c4ce6acd3b0f7e566610d0f44c"
 
 [metadata.files]
 altair = [
@@ -1147,7 +1147,7 @@ distlib = [
     {file = "distlib-0.3.6.tar.gz", hash = "sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46"},
 ]
 emoji = [
-    {file = "emoji-2.2.0.tar.gz", hash = "sha256:a2986c21e4aba6b9870df40ef487a17be863cb7778dcf1c01e25917b7cd210bb"},
+    {file = "emoji-1.7.0.tar.gz", hash = "sha256:65c54533ea3c78f30d0729288998715f418d7467de89ec258a31c0ce8660a1d1"},
 ]
 emojificate = [
     {file = "emojificate-0.6.0-py2.py3-none-any.whl", hash = "sha256:eca9fdd0678596717e661ff195b04f26b4c96ffb53b4bb076e4c802680212e93"},
