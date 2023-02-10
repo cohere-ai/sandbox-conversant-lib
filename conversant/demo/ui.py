@@ -20,7 +20,7 @@ def render_bot_partial_reply(utterance, idx):
     """Renders a partial reply message from the bot.
 
     Args:
-        turn (str): The utterance to be rendered.
+        utterance (str): The utterance to be rendered.
         idx (int): The index of the turn.
     """
     st_message(
