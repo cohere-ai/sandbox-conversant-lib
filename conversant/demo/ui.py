@@ -57,7 +57,6 @@ def draw_chat_history() -> None:
             if "user" in turn:
                 st_message(
                     value=turn["user"],
-                    animate_from="",
                     is_user=True,
                     key=f"{i}_user",
                     avatar_style=st.session_state.user_avatar,
