@@ -46,12 +46,15 @@ def peek(iterable) -> str:
 
 def get_reply() -> None:
     """Replies query from the message input and initializes the rerun_count."""
-    st.session_state.text_input_disabled = True
-    st.session_state.finished_generation = False
+    st.session_state.partial_reply_in_progress = True
     st.session_state.partial_reply_generator = st.session_state.bot.partial_reply(
         query=st.session_state.message_input
     )
-    next(st.session_state.partial_reply_generator)
+    # This variable is used to indicate from where streamlit_talk should animate the
+    # typewriter effect from and to.
+    st.session_state.prev_partial_chunk, st.session_state.curr_partial_chunk = next(
+        st.session_state.partial_reply_generator
+    )
     st.session_state.message_input = ""
 
 
@@ -64,7 +67,9 @@ def initialize_chatbot() -> None:
     elif st.session_state.persona == "":
         st.session_state.bot = None
     elif st.session_state.persona == "parrot":
-        st.session_state.bot = utils.ParrotChatbot()
+        st.session_state.bot = utils.ParrotChatbot(
+            client=cohere.Client(os.environ.get("COHERE_API_KEY"))
+        )
     else:
         st.session_state.bot = PromptChatbot.from_persona(
             emoji.replace_emoji(st.session_state.persona, "").strip(),
@@ -78,7 +83,7 @@ def initialize_chatbot() -> None:
     # Reset the edit_promp_json session state so we don't remain on the JSON editor when
     # changing to another bot. This is because st_ace is unable to write
     # new values from the current session state.
-    st.session_state.text_input_disabled = False
+    st.session_state.partial_reply_in_progress = False
     st.session_state.edit_prompt_json = False
 
 
@@ -290,9 +295,8 @@ if __name__ == "__main__":
             # The session's state needs to be manually updated since we are not
             # refreshing the entire Streamlit app.
             if not st.session_state.bot.chat_history:
-                st.session_state.bot.reply(
-                    query="Hello",
-                )
+                st.session_state.message_input = "Hello"
+                get_reply()
                 update_session_with_prompt()
 
             # Draw UI elements for the sidebar
@@ -309,10 +313,6 @@ if __name__ == "__main__":
                 with st.expander("Prompt (string)", expanded=True):
                     ui.draw_prompt_view(json=False)
 
-            # Draw chat history.
-            with chat_history_placeholder.container():
-                ui.draw_chat_history()
-
             # Draw the message input field and a disclaimer.
             with message_input_placeholder.container():
                 st.text_input(
@@ -320,7 +320,7 @@ if __name__ == "__main__":
                     placeholder="Type a message",
                     key="message_input",
                     on_change=get_reply,
-                    disabled=st.session_state.text_input_disabled,
+                    disabled=st.session_state.partial_reply_in_progress,
                 )
                 ui.draw_disclaimer()
 
@@ -333,12 +333,31 @@ if __name__ == "__main__":
             """
             )
 
+            # Draw chat history.
+            with chat_history_placeholder.container():
+                ui.draw_chat_history()
+
+            # Rerun the app if there are partial replies to add to the latest
+            # response.
             if "partial_reply_generator" in st.session_state:
-                st.session_state.text_input_disabled = True
-                partial_chunk = peek(st.session_state.partial_reply_generator)
-                if partial_chunk != "":
+                st.session_state.partial_reply_in_progress = True
+                yielded_chunks = peek(st.session_state.partial_reply_generator)
+                if yielded_chunks:
+                    previous_partial_chunk, partial_chunk = yielded_chunks
+                    st.session_state.prev_partial_chunk = previous_partial_chunk
+                    st.session_state.curr_partial_chunk = partial_chunk
                     st.experimental_rerun()
                 else:
                     del st.session_state.partial_reply_generator
-                    st.session_state.text_input_disabled = False
+                    st.session_state.partial_reply_in_progress = False
+                    # At the end of the partial reply generation, we want the typewriter
+                    # animation to cease. To do this, make the prev and curr the same
+                    # so that nothing is animated.
+                    st.session_state.prev_partial_chunk = (
+                        st.session_state.curr_partial_chunk
+                    )
+                    assert (
+                        st.session_state.bot.chat_history[-1]["bot"].strip()
+                        == st.session_state.curr_partial_chunk.strip()
+                    )
                     st.experimental_rerun()
