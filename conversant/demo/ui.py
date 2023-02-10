@@ -16,18 +16,17 @@ from streamlit_talk import message as st_message
 from conversant.demo import utils
 
 
-def render_bot_partial_reply(utterance, idx):
+def render_bot_partial_reply_curr_partial_chunk(idx):
     """Renders a partial reply message from the bot.
 
     Args:
-        utterance (str): The utterance to be rendered.
         idx (int): The index of the turn.
     """
     st_message(
-        value=utterance.rstrip(),
+        value=st.session_state.curr_partial_chunk,
         animate_from=""
         if "prev_partial_chunk" not in st.session_state
-        else st.session_state.prev_partial_chunk.lstrip(),
+        else st.session_state.prev_partial_chunk,
         use_typewriter=True,
         key=f"{idx}_bot",
         avatar_style=st.session_state.bot_avatar,
@@ -49,7 +48,7 @@ def draw_chat_history() -> None:
         # skipping over the first injected user utterance.
         if len(st.session_state.bot.chat_history) == 1:
             if "bot" in turn:
-                render_bot_partial_reply(turn["bot"], i)
+                render_bot_partial_reply_curr_partial_chunk(i)
 
         # If we are at the last conversation turn, the bot utterance
         # will be rendered as a partial reply with the typewriter effect.
@@ -57,13 +56,12 @@ def draw_chat_history() -> None:
             if "user" in turn:
                 st_message(
                     value=turn["user"],
-                    animate_from="",
                     is_user=True,
                     key=f"{i}_user",
                     avatar_style=st.session_state.user_avatar,
                 )
             if "bot" in turn:
-                render_bot_partial_reply(turn["bot"], i)
+                render_bot_partial_reply_curr_partial_chunk(i)
 
         else:
             # If there is more than one turn, the first turn should skip over
