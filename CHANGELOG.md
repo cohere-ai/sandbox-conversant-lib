@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.2 (2023-02-17)
+
+### Added
+- Simulated token streaming support for Streamlit demo app
+- Method in `PromptChatbot` to chain `co.generate` calls (`partial_reply`) for one response
+
+### Changed
+- N/A
+
+### Removed
+- N/A
+
 ## 0.2.1 (2023-01-20)
 
 ### Added
