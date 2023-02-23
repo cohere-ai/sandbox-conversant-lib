@@ -24,10 +24,10 @@ def render_bot_partial_reply(utterance, idx):
         idx (int): The index of the turn.
     """
     st_message(
-        value=utterance.rstrip(),
+        value=utterance,
         animate_from=""
         if "prev_partial_chunk" not in st.session_state
-        else st.session_state.prev_partial_chunk.lstrip(),
+        else st.session_state.prev_partial_chunk,
         use_typewriter=True,
         key=f"{idx}_bot",
         avatar_style=st.session_state.bot_avatar,
