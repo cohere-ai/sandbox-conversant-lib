@@ -63,7 +63,7 @@ class ParrotChatbot(PromptChatbot):
         return query
 
 
-@st.cache
+@st.cache_data
 def get_twemoji_url_from_shortcode(shortcode: str) -> str:
 
     """Converts an emoji shortcode to its corresponding Twemoji URL.
@@ -83,7 +83,7 @@ def get_twemoji_url_from_shortcode(shortcode: str) -> str:
     return url
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def get_persona_options(persona_directory: str = PERSONA_MODEL_DIRECTORY) -> List[str]:
     """Initializes a list of personas.
 
