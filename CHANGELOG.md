@@ -1,4 +1,14 @@
 # Changelog
+## 0.2.3 (2023-02-23)
+
+### Added
+- N/A
+### Changed
+- Updated streamlit to 1.18.1.
+- Fixed a bug that was causing the last utterance to be repeated in the Streamlit demo.
+
+### Removed
+- N/A
 
 ## 0.2.2 (2023-02-17)
 

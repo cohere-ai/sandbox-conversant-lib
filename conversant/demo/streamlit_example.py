@@ -327,7 +327,7 @@ if __name__ == "__main__":
             # When in chat view, anchor elements from the bottom so that
             # the message input field is at the bottom (more natural).
             utils.style_using_css(
-                """div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(6) { /* # noqa */
+                """div.css-k1ih3n.egzxvld4 > div:nth-child(1) > div:nth-child(1) > div:nth-child(6) { /* # noqa */
                     margin-top: auto;
                 }
             """

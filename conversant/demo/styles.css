@@ -1,26 +1,30 @@
 /* Style the overall app container */
-div.css-18e3th9.egzxvld2 {
+div.css-k1ih3n.egzxvld4 {
     padding: 1rem 1rem 1rem;
     display: flex;
     overflow: visible;
+    flex-grow: 1; /* This allows the chat window to be anchored at the bottom */
+}
+/* Hide the streamlit injected data-iframe-height div */
+div.css-qcqlej.egzxvld3 {
+    display: none;
 }
 .css-ocqkz7 {
     flex-grow: 0;
 }
 
 /* Style the app so the scrollbar is anchored to the bottom */
-section.css-k1vhr4.egzxvld3 {
+section.css-k1vhr4.egzxvld5 {
     display: flex;
-    flex-direction: column-reverse;
 }
 
 /* Style prompt_json_view_placeholder header so it is aligned. */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(1) p {
+div.css-k1ih3n.egzxvld4 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(1) p {
     margin-left: 8px;
 }
 
 /* Style prompt_json_view_placeholder so overflow is scrollable */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) {
+div.css-k1ih3n.egzxvld4 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) {
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: 955px;
@@ -29,7 +33,7 @@ div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7
 }
 
 /* Style prompt_string_placeholder so overflow is scrollable */
-div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(2) .stCodeBlock {
+div.css-k1ih3n.egzxvld4 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7) > div:nth-child(2) .stCodeBlock {
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: 955px;
@@ -37,7 +41,7 @@ div.css-18e3th9.egzxvld2 > div:nth-child(1) > div:nth-child(1) > div:nth-child(7
 }
 
 /* Remove "Press enter to apply" from text input */
-.stTextInput div.css-1li7dat.effi0qh1 {
+.stTextInput div.css-1if5ada.effi0qh1 {
     visibility: hidden;
 }
 
@@ -47,6 +51,6 @@ code.language-markdown {
 }
 
 /* Make padding smaller on st.sidebar */
-div.css-hxt7ib.e1fqkh3o5 {
+div.css-1vq4p4l.e1fqkh3o4 {
     padding-top: 2rem;
 }
