@@ -1,4 +1,25 @@
 # Changelog
+
+## 0.2.5 (2023-03-10)
+
+### Added
+- N/A
+### Changed
+- Updated streamlit-talk to 0.2.1
+
+### Removed
+- N/A
+## 0.2.4 (2023-03-10)
+
+### Added
+- N/A
+### Changed
+- Updated streamlit-talk to 0.2.0
+
+### Removed
+- N/A
+
+
 ## 0.2.3 (2023-02-23)
 
 ### Added
